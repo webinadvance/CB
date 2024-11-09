@@ -1,5 +1,5 @@
 ﻿export async function load({ fetch }) {
-  const response = await fetch('/api/pages?publishedOnly=true');
+  const response = await fetch("/api/pages?publishedOnly=true");
   const pages = await response.json();
 
   const routingMap = new Map();
@@ -15,3 +15,6 @@
     routingMap,
   };
 }
+
+export const ssr = true;
+export const prerender = false;
