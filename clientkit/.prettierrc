@@ -1,0 +1,12 @@
+﻿{
+  "plugins": [ "prettier-plugin-svelte" ],
+  "svelteSortOrder": "options-scripts-markup-styles",
+  "svelteStrictMode": false,
+  "svelteIndentScriptAndStyle": true,
+  "svelteAllowShorthand": true,
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "tabWidth": 2,
+  "printWidth": 100
+}
