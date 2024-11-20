@@ -36,7 +36,8 @@ router.get("/pages", async (req, res) => {
   }
 });
 
-router.get("/pages/:slug", async (req, res) => {
+router.get("/pages/:slug(*)", async (req, res) => {
+  // (*) allows slashes
   try {
     const page = await Page.findOne({
       where: {
@@ -51,9 +52,7 @@ router.get("/pages/:slug", async (req, res) => {
       ],
     });
 
-    if (!page) {
-      return res.status(404).json({ message: "Page not found" });
-    }
+    if (!page) return res.status(404).json({ message: "Page not found" });
 
     const transformedPage = {
       ...page.toJSON(),

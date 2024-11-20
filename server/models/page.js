@@ -18,6 +18,9 @@ Page.init(
       type: DataTypes.STRING(200),
       allowNull: false,
       unique: true,
+      validate: {
+        notContains: " ",
+      },
     },
     isPublished: {
       type: DataTypes.BOOLEAN,
