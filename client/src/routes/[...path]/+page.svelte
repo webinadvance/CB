@@ -3,6 +3,10 @@
 
     /** @type {import('./$types').PageData} */
     export let data;
+
+    function getContent(key) {
+        return data.page?.contentData?.[key]?.content || '';
+    }
 </script>
 
 <div class="p-4">
@@ -13,13 +17,13 @@
             <DynamicComponentLoader
                     componentName={data.page.componentName}
                     pageData={{
-  ...data.page,
-  routeParams: data.routeParams,
-  placeholdersDictionary: data.page.contentData
-}}
+          ...data.page,
+          routeParams: data.routeParams,
+          placeholdersDictionary: data.page.contentData
+        }}
             />
         {/if}
 
-        {@html data.page.contentData['main-content']?.content}
+        {@html getContent('main-content')}
     {/if}
 </div>
