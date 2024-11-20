@@ -1,19 +1,22 @@
 ﻿<script>
-  import TestComponent from '$lib/components/TestComponent.svelte';
-  let { data } = $props();
+    import DynamicComponentLoader from '$lib/components/DynamicComponentLoader.svelte';
+
+    /** @type {import('./$types').PageData} */
+    export let data;
 </script>
 
 <div class="p-4">
-  <h1 class="text-2xl font-bold mb-4">Test Page DYNAMYC ROUTE SVELTE</h1>
+    {#if data.page}
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold">{data.page.title}</h2>
 
-  {#if data.page}
-    <div class="mb-6">
-      <h2 class="text-xl font-semibold">{data.page.title}</h2>
-      {@html data.page.placeholdersDictionary['main-content']?.content}
-    </div>
-  {/if}
+            <!-- Load the component specified in the page data -->
+            {#if data.page.componentName}
+                <DynamicComponentLoader componentName={data.page.componentName}/>
+            {/if}
 
-  <TestComponent />
-
-  <a class="text-blue-500 hover:underline mt-4" href="/">Back to Home</a>
+            <!-- Render page content -->
+            {@html data.page.placeholdersDictionary['main-content']?.content}
+        </div>
+    {/if}
 </div>

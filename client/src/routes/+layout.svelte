@@ -1,27 +1,27 @@
 <script>
-  import '../app.css';
+    import '../app.css';
 
-  /** @type {import('./$types').LayoutData} */
-  let { data } = $props();
+    /** @type {import('./$types').LayoutData} */
+    let {data} = $props();
 </script>
 
 <div class="app">
-  <main>
-    <slot />
-  </main>
+    <main>
+        <slot/>
+    </main>
 </div>
 
 <style>
-  .app {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
+    .app {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
 
-  main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
+    main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
 </style>

@@ -1,8 +1,9 @@
-﻿import { Model, DataTypes } from "sequelize";
+﻿import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database/config.js";
 import { Page } from "./page.js";
 
 export class PagePlaceholder extends Model {}
+
 PagePlaceholder.init(
   {
     id: {

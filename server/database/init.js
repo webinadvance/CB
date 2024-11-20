@@ -44,6 +44,32 @@ export async function initializeDatabase() {
         redirectUrl: "/test",
         isPublished: true,
       },
+      {
+        title: "Test Page",
+        slug: "test",
+        componentName: "TestComponent",
+        isPublished: true,
+        placeholders: [
+          {
+            key: "main-content",
+            content: "Test page content",
+            contentType: "html",
+          },
+        ],
+      },
+      {
+        title: "Test Page 2",
+        slug: "test2",
+        componentName: "TestComponent2",
+        isPublished: true,
+        placeholders: [
+          {
+            key: "main-content",
+            content: "Test page content",
+            contentType: "html",
+          },
+        ],
+      },
     ];
 
     // Create pages with their placeholders

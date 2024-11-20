@@ -1,7 +1,8 @@
-﻿import { Model, DataTypes } from "sequelize";
+﻿import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database/config.js";
 
 export class Page extends Model {}
+
 Page.init(
   {
     id: {
@@ -31,6 +32,10 @@ Page.init(
     },
     redirectUrl: {
       type: DataTypes.STRING,
+    },
+    componentName: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
     },
   },
   {
