@@ -12,7 +12,10 @@
 
             <!-- Load the component specified in the page data -->
             {#if data.page.componentName}
-                <DynamicComponentLoader componentName={data.page.componentName}/>
+                <DynamicComponentLoader
+                        componentName={data.page.componentName}
+                        pageData={data.page}
+                />
             {/if}
 
             <!-- Render page content -->
