@@ -1,12 +1,11 @@
 ﻿<script>
     import DynamicComponentLoader from '$lib/components/DynamicComponentLoader.svelte';
+    import {setContent} from '$lib/actions/content.js';
 
     /** @type {import('./$types').PageData} */
     export let data;
 
-    function getContent(key) {
-        return data.page?.contentData?.[key]?.content || '';
-    }
+    $: content = setContent(data.page);
 </script>
 
 <div class="p-4">
@@ -17,13 +16,11 @@
             <DynamicComponentLoader
                     componentName={data.page.componentName}
                     pageData={{
-          ...data.page,
-          routeParams: data.routeParams,
-          placeholdersDictionary: data.page.contentData
-        }}
+                    ...data.page,
+                    routeParams: data.routeParams,
+                    placeholdersDictionary: data.page.contentData
+                }}
             />
         {/if}
-
-        {@html getContent('main-content')}
     {/if}
 </div>

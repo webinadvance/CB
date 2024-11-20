@@ -1,18 +1,16 @@
 ﻿<script>
     /** @type {any} */
     export let pageData;
+    import { getContent } from '$lib/actions/content.js';
 
     $: params = pageData.routeParams || {};
-
-    function getContent(key) {
-        return pageData?.contentData?.[key]?.content || '';
-    }
+    const content = getContent();
 </script>
 
 <div class="p-4">
     {#if pageData}
         <h2 class="text-xl font-semibold">{pageData.title}</h2>
         <div>Item: {params.item1}</div>
-        <div>{@html getContent('main-content')}</div>
+        <div>{@html content('main-content')}</div>
     {/if}
 </div>
