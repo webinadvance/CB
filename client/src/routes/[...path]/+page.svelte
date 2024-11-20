@@ -13,7 +13,7 @@
             {#if data.page.componentName}
                 <DynamicComponentLoader
                         componentName={data.page.componentName}
-                        pageData={{...data.page, currentPath: data.fullPath}}
+                        pageData={{...data.page, routeParams: data.routeParams}}
                 />
             {/if}
 

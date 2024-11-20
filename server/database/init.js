@@ -59,7 +59,7 @@ export async function initializeDatabase() {
       },
       {
         title: "Test Page 2",
-        slug: "aaa/bbb",
+        slug: "aaa/bbb/data1",
         componentName: "TestComponent2",
         isPublished: true,
         placeholders: [
