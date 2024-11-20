@@ -1,15 +1,20 @@
 ﻿/** @type {import('./$types').PageServerLoad} */
 export async function load({ fetch, params }) {
-  // Split path into base path and additional params
   const pathParts = params.path.split("/");
-  const basePath = pathParts.slice(0, 2).join("/"); // "aaa/bbb"
-  const additionalParams = pathParts.slice(2); // ["data1", "data2"]
 
-  const response = await fetch(`http://localhost:3000/api/pages/${basePath}`);
-  const page = response.ok ? await response.json() : null;
+  // Try progressively shorter paths until we find a match
+  for (let i = pathParts.length; i > 0; i--) {
+    const testPath = pathParts.slice(0, i).join("/");
+    const response = await fetch(`http://localhost:3000/api/pages/${testPath}`);
 
-  return {
-    page,
-    routeParams: additionalParams,
-  };
+    if (response.ok) {
+      const page = await response.json();
+      return {
+        page,
+        routeParams: pathParts.slice(i),
+      };
+    }
+  }
+
+  return { page: null };
 }
