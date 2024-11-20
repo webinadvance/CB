@@ -10,15 +10,13 @@ export async function load({ fetch, params }) {
       const page = await response.json();
       const paramValues = pathParts.slice(i);
 
-      // Map param values to names
-      const namedParams = {};
+      const routeParams = {};
       (page.paramSchema || []).forEach((name, index) => {
-        namedParams[name] = paramValues[index];
+        routeParams[name] = paramValues[index];
       });
 
-      return { page, routeParams: namedParams };
+      return { page, routeParams };
     }
   }
-
   return { page: null };
 }

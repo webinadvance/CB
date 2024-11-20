@@ -1,7 +1,8 @@
-﻿import { DataTypes, Model } from "sequelize";
+﻿// models/page.js
+import { Model, DataTypes } from "sequelize";
 import { sequelize } from "../database/config.js";
 
-export class Page extends Model {}
+class Page extends Model {}
 
 Page.init(
   {
@@ -10,36 +11,26 @@ Page.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    title: {
-      type: DataTypes.STRING(200),
-      allowNull: false,
-    },
+    title: DataTypes.STRING(200),
     slug: {
       type: DataTypes.STRING(200),
-      allowNull: false,
       unique: true,
-      validate: {
-        notContains: " ",
-      },
     },
     isPublished: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
+      defaultValue: true,
     },
-    createdAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
+    contentData: {
+      type: DataTypes.TEXT,
+      get() {
+        const raw = this.getDataValue("contentData");
+        return raw ? JSON.parse(raw) : {};
+      },
+      set(value) {
+        this.setDataValue("contentData", JSON.stringify(value));
+      },
     },
-    updatedAt: {
-      type: DataTypes.DATE,
-    },
-    redirectUrl: {
-      type: DataTypes.STRING,
-    },
-    componentName: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-    },
+    componentName: DataTypes.STRING(100),
     paramSchema: {
       type: DataTypes.TEXT,
       get() {
@@ -56,3 +47,5 @@ Page.init(
     modelName: "Page",
   },
 );
+
+export { Page };

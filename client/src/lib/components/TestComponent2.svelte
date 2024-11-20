@@ -12,6 +12,6 @@
         <!-- Direct param access -->
         <div>Item: {params.item1}</div>
 
-        <div>{@html pageData.placeholdersDictionary['main-content']?.content}</div>
+        <div>{@html pageData.contentData['main-content']?.content}</div>
     {/if}
 </div>
