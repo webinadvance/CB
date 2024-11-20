@@ -4,7 +4,6 @@ import { PagePlaceholder } from "../models/pagePlaceholder.js";
 
 export const router = Router();
 
-// Get all pages
 router.get("/pages", async (req, res) => {
   try {
     const { publishedOnly } = req.query;
@@ -23,7 +22,6 @@ router.get("/pages", async (req, res) => {
 
     const pages = await Page.findAll(query);
 
-    // Transform the response to match the .NET API format
     const transformedPages = pages.map((page) => ({
       ...page.toJSON(),
       placeholdersDictionary: page.placeholders.reduce((acc, ph) => {
@@ -38,7 +36,6 @@ router.get("/pages", async (req, res) => {
   }
 });
 
-// Get page by slug
 router.get("/pages/:slug", async (req, res) => {
   try {
     const page = await Page.findOne({
@@ -58,7 +55,6 @@ router.get("/pages/:slug", async (req, res) => {
       return res.status(404).json({ message: "Page not found" });
     }
 
-    // Transform the response to match the .NET API format
     const transformedPage = {
       ...page.toJSON(),
       placeholdersDictionary: page.placeholders.reduce((acc, ph) => {
