@@ -40,6 +40,16 @@ Page.init(
       type: DataTypes.STRING(100),
       allowNull: true,
     },
+    paramSchema: {
+      type: DataTypes.TEXT,
+      get() {
+        const raw = this.getDataValue("paramSchema");
+        return raw ? JSON.parse(raw) : [];
+      },
+      set(value) {
+        this.setDataValue("paramSchema", JSON.stringify(value));
+      },
+    },
   },
   {
     sequelize,

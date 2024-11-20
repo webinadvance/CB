@@ -59,8 +59,9 @@ export async function initializeDatabase() {
       },
       {
         title: "Test Page 2",
-        slug: "aaa/bbb/data1",
+        slug: "aaa/bbb",
         componentName: "TestComponent2",
+        paramSchema: ["item1", "item2"],
         isPublished: true,
         placeholders: [
           {
