@@ -4,5 +4,6 @@
 <nav>
     <ul>
         <li><a href="/test">Go to Test Page</a></li>
+        <div>dasdsa</div>
     </ul>
 </nav>
