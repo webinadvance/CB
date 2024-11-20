@@ -1,10 +1,14 @@
-﻿/** @type {import('./$types').PageServerLoad} */
+﻿import { config } from 'dotenv'
+config()
+
+/** @type {import('./$types').PageServerLoad} */
 export async function load({ fetch, params }) {
   const pathParts = params.path.split('/')
 
   for (let i = pathParts.length; i > 0; i--) {
     const testPath = pathParts.slice(0, i).join('/')
-    const response = await fetch(`http://localhost:3000/api/pages/${testPath}`)
+    const apiBaseUrl = process.env.VITE_API_BASE_URL
+    const response = await fetch(`${apiBaseUrl}/api/pages/${testPath}`)
 
     if (response.ok) {
       const page = await response.json()
