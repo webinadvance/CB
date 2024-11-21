@@ -8,3 +8,6 @@
 </script>
 
 <slot {pageData} {params} {content} />
+<div>{JSON.stringify(params)}</div>
+<div>{JSON.stringify(pageData)}</div>
+<div>{JSON.stringify(content)}</div>

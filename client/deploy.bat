@@ -1,0 +1,9 @@
+﻿@echo off
+echo Building application...
+call npm run build
+
+echo Installing production dependencies...
+call npm install --omit=dev
+
+echo Starting server...
+node server.js
