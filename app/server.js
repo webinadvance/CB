@@ -1,6 +1,7 @@
 ﻿import express from 'express'
-import { createServer } from 'vite'
-import { sequelize, Page } from './database/models/page.js'
+import initializeDatabase from './database/index.js'
+import addSampleData from './database/sampleData.js'
+import createViteMiddleware from './config/viteConfig.js'
 import pagesRouter from './api/pages.js'
 
 async function createDevServer() {
@@ -13,46 +14,27 @@ async function createDevServer() {
   app.use('/api/pages', pagesRouter)
 
   // Vite middleware
-  const vite = await createServer({
-    server: { middlewareMode: 'true' },
-    appType: 'custom',
-  })
-
-  app.use(vite.middlewares)
-
-  // Initialize database and start server
   try {
-    await sequelize.sync({ force: true })
-
-    // Sample data
-    await Page.bulkCreate([
-      {
-        title: 'Home',
-        slug: 'home',
-        contentData: { 'main-content': { content: 'Welcome' } },
-      },
-      {
-        title: 'Test',
-        slug: 'test',
-        componentName: 'TestComponent',
-        contentData: { 'main-content': { content: 'Test content' } },
-      },
-      {
-        title: 'Dynamic',
-        slug: 'aaa/bbb',
-        componentName: 'TestComponent2',
-        paramSchema: ['item1', 'item2'],
-        contentData: { 'main-content': { content: 'Dynamic content' } },
-      },
-    ])
-
-    app.listen(port, () => {
-      console.log(`Server running at http://localhost:${port}`)
-    })
+    const viteMiddleware = await createViteMiddleware()
+    app.use(viteMiddleware)
   } catch (error) {
-    console.error('Unable to start server:', error)
+    console.error('Unable to setup Vite middleware:', error)
     process.exit(1)
   }
+
+  // Database initialization and sample data
+  try {
+    await initializeDatabase()
+    await addSampleData()
+  } catch (error) {
+    console.error('Failed to initialize database or add sample data:', error)
+    process.exit(1)
+  }
+
+  // Start the server
+  app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`)
+  })
 }
 
 createDevServer()
