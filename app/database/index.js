@@ -2,7 +2,7 @@
 
 async function initializeDatabase() {
   try {
-    await sequelize.sync({ force: true })
+    await sequelize.sync() // Avoid `force: true` in production
     console.log('Database synced successfully')
   } catch (error) {
     console.error('Database initialization failed:', error)

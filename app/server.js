@@ -3,6 +3,7 @@ import initializeDatabase from './database/index.js'
 import addSampleData from './database/sampleData.js'
 import createViteMiddleware from './config/viteConfig.js'
 import pagesRouter from './api/pages.js'
+import errorHandler from './middleware/errorHandler.js'
 
 async function createDevServer() {
   const app = express()
@@ -12,6 +13,8 @@ async function createDevServer() {
 
   // API routes
   app.use('/api/pages', pagesRouter)
+
+  app.use(errorHandler)
 
   // Vite middleware
   try {

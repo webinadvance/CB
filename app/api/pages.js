@@ -1,30 +1,24 @@
 ﻿import { Router } from 'express'
-import { Page } from '../database/models/page.js'
+import { getAllPages, getPageBySlug } from '../services/pageService.js'
 
 const router = Router()
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
-    const whereClause =
-      req.query.publishedOnly === 'true' ? { isPublished: true } : {}
-    const pages = await Page.findAll({ where: whereClause })
+    const pages = await getAllPages(req.query.publishedOnly)
     res.json(pages)
   } catch (error) {
-    console.error('Error fetching pages:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    next(error)
   }
 })
 
-router.get('/:slug(*)', async (req, res) => {
+router.get('/:slug(*)', async (req, res, next) => {
   try {
-    const page = await Page.findOne({
-      where: { slug: req.params.slug, isPublished: true },
-    })
+    const page = await getPageBySlug(req.params.slug)
     if (!page) return res.status(404).json({ message: 'Page not found' })
     res.json(page)
   } catch (error) {
-    console.error('Error fetching page:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    next(error)
   }
 })
 
