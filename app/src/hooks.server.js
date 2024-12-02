@@ -1,10 +1,21 @@
-﻿/** @type {import('@sveltejs/kit').Handle} */
+﻿// src/hooks.server.js
+import initializeDatabase from '$lib/database/index.js'
+import addSampleData from '$lib/database/sampleData.js'
+
+let dbInitialized = false
+
+/** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
-  // If the request starts with /api, bypass SvelteKit
-  if (event.url.pathname.startsWith('/api')) {
-    return new Response('Not handled by SvelteKit', { status: 404 })
+  try {
+    if (!dbInitialized) {
+      await initializeDatabase()
+      await addSampleData()
+      dbInitialized = true
+    }
+  } catch (error) {
+    console.error('Database initialization error:', error)
+    // Continue even if DB init fails - might be duplicate data
   }
 
-  // Otherwise, let SvelteKit handle the request
   return resolve(event)
 }

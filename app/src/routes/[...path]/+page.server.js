@@ -1,19 +1,12 @@
-﻿import { config } from 'dotenv'
-config()
+﻿// src/routes/[...path]/+page.server.js
+import { getAllPages, getPageBySlug } from '$lib/services/pageService.js'
 
 /** @type {import('./$types').PageServerLoad} */
-export async function load({ fetch, params }) {
-  const { VITE_API_BASE_URL } = process.env
+export async function load({ params }) {
   const fullPath = params.path
 
-  // Fetch all pages first to check against available slugs
-  const response = await fetch(`${VITE_API_BASE_URL}/api/pages`)
-  if (!response.ok) {
-    console.log('response', response)
-    return { page: null }
-  }
-
-  const pages = await response.json()
+  // Get pages directly from service
+  const pages = await getAllPages(false)
 
   // Find the page with the longest matching slug that is at the start of the full path
   const matchingPage = pages
@@ -24,15 +17,12 @@ export async function load({ fetch, params }) {
     return { page: null }
   }
 
-  // Fetch the full page data for the matching slug
-  const pageResponse = await fetch(
-    `${VITE_API_BASE_URL}/api/pages/${matchingPage.slug}`,
-  )
-  if (!pageResponse.ok) {
+  // Get full page data directly from service
+  const page = await getPageBySlug(matchingPage.slug)
+
+  if (!page) {
     return { page: null }
   }
-
-  const page = await pageResponse.json()
 
   // Calculate remaining path segments after the slug
   const remainingPath = fullPath
