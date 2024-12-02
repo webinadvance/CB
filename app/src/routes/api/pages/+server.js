@@ -1,5 +1,5 @@
 ﻿import { json } from '@sveltejs/kit'
-import { getAllPages, getPageBySlug } from '$lib/services/pageService.js'
+import { getAllPages } from '$lib/services/pageService.js'
 
 export async function GET({ url }) {
   const publishedOnly = url.searchParams.get('publishedOnly')

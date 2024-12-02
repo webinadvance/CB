@@ -1,5 +1,5 @@
-﻿import { Page } from './models/page.js'
-import samplePages from './data/samplePages.js'
+﻿import { Page } from '$lib/database/models/page.js'
+import samplePages from '$lib/database/data/samplePages.js'
 
 async function addSampleData() {
   try {

@@ -1,4 +1,4 @@
-﻿import { sequelize } from './models/page.js'
+﻿import { sequelize } from '$lib/database/models/page.js'
 
 async function initializeDatabase() {
   try {
