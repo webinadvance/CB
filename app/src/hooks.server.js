@@ -6,7 +6,7 @@ let dbInitialized = false
 export async function handle({ event, resolve }) {
   try {
     if (!dbInitialized) {
-      await initializeDatabase() // This already handles sample data
+      await initializeDatabase()
       dbInitialized = true
     }
   } catch (error) {

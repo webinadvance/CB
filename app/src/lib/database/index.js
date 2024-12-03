@@ -8,26 +8,32 @@ async function initializeDatabase() {
     await sequelize.authenticate()
     console.log('Database connection established.')
 
-    console.log('Checking database tables...')
-    // Change force: true to alter: true to preserve existing tables and data
-    await sequelize.sync({ alter: true })
-    console.log('Database tables verified.')
+    console.log('Checking if tables exist...')
+    // First check if the table exists
+    const [results] = await sequelize.query(`
+      SELECT TABLE_NAME 
+      FROM INFORMATION_SCHEMA.TABLES 
+      WHERE TABLE_NAME = 'Page'
+    `)
 
-    // Only add sample data if table is empty
-    const count = await Page.count()
-    if (count === 0) {
-      console.log('Database empty, adding sample data...')
+    if (results.length === 0) {
+      console.log('Tables do not exist, creating...')
+      // Only create tables if they don't exist
+      await sequelize.sync({ force: false })
+      console.log('Tables created successfully')
+
+      // Add sample data only for fresh installation
+      console.log('Adding sample data for new installation...')
       await addSampleData()
     } else {
-      console.log(
-        `Database already contains ${count} pages, skipping sample data.`,
-      )
+      console.log('Tables already exist, skipping initialization')
     }
 
     return true
   } catch (error) {
     console.error('Database initialization failed:', error)
-    throw error
+    return false // Don't throw error, just return false
   }
 }
+
 export default initializeDatabase
