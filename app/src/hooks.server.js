@@ -1,6 +1,4 @@
-﻿// src/hooks.server.js
-import initializeDatabase from '$lib/database/index.js'
-import addSampleData from '$lib/database/sampleData.js'
+﻿import initializeDatabase from '$lib/database/index.js'
 
 let dbInitialized = false
 
@@ -8,13 +6,11 @@ let dbInitialized = false
 export async function handle({ event, resolve }) {
   try {
     if (!dbInitialized) {
-      await initializeDatabase()
-      await addSampleData()
+      await initializeDatabase() // This already handles sample data
       dbInitialized = true
     }
   } catch (error) {
     console.error('Database initialization error:', error)
-    // Continue even if DB init fails - might be duplicate data
   }
 
   return resolve(event)

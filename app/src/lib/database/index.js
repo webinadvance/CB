@@ -1,4 +1,6 @@
 ﻿import sequelize from '$lib/database/config.js'
+import addSampleData from '$lib/database/sampleData.js'
+import { Page } from '$lib/database/models/page.js'
 
 async function initializeDatabase() {
   try {
