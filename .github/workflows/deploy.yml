@@ -1,0 +1,42 @@
+﻿name: Deploy to Production
+
+on:
+  push:
+    branches: [ v2 ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: Deploy to server
+        env:
+          HOST: ${{ secrets.HOST }}
+        run: |
+          rsync -avz --delete \
+            --exclude='.git*' \
+            --exclude='node_modules' \
+            --exclude='.env' \
+            ./ root@$HOST:/var/www/kymera.cloud/
+
+          ssh root@$HOST << 'ENDSSH'
+            cd /var/www/kymera.cloud
+            export NODE_ENV=production
+            npm install
+            npm run build
+            systemctl restart kymera
+            sleep 2
+            systemctl status kymera
+          ENDSSH
