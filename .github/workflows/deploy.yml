@@ -15,23 +15,26 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
-
       - name: Deploy to server
         env:
           HOST: ${{ secrets.HOST }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          rsync -avz --delete \
+          # Setup SSH
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+          # Disable strict host key checking
+          echo -e "Host *\n\tStrictHostKeyChecking no\n\t" > ~/.ssh/config
+          
+          rsync -avz -e "ssh -i ~/.ssh/deploy_key" --delete \
             --exclude='.git*' \
             --exclude='node_modules' \
             --exclude='.env' \
             ./ root@$HOST:/var/www/kymera.cloud/
 
-          ssh root@$HOST << 'ENDSSH'
+          ssh -i ~/.ssh/deploy_key root@$HOST << 'ENDSSH'
             cd /var/www/kymera.cloud
             export NODE_ENV=production
             npm install
