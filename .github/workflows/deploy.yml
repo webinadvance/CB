@@ -28,11 +28,12 @@ jobs:
           # Disable strict host key checking
           echo -e "Host *\n\tStrictHostKeyChecking no\n\tPort 2222\n\t" > ~/.ssh/config
           
+          # Copy app directory contents to server
           rsync -avz -e "ssh -i ~/.ssh/deploy_key -p 2222" --delete \
             --exclude='.git*' \
             --exclude='node_modules' \
             --exclude='.env' \
-            ./ root@$HOST:/var/www/kymera.cloud/
+            app/ root@$HOST:/var/www/kymera.cloud/
 
           ssh -i ~/.ssh/deploy_key -p 2222 root@$HOST << 'ENDSSH'
             cd /var/www/kymera.cloud

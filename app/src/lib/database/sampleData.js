@@ -1,8 +1,6 @@
 ﻿import samplePages from '$lib/database/data/samplePages.js'
 import { Page } from '$lib/database/models/page.js'
 
-//AAA
-
 async function addSampleData() {
   try {
     console.log('Adding sample data...')
