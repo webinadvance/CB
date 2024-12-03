@@ -1,6 +1,5 @@
-﻿import { Sequelize, Model, DataTypes } from 'sequelize'
-
-const sequelize = new Sequelize('sqlite::memory:', { logging: false })
+﻿import { Model, DataTypes } from 'sequelize'
+import sequelize from '../config.js'
 
 class Page extends Model {}
 
@@ -33,7 +32,8 @@ Page.init(
   {
     sequelize,
     modelName: 'Page',
+    tableName: 'Page', // Explicitly set table name
   },
 )
 
-export { sequelize, Page }
+export { Page }
