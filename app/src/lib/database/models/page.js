@@ -1,5 +1,5 @@
-﻿import { Model, DataTypes } from 'sequelize'
-import sequelize from '../config.js'
+﻿import { DataTypes, Model } from 'sequelize'
+import sequelize from '$lib/database/config.js'
 
 class Page extends Model {}
 
@@ -29,11 +29,7 @@ Page.init(
       },
     },
   },
-  {
-    sequelize,
-    modelName: 'Page',
-    tableName: 'Page', // Explicitly set table name
-  },
+  { sequelize, modelName: 'Page', tableName: 'Page' },
 )
 
 export { Page }
