@@ -6,13 +6,12 @@ export async function load({ params }) {
   const matchingPage = pages
     .filter((page) => fullPath.startsWith(page.slug))
     .sort((a, b) => b.slug.length - a.slug.length)[0]
-  if (!matchingPage) {
-    return { page: null }
-  }
+
+  if (!matchingPage) return { page: null }
+
   const page = await getPageBySlug(matchingPage.slug)
-  if (!page) {
-    return { page: null }
-  }
+  if (!page) return { page: null }
+
   const remainingPath = fullPath
     .slice(page.slug.length)
     .split('/')
@@ -23,5 +22,6 @@ export async function load({ params }) {
       remainingPath[index] || null,
     ]),
   )
+
   return { page, routeParams }
 }
