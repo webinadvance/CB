@@ -1,7 +1,12 @@
 ﻿import { Sequelize } from 'sequelize'
 import { env } from '$env/dynamic/private'
 
-console.log('Current NODE_ENV:', env.NODE_ENV || 'development')
+console.log('Environment variables:', {
+  NODE_ENV: env.NODE_ENV,
+  DB_HOST: env.DB_HOST,
+  DB_NAME: env.DB_NAME,
+  DB_USER: env.DB_USER,
+})
 
 const environment = env.NODE_ENV || 'development'
 
@@ -11,7 +16,10 @@ const sequelize = new Sequelize(env.DB_NAME, env.DB_USER, env.DB_PASSWORD, {
   dialectOptions: {
     options: {
       encrypt: environment === 'production',
-      trustServerCertificate: environment !== 'production',
+      trustServerCertificate: true,
+      cryptoCredentialsDetails: {
+        minVersion: 'TLSv1',
+      },
     },
   },
   pool: {
