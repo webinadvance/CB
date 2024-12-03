@@ -1,27 +1,59 @@
 ﻿import { getAllPages, getPageBySlug } from '$lib/services/pageService.js'
 
+// Configuration Variables
+const CONFIG = {
+  INCLUDE_PUBLISHED_ONLY: false,
+  NO_MATCHING_PAGE_RESULT: { page: null },
+}
+
+// Main Load Function
 export async function load({ params }) {
   const fullPath = params.path
-  const pages = await getAllPages(false)
-  const matchingPage = pages
+  const pages = await fetchAllPages(CONFIG.INCLUDE_PUBLISHED_ONLY)
+  const matchingPage = locateMatchingPage(fullPath, pages)
+
+  if (!matchingPage) {
+    return CONFIG.NO_MATCHING_PAGE_RESULT
+  }
+
+  const pageDetails = await fetchPageDetailsBySlug(matchingPage.slug)
+
+  if (!pageDetails) {
+    return CONFIG.NO_MATCHING_PAGE_RESULT
+  }
+
+  const routeParameters = deriveRouteParams(fullPath, pageDetails)
+  return { page: pageDetails, routeParams: routeParameters }
+}
+
+// Fetch All Pages
+async function fetchAllPages(includePublishedOnly) {
+  return getAllPages(includePublishedOnly)
+}
+
+// Locate Matching Page
+function locateMatchingPage(fullPath, pages) {
+  return pages
     .filter((page) => fullPath.startsWith(page.slug))
     .sort((a, b) => b.slug.length - a.slug.length)[0]
+}
 
-  if (!matchingPage) return { page: null }
+// Fetch Page Details by Slug
+async function fetchPageDetailsBySlug(slug) {
+  return getPageBySlug(slug)
+}
 
-  const page = await getPageBySlug(matchingPage.slug)
-  if (!page) return { page: null }
-
-  const remainingPath = fullPath
+// Derive Route Parameters
+function deriveRouteParams(fullPath, page) {
+  const remainingPathSegments = fullPath
     .slice(page.slug.length)
     .split('/')
     .filter(Boolean)
-  const routeParams = Object.fromEntries(
+
+  return Object.fromEntries(
     (page.paramSchema || []).map((name, index) => [
       name,
-      remainingPath[index] || null,
+      remainingPathSegments[index] || null,
     ]),
   )
-
-  return { page, routeParams }
 }
