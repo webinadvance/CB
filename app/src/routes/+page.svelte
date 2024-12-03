@@ -7,6 +7,6 @@
 <nav>
   <ul>
     <li><a href="/test">Go to Test Page</a></li>
-    <div>NOWWWWWWWWWW</div>
+    <div>POPOTTO</div>
   </ul>
 </nav>
