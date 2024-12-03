@@ -1,35 +1,23 @@
-﻿// src/lib/services/pageService.js
-import { Page } from '$lib/database/models/page.js'
+﻿import { Page } from '$lib/database/models/page.js'
 
-async function getAllPages(publishedOnly) {
-  const whereClause = publishedOnly === 'true' ? { isPublished: true } : {}
-  const pages = await Page.findAll({
-    where: whereClause,
-    raw: true,
-  })
+const parsePageData = (page) => ({
+  ...page,
+  contentData: JSON.parse(page.contentData || '{}'),
+  paramSchema: JSON.parse(page.paramSchema || '[]'),
+})
 
-  // Parse JSON fields manually
-  return pages.map((page) => ({
-    ...page,
-    contentData: JSON.parse(page.contentData || '{}'),
-    paramSchema: JSON.parse(page.paramSchema || '[]'),
-  }))
-}
+export const getAllPages = async (publishedOnly) =>
+  (
+    await Page.findAll({
+      where: publishedOnly === 'true' ? { isPublished: true } : {},
+      raw: true,
+    })
+  ).map(parsePageData)
 
-async function getPageBySlug(slug) {
+export const getPageBySlug = async (slug) => {
   const page = await Page.findOne({
     where: { slug, isPublished: true },
     raw: true,
   })
-
-  if (!page) return null
-
-  // Parse JSON fields manually
-  return {
-    ...page,
-    contentData: JSON.parse(page.contentData || '{}'),
-    paramSchema: JSON.parse(page.paramSchema || '[]'),
-  }
+  return page ? parsePageData(page) : null
 }
-
-export { getAllPages, getPageBySlug }

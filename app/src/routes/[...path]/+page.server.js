@@ -5,52 +5,26 @@ const CONFIG = {
   NO_MATCHING_PAGE_RESULT: { page: null },
 }
 
-async function retrieveAllPages(includePublishedOnly) {
-  return await getAllPages(includePublishedOnly)
-}
+const findMatchingPage = (fullPath, pages) =>
+  pages
+    .filter((p) => fullPath.startsWith(p.slug))
+    .sort((a, b) => b.slug.length - a.slug.length)[0]
 
-function isPathMatching(fullPath, slug) {
-  return fullPath.startsWith(slug)
-}
-
-function compareSlugLengthDescending(a, b) {
-  return b.slug.length - a.slug.length
-}
-
-function findMatchingPage(fullPath, pages) {
-  return pages
-    .filter((page) => isPathMatching(fullPath, page.slug))
-    .sort(compareSlugLengthDescending)[0]
-}
-
-function getParameter(fullPath, page, index) {
-  return (
-    fullPath.slice(page.slug.length).split('/').filter(Boolean)[index] || null
-  )
-}
-
-function generateRouteParams(fullPath, page) {
-  return Object.fromEntries(
-    (page.paramSchema || []).map((name, index) => [
+const generateRouteParams = (fullPath, page) =>
+  Object.fromEntries(
+    (page.paramSchema || []).map((name, i) => [
       name,
-      getParameter(fullPath, page, index),
+      fullPath.slice(page.slug.length).split('/').filter(Boolean)[i] || null,
     ]),
   )
-}
 
 export async function load({ params }) {
-  const pages = await retrieveAllPages(CONFIG.INCLUDE_PUBLISHED_ONLY)
+  const pages = await getAllPages(CONFIG.INCLUDE_PUBLISHED_ONLY)
   const matchingPage = findMatchingPage(params.path, pages)
-
-  if (!matchingPage) {
-    return CONFIG.NO_MATCHING_PAGE_RESULT
-  }
+  if (!matchingPage) return CONFIG.NO_MATCHING_PAGE_RESULT
 
   const pageDetails = await getPageBySlug(matchingPage.slug)
-
-  if (!pageDetails) {
-    return CONFIG.NO_MATCHING_PAGE_RESULT
-  }
+  if (!pageDetails) return CONFIG.NO_MATCHING_PAGE_RESULT
 
   return {
     page: pageDetails,
