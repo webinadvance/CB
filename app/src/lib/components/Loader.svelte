@@ -4,7 +4,7 @@
   /** @type {any} */
   export let pageData
 
-  import * as components from '$lib/components'
+  import * as components from '$lib'
   $: Component = components[componentName]
 </script>
 
