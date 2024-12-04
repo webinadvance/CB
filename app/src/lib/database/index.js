@@ -6,10 +6,10 @@ import { env } from '$env/dynamic/private'
 async function initializeDatabase() {
   try {
     await sequelize.authenticate()
-
+    
     // Check if we should force sync (drop and recreate all tables)
     const shouldForceSync = env.DB_FORCE_SYNC === 'true'
-
+    
     // Sync database with force option based on environment variable
     await sequelize.sync({ force: shouldForceSync })
 
