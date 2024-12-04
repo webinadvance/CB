@@ -1,9 +1,8 @@
 ﻿import { Media } from '$lib/database/models/media.js'
 import crypto from 'crypto'
 
-export const getAllMedia = async (publicOnly = true) => {
-  const where = publicOnly ? { isPublic: true } : {}
-  return await Media.findAll({ where, raw: true })
+export const getAllMedia = async () => {
+  return await Media.findAll({ raw: true })
 }
 
 export const getMediaById = async (id) => {
