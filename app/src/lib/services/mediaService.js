@@ -24,7 +24,7 @@ export const createMedia = async (mediaData) => {
 export const updateMedia = async (id, mediaData) => {
   const media = await Media.findByPk(id)
   if (!media) return null
-  
+
   await media.update(mediaData)
   return media
 }
@@ -32,7 +32,7 @@ export const updateMedia = async (id, mediaData) => {
 export const deleteMedia = async (id) => {
   const media = await Media.findByPk(id)
   if (!media) return false
-  
+
   await media.destroy()
   return true
 }
