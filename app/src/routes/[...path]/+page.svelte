@@ -1,5 +1,5 @@
 ﻿<script>
-  import DynamicComponentLoader from '$lib/components/DynamicComponentLoader.svelte'
+  import Loader from '$lib/components/Loader.svelte'
   import { setContent } from '$lib/actions/content.js'
 
   /** @type {import('./$types').PageData} */
@@ -10,7 +10,7 @@
 
 <div class="p-4">
   {#if data.page}
-    <DynamicComponentLoader
+    <Loader
       componentName={data.page.componentName}
       pageData={{
         ...data.page,
