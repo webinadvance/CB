@@ -6,6 +6,7 @@ console.log('Environment variables:', {
   DB_HOST: env.DB_HOST,
   DB_NAME: env.DB_NAME,
   DB_USER: env.DB_USER,
+  DB_INSTANCE: env.DB_INSTANCE,
 })
 
 const environment = env.NODE_ENV || 'development'
@@ -20,6 +21,7 @@ const sequelize = new Sequelize(env.DB_NAME, env.DB_USER, env.DB_PASSWORD, {
       cryptoCredentialsDetails: {
         minVersion: 'TLSv1',
       },
+      instanceName: env.DB_INSTANCE,
     },
   },
   pool: {
