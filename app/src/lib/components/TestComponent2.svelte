@@ -1,6 +1,6 @@
 ﻿<script>
-  import { BaseComponent } from '$lib/components'
-  let src = `/api/media/serve/1`
+  import { BaseComponent, getMediaPreviewUrl } from '$lib/components'
+  let src = getMediaPreviewUrl(1)
 </script>
 
 <BaseComponent {...$$props} let:pageData let:params let:content>

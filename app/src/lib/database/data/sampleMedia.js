@@ -11,7 +11,7 @@ export const loadMediaFromUrl = async (url) => {
     uploadedBy: 'system',
   }
 }
-//MM
+
 const sampleMedia = [
   await loadMediaFromUrl(
     'https://upload.wikimedia.org/wikipedia/commons/6/6a/PNG_Test.png',
