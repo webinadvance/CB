@@ -29,7 +29,11 @@ Page.init(
       },
     },
   },
-  { sequelize, modelName: 'Page', tableName: 'Page' },
+  {
+    sequelize,
+    modelName: 'Page',
+    tableName: 'Page',
+  },
 )
 
 export { Page }
