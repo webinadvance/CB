@@ -1,5 +1,6 @@
 ﻿<script>
   import { BaseComponent } from '$lib/components'
+  let src = `/api/media/serve/1`
 </script>
 
 <BaseComponent {...$$props} let:pageData let:params let:content>
@@ -8,5 +9,6 @@
     <div>Item: {params?.item1 || ''}</div>
     <div>Item: {params?.item2 || ''}</div>
     <div>{@html content('main-content')}</div>
+    <img {src} alt="Media content" class="max-w-full h-auto" />
   </div>
 </BaseComponent>

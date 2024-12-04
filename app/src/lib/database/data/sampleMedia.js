@@ -1,14 +1,20 @@
-﻿const sampleMedia = [
-  {
-    filename: 'arrow.png',
-    mimeType: 'image/png',
-    size: 308,
-    content: Buffer.from(
-      'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAA7AAAAOwBeShxvQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAGHSURBVFiF7ZY9SwNBEIYfRUQQRAQRRBBBxEJEEEEEEbGwsPAXiIU/QCwsLMS/YGFhYWFhYWEhFiKCiCCIICKCCCI2FgoqHHfJbt47csl6nCZ3xu3uHt6Z2Q/2YI7nmaAO1EgwKiQY5RKMrESDqR8TApKMLE0yLqbzMSUBdxxH1wBSSsqyjOM4ALiuS61WQ0oJgG3b+L6P4ziEYYjrugghCMMQgDAMEUJQr9cBqFarGGOI45jBwQEASqUSQggajQbFYhEpJUoppJQUCgWMMTQaDaSUeJ5HvV7HcRyCICAIAgqFAkEQ4LouQRAQRRG5XI48z6OlpcX+k4BSCq01Wmvi+P2MtNYopVBKobVmfHwcgOnpaZRSZLNZAKamptBaY4xBa43WmmKxSLlcxvd9tNYMDQ0BkMlk0FoTRRHGGMrlMsYYwjDE932MMRhjcF2XKIoYGRmhXC7T2tpqU6GUerUsi3Q6TSqVIpfLkU6nSaVS+L7P+Pg4QRBQqVTwPI9sNks+n6dUKtHe3s709DSWZeH7PpZl0dnZSWdnJ38BM0+j4GY+VdYAAAAASUVORK5CYII=',
-      'base64',
-    ),
-    uploadedBy: 'system',
-  },
-]
+﻿import fetch from 'node-fetch'
 
+export const loadMediaFromUrl = async (url) => {
+  const response = await fetch(url)
+  const content = await response.buffer()
+  return {
+    filename: 'test.png',
+    mimeType: 'image/png',
+    size: content.length,
+    content,
+    uploadedBy: 'system',
+  }
+}
+
+const sampleMedia = [
+  await loadMediaFromUrl(
+    'https://upload.wikimedia.org/wikipedia/commons/6/6a/PNG_Test.png',
+  ),
+]
 export default sampleMedia
