@@ -1,9 +1,14 @@
-import { getContext, setContext } from 'svelte'
+import { getContext, setContext } from "svelte"
+import { derived } from "svelte/store"
+import { i18n } from "../i18n"
 
 const CONTENT_KEY = Symbol()
 
-export function setContent(page, lang = 'en') {
-  const getContent = (key) => page?.contentData?.[key]?.content?.[lang] || ''
+export function setContent(page) {
+  const getContent = (key) => {
+    const content = page?.contentData?.[key]?.content || ""
+    return content
+  }
   setContext(CONTENT_KEY, getContent)
   return getContent
 }

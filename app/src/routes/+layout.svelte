@@ -1,13 +1,22 @@
 <script>
-  import '../app.css'
-
-  /** @type {import('./$types').LayoutData} */
-  let { children } = $props() // Destructure 'children' from props
+  import "../app.css"
+  import { i18n } from "$lib/i18n"
+  
+  let language = $state(i18n.language)
+  
+  function toggleLang() {
+    language = language === "en" ? "it" : "en"
+    i18n.changeLanguage(language)
+  }
 </script>
 
 <div class="app">
+  <div class="flex gap-2 items-center p-2">
+    <button onclick={toggleLang}>Toggle Language</button>
+    <span>Current: {language.toUpperCase()}</span>
+  </div>
   <main>
-    {@render children()}
+    <slot />
   </main>
 </div>
 
