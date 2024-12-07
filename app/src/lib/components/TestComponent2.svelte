@@ -1,5 +1,6 @@
 ﻿<script>
   import { BaseComponent, getMediaPreviewUrl } from '$lib'
+
   let src = getMediaPreviewUrl(1)
 </script>
 

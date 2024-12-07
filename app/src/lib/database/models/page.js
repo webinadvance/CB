@@ -16,8 +16,13 @@ Page.init(
         return Object.fromEntries(
           Object.entries(data).map(([key, value]) => [
             key,
-            { content: { en: value.content, it: value.content_it || value.content } }
-          ])
+            {
+              content: {
+                en: value.content,
+                it: value.content_it || value.content,
+              },
+            },
+          ]),
         )
       },
       set(value) {
@@ -27,11 +32,15 @@ Page.init(
     componentName: DataTypes.STRING(100),
     paramSchema: {
       type: DataTypes.TEXT,
-      get() { return JSON.parse(this.getDataValue('paramSchema') || '[]') },
-      set(value) { this.setDataValue('paramSchema', JSON.stringify(value)) },
+      get() {
+        return JSON.parse(this.getDataValue('paramSchema') || '[]')
+      },
+      set(value) {
+        this.setDataValue('paramSchema', JSON.stringify(value))
+      },
     },
   },
-  { sequelize, modelName: 'Page', tableName: 'Page', }
+  { sequelize, modelName: 'Page', tableName: 'Page' },
 )
 
 export { Page }
