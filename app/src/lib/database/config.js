@@ -1,6 +1,8 @@
 ﻿import { Sequelize } from 'sequelize'
 import { env } from '$env/dynamic/private'
 
+//MM
+
 console.log('Environment variables:', {
   NODE_ENV: env.NODE_ENV,
   DB_HOST: env.DB_HOST,

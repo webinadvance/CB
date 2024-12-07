@@ -1,4 +1,4 @@
-﻿import { DataTypes, Model } from 'sequelize'
+import { DataTypes, Model } from 'sequelize'
 import sequelize from '$lib/database/config.js'
 
 class Page extends Model {}
@@ -12,7 +12,13 @@ Page.init(
     contentData: {
       type: DataTypes.TEXT,
       get() {
-        return JSON.parse(this.getDataValue('contentData') || '{}')
+        const data = JSON.parse(this.getDataValue('contentData') || '{}')
+        return Object.fromEntries(
+          Object.entries(data).map(([key, value]) => [
+            key,
+            { content: { en: value.content, it: value.content_it || value.content } }
+          ])
+        )
       },
       set(value) {
         this.setDataValue('contentData', JSON.stringify(value))
@@ -21,19 +27,11 @@ Page.init(
     componentName: DataTypes.STRING(100),
     paramSchema: {
       type: DataTypes.TEXT,
-      get() {
-        return JSON.parse(this.getDataValue('paramSchema') || '[]')
-      },
-      set(value) {
-        this.setDataValue('paramSchema', JSON.stringify(value))
-      },
+      get() { return JSON.parse(this.getDataValue('paramSchema') || '[]') },
+      set(value) { this.setDataValue('paramSchema', JSON.stringify(value)) },
     },
   },
-  {
-    sequelize,
-    modelName: 'Page',
-    tableName: 'Page',
-  },
+  { sequelize, modelName: 'Page', tableName: 'Page', }
 )
 
 export { Page }

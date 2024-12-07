@@ -5,6 +5,7 @@
 
   $: params = pageData?.routeParams || {}
   $: content = getContent()
+  //MM
 </script>
 
 <slot {pageData} {params} {content} />
