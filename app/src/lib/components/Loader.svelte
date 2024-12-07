@@ -6,8 +6,6 @@
 
   import * as components from '$lib'
   $: Component = components[componentName]
-
-  //MM
 </script>
 
 {#if Component}

@@ -3,8 +3,6 @@ import addSampleData from '$lib/database/sampleData.js'
 import { Page } from '$lib/database/models/page.js'
 import { env } from '$env/dynamic/private'
 
-//MM
-
 async function initializeDatabase() {
   try {
     await sequelize.authenticate()

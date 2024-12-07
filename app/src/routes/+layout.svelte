@@ -1,11 +1,11 @@
 <script>
-  import "../app.css"
-  import { i18n } from "$lib/i18n"
-  
+  import '../app.css'
+  import { i18n } from '$lib/i18n'
   let language = $state(i18n.language)
-  
+  let { children } = $props()
+
   function toggleLang() {
-    language = language === "en" ? "it" : "en"
+    language = language === 'en' ? 'it' : 'en'
     i18n.changeLanguage(language)
   }
 </script>
@@ -16,7 +16,7 @@
     <span>Current: {language.toUpperCase()}</span>
   </div>
   <main>
-    <slot />
+    {@render children()}
   </main>
 </div>
 
