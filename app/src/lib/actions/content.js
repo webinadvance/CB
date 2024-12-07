@@ -1,18 +1,13 @@
-import { getContext, setContext } from "svelte"
-import { derived } from "svelte/store"
-import { i18n } from "../i18n"
-
-const CONTENT_KEY = Symbol()
-
-export function setContent(page) {
-  const getContent = (key) => {
-    const content = page?.contentData?.[key]?.content || ""
-    return content
-  }
-  setContext(CONTENT_KEY, getContent)
-  return getContent
-}
+import { i18n } from '$lib/i18n'
 
 export function getContent() {
-  return getContext(CONTENT_KEY)
+  return (key) => {
+    const content = i18n.content[key]?.content || {}
+    const result = content[i18n.language] || content.en || ''
+    return result
+  }
+}
+
+export function setContent(data) {
+  i18n.content = data
 }

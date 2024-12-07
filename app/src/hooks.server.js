@@ -1,17 +1,14 @@
-﻿import initializeDatabase from '$lib/database/index.js'
+import { i18n } from '$lib/i18n'
 
-let dbInitialized = false
-
-/** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
-  try {
-    if (!dbInitialized) {
-      await initializeDatabase()
-      dbInitialized = true
-    }
-  } catch (error) {
-    console.error('Database initialization error:', error)
+  const lang = event.request.headers.get('cookie')?.match(/language=(\w+)/)?.[1] || 'en'
+  i18n.language = lang
+  
+  const response = await resolve(event)
+  
+  if (!event.request.headers.get('cookie')?.includes('language=')) {
+    response.headers.append('Set-Cookie', `language=${lang}; Path=/; HttpOnly`)
   }
-
-  return resolve(event)
+  
+  return response
 }

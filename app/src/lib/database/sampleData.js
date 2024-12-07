@@ -1,4 +1,4 @@
-﻿import samplePages from '$lib/database/data/samplePages.js'
+import samplePages from '$lib/database/data/samplePages.js'
 import sampleMedia from '$lib/database/data/sampleMedia.js'
 import { Page } from '$lib/database/models/page.js'
 import { Media } from '$lib/database/models/media.js'

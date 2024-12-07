@@ -1,13 +1,10 @@
-﻿<script>
-  /** @type {any} */
+<script>
   export let pageData = {}
-  import { getContent } from '$lib/actions/content.js'
-
+  import { getContent, setContent } from '$lib/actions/content.js'
+  $: {
+    setContent(pageData?.contentData || {})
+  }
   $: params = pageData?.routeParams || {}
   $: content = getContent()
 </script>
-
 <slot {pageData} {params} {content} />
-<div>{JSON.stringify(params)}</div>
-<div>{JSON.stringify(pageData)}</div>
-<div>{JSON.stringify(content)}</div>
