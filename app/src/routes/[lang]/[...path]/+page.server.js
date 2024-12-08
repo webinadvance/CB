@@ -23,20 +23,16 @@ const generateRouteParams = (fullPath, page) =>
 export async function load({ params }) {
   const pages = await getAllPages(CONFIG.INCLUDE_PUBLISHED_ONLY)
   const matchingPage = findMatchingPage(params.path, pages)
-
   if (!matchingPage) return CONFIG.NO_MATCHING_PAGE_RESULT
 
   const pageDetails = await getPageBySlug(matchingPage.slug)
-
   if (!pageDetails) return CONFIG.NO_MATCHING_PAGE_RESULT
 
-  // Get required pages for this component
-  const neededPages = componentDependencies[pageDetails.componentName] || []
-
-  // Fetch only the needed content
   const extraContent = Object.fromEntries(
     await Promise.all(
-      neededPages.map(async (title) => [title, await getPageContent(title)]),
+      (componentDependencies[pageDetails.componentName] || []).map(
+        async (title) => [title, await getPageContent(title)],
+      ),
     ),
   )
 
