@@ -1,6 +1,7 @@
 ﻿import { getAllPages, getPageBySlug } from '$lib/services/pageService.js'
 import { getServerLang } from '$lib/server/lang.js'
 import { getPageContent } from '$lib/server/pageContent.js'
+import { componentDependencies } from '$lib/components/dependencies.js'
 
 const CONFIG = {
   INCLUDE_PUBLISHED_ONLY: false,
@@ -28,10 +29,15 @@ export async function load({ params }) {
   const pageDetails = await getPageBySlug(matchingPage.slug)
   if (!pageDetails) return CONFIG.NO_MATCHING_PAGE_RESULT
 
-  // Fetch needed content during SSR
-  const extraContent = {
-    Test: await getPageContent('Test'),
-  }
+  // Get required pages for this component
+  const neededPages = componentDependencies[pageDetails.componentName] || []
+
+  // Fetch only the needed content
+  const extraContent = Object.fromEntries(
+    await Promise.all(
+      neededPages.map(async (title) => [title, await getPageContent(title)]),
+    ),
+  )
 
   return {
     page: pageDetails,
