@@ -1,7 +1,8 @@
 const samplePages = [
   {
     title: 'Home',
-    slug: 'home',
+    slug: '/',
+    componentName: 'HomeComponent',
     contentData: { 'main-content': { content: 'Welcome' } },
   },
   {
