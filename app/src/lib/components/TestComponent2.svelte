@@ -6,7 +6,6 @@
 <BaseComponent {...$$props} let:pageData let:params let:content>
   <div>TestComponent2.svelte</div>
   <div>{content('main-content')}</div>
-  <div>{content('main-content2')}</div>
   <div>{content('main-content', 'Test')}</div>
   <!--  <div class="p-4">-->
   <!--        <h2 class="text-xl font-semibold">{pageData?.title || ''}</h2>-->

@@ -5,7 +5,12 @@
   /** @type {import('./$types').PageData} */
   export let data
 
-  $: content = setContent(data.page, data.allPages)
+  $: getContent = (key, pageTitle = null) => {
+    if (!pageTitle) return data.page?.contentData?.[key] || ''
+    return data.extraContent[pageTitle]?.[key] || ''
+  }
+
+  $: content = setContent(data.page, getContent)
 </script>
 
 <div class="p-4">
@@ -15,7 +20,7 @@
       pageData={{
         ...data.page,
         routeParams: data.routeParams,
-        contentData: data.page.contentData,
+        getExtraContent: getContent,
       }}
     />
   {/if}

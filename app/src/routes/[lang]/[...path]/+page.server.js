@@ -1,5 +1,6 @@
 ﻿import { getAllPages, getPageBySlug } from '$lib/services/pageService.js'
 import { getServerLang } from '$lib/server/lang.js'
+import { getPageContent } from '$lib/server/pageContent.js'
 
 const CONFIG = {
   INCLUDE_PUBLISHED_ONLY: false,
@@ -27,9 +28,14 @@ export async function load({ params }) {
   const pageDetails = await getPageBySlug(matchingPage.slug)
   if (!pageDetails) return CONFIG.NO_MATCHING_PAGE_RESULT
 
+  // Fetch needed content during SSR
+  const extraContent = {
+    Test: await getPageContent('Test'),
+  }
+
   return {
     page: pageDetails,
-    allPages: pages, // Pass all pages to the client
+    extraContent,
     routeParams: generateRouteParams(params.path, pageDetails),
   }
 }
