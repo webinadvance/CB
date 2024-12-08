@@ -1,4 +1,4 @@
-﻿const samplePages = [
+const samplePages = [
   {
     title: 'Home',
     slug: 'home',
@@ -8,7 +8,12 @@
     title: 'Test',
     slug: 'test',
     componentName: 'TestComponent',
-    contentData: { 'main-content': { content: 'Test content' } },
+    contentData: {
+      'main-content': {
+        en: 'Dynamic content FROM TEST PAGE',
+        it: 'Contenuto Dinamico FROM TEST PAGE',
+      },
+    },
   },
   {
     title: 'Dynamic',
@@ -21,8 +26,8 @@
         it: 'Contenuto Dinamico',
       },
       'main-content2': {
-        en: 'Dynamic content 2',
-        it: 'Contenuto Dinamico 2',
+        en: 'Dynamic content 2 FROM Dynamic PAGE',
+        it: 'Contenuto Dinamico 2 FROM Dynamic PAGE',
       },
     },
   },
