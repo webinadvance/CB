@@ -1,4 +1,4 @@
-﻿name: Deploy to Production
+name: Deploy to Production
 
 on:
   push:
@@ -25,7 +25,6 @@ jobs:
         env:
           HOST: ${{ secrets.HOST }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
@@ -33,6 +32,7 @@ jobs:
           
           echo -e "Host *\n\tStrictHostKeyChecking no\n\tPort 2222\n\t" > ~/.ssh/config
           
+          # Copy only the necessary files
           rsync -avz -e "ssh -i ~/.ssh/deploy_key -p 2222" --delete \
             --exclude='.git*' \
             --exclude='node_modules' \
@@ -44,30 +44,11 @@ jobs:
           rsync -avz -e "ssh -i ~/.ssh/deploy_key -p 2222" \
             app/package.json app/package-lock.json root@$HOST:/var/www/kymera.cloud/
 
-          # Create and update service file
-          ssh -i ~/.ssh/deploy_key -p 2222 root@$HOST << ENDSSH
-            cat > /etc/systemd/system/kymera.service << 'EOL'
-  [Unit]
-  Description=Kymera Node.js Service
-  
-  [Service]
-  Environment=PORT=3000
-  Environment=DB_NAME=cb
-  Environment=DB_USER=sa
-  Environment=DB_PASSWORD=${DB_PASSWORD}
-  Environment=DB_HOST=srv_linux
-  Environment=NODE_ENV=production
-  Environment=DB_FORCE_SYNC=true
-  ExecStart=/usr/bin/node /var/www/kymera.cloud/build
-  WorkingDirectory=/var/www/kymera.cloud
-  Restart=always
-  
-  [Install]
-  WantedBy=multi-user.target
-  EOL
-  
-  systemctl daemon-reload
-  systemctl restart kymera
-  sleep 2
-  systemctl status kymera
-  ENDSSH
+          ssh -i ~/.ssh/deploy_key -p 2222 root@$HOST << 'ENDSSH'
+            cd /var/www/kymera.cloud
+            export NODE_ENV=production
+            npm install --production
+            systemctl restart kymera
+            sleep 2
+            systemctl status kymera
+          ENDSSH
