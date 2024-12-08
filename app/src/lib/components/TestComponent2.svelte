@@ -8,10 +8,10 @@
   <div>{content('main-content')}</div>
   <div>{content('main-content', 'Test')}</div>
   <!--  <div class="p-4">-->
-  <!--        <h2 class="text-xl font-semibold">{pageData?.title || ''}</h2>-->
-  <!--        <div>Item: {params?.item1 || ''}</div>-->
-  <!--        <div>Item: {params?.item2 || ''}</div>-->
-  <!--        <div>{@html content('main-content')}</div>-->
-  <!--        <img {src} alt="Media content" class="max-w-full h-auto" />-->
+  <!--    <h2 class="text-xl font-semibold">{pageData?.title || ''}</h2>-->
+  <!--    <div>Item: {params?.item1 || ''}</div>-->
+  <!--    <div>Item: {params?.item2 || ''}</div>-->
+  <!--    <div>{@html content('main-content')}</div>-->
+  <!--    <img {src} alt="Media content" class="max-w-full h-auto" />-->
   <!--  </div>-->
 </BaseComponent>

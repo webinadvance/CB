@@ -10,8 +10,8 @@ const samplePages = [
     componentName: 'TestComponent',
     contentData: {
       'main-content': {
-        en: 'Dynamic content FROM TEST PAGE',
-        it: 'Contenuto Dinamico FROM TEST PAGE',
+        en: 'Dynamic content FROM TEST PAGE AAAA',
+        it: 'Contenuto Dinamico FROM TEST PAGE AAAA',
       },
     },
   },
