@@ -1,9 +1,9 @@
-﻿import { getContext, setContext } from 'svelte'
+import { getContext, setContext } from 'svelte'
 
 const CONTENT_KEY = Symbol()
 
 export function setContent(page) {
-  const getContent = (key) => page?.contentData?.[key]?.content || ''
+  const getContent = (key) => page?.contentData?.[key] || ''
   setContext(CONTENT_KEY, getContent)
   return getContent
 }

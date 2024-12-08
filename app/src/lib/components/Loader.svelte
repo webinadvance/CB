@@ -1,4 +1,4 @@
-﻿<script>
+<script>
   /** @type {string} */
   export let componentName
   /** @type {any} */
