@@ -37,6 +37,15 @@ const samplePages = [
       },
     },
   },
+  {
+    title: 'Common',
+    contentData: {
+      footer: {
+        en: '© 2024 Palazzo Odescalchi EN',
+        it: '© 2024 Palazzo Odescalchi IT',
+      },
+    },
+  },
 ]
 
 export default samplePages

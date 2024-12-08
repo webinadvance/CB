@@ -5,4 +5,5 @@
 
 <BaseComponent {...$$props} let:pageData let:params let:content>
   <div>{content('main-content')}</div>
+  <div>{content('footer', 'Common')}</div>
 </BaseComponent>
