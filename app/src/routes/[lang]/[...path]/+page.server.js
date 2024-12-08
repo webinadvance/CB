@@ -1,7 +1,6 @@
 ﻿import { getAllPages, getPageBySlug } from '$lib/services/pageService.js'
-import { getServerLang } from '$lib/server/lang.js'
 import { getPageContent } from '$lib/server/pageContent.js'
-import { componentDependencies } from '$lib/components/dependencies.js'
+import { componentDependencies } from '$lib/utils/dependencies.js'
 
 const CONFIG = {
   INCLUDE_PUBLISHED_ONLY: false,
@@ -24,9 +23,14 @@ const generateRouteParams = (fullPath, page) =>
 export async function load({ params }) {
   const pages = await getAllPages(CONFIG.INCLUDE_PUBLISHED_ONLY)
   const matchingPage = findMatchingPage(params.path, pages)
+
+  console.log('-------------------', params.path)
+  console.log('-------------------', matchingPage)
+
   if (!matchingPage) return CONFIG.NO_MATCHING_PAGE_RESULT
 
   const pageDetails = await getPageBySlug(matchingPage.slug)
+
   if (!pageDetails) return CONFIG.NO_MATCHING_PAGE_RESULT
 
   // Get required pages for this component

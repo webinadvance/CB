@@ -4,5 +4,5 @@
 </script>
 
 <BaseComponent {...$$props} let:pageData let:params let:content>
-  <div>HOME</div>
+  <div>{content('main-content')}</div>
 </BaseComponent>
