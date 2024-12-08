@@ -5,7 +5,7 @@
   /** @type {import('./$types').PageData} */
   export let data
 
-  $: content = setContent(data.page)
+  $: content = setContent(data.page, data.allPages)
 </script>
 
 <div class="p-4">

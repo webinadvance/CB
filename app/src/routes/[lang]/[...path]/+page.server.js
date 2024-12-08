@@ -27,13 +27,9 @@ export async function load({ params }) {
   const pageDetails = await getPageBySlug(matchingPage.slug)
   if (!pageDetails) return CONFIG.NO_MATCHING_PAGE_RESULT
 
-  const currentLang = getServerLang()
-
-  console.log(pageDetails)
-  console.log(currentLang)
-
   return {
     page: pageDetails,
+    allPages: pages, // Pass all pages to the client
     routeParams: generateRouteParams(params.path, pageDetails),
   }
 }
