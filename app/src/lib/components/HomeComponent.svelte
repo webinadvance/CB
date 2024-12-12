@@ -5,5 +5,4 @@
 
 <BaseComponent {...$$props}>
   <EditableContent key="main-content" pageTitle="Home" isEditing={true} />
-  <EditableContent key="main-content" isEditing={false} />
 </BaseComponent>
