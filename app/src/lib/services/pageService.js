@@ -24,7 +24,8 @@ export const getPageBySlug = async (slug) => {
   const plainPage = page.get({ plain: true })
   const contentData = localizeContent(plainPage.contents)
 
-  return { ...plainPage, contentData }
+  const { contents, ...pageWithoutContents } = plainPage
+  return { ...pageWithoutContents, contentData }
 }
 
 export const getAllPages = async () => {
