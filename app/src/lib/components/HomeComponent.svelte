@@ -7,4 +7,5 @@
   <div>HomeComponent.svelte</div>
   <div>{content('main-content')}</div>
   <div>{content('footer', 'Common')}</div>
+  <div>{src}</div>
 </BaseComponent>

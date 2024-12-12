@@ -1,7 +1,7 @@
 import { Page } from './models/page.js'
 import { Content } from './models/content.js'
 import { Media } from './models/media.js'
-import { loadMediaFromUrl } from './data/sampleMedia.js'
+import fetch from 'node-fetch'
 
 const samplePages = [
   { pageTitle: 'Home', slug: '', componentName: 'HomeComponent' },
@@ -38,6 +38,18 @@ const sampleContent = [
     value: { en: 'Â© 2024 EN', it: 'Â© 2024 IT' },
   },
 ]
+
+export const loadMediaFromUrl = async (url) => {
+  const response = await fetch(url)
+  const content = await response.buffer()
+  return {
+    filename: 'test.png',
+    mimeType: 'image/png',
+    size: content.length,
+    content,
+    uploadedBy: 'system',
+  }
+}
 
 async function addSampleData() {
   for (const page of samplePages) {
