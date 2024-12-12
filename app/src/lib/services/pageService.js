@@ -1,6 +1,6 @@
 import { Page } from '$lib/database/models/page.js'
-import { getServerLang } from '$lib/server/lang.js'
 import { Content } from '$lib/database/models/content.js'
+import { getServerLang } from '$lib/server/lang.js'
 
 const localizeContent = (contentData) => {
   const lang = getServerLang()
@@ -32,12 +32,13 @@ export const getPageBySlug = async (slug) => {
     {},
   )
 
-  return { ...plainPage, contentData: localizeContent(contentData) }
+  const extraContent = localizeContent(contentData)
+
+  return { ...plainPage, contentData: extraContent }
 }
 
 export const getAllPages = async () => {
   const pages = await Page.findAll({
-    where: {},
     include: [{ model: Content, as: 'contents' }],
     raw: false,
   })
@@ -52,6 +53,10 @@ export const getAllPages = async () => {
       {},
     )
 
-    return { ...plainPage, contentData: localizeContent(contentData) }
+    const extraContent = localizeContent(contentData)
+
+    console.log('AAAA extraContent', extraContent)
+
+    return { ...plainPage, contentData: extraContent }
   })
 }
