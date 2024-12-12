@@ -31,7 +31,7 @@
     bind:this={editableRef}
     contenteditable="true"
     on:blur={save}
-    class={cssClass}
+    class="{cssClass} outline-dashed outline-1 outline-red-500 hover:outline-red-500"
   >
     {text}
   </div>
