@@ -1,5 +1,7 @@
 import { Page } from './models/page.js'
 import { Content } from './models/content.js'
+import { Media } from './models/media.js'
+import { loadMediaFromUrl } from './data/sampleMedia.js'
 
 const samplePages = [
   { pageTitle: 'Home', slug: '', componentName: 'HomeComponent' },
@@ -33,7 +35,7 @@ const sampleContent = [
   {
     pageTitle: 'Common',
     key: 'footer',
-    value: { en: '© 2024 EN', it: '© 2024 IT' },
+    value: { en: 'Â© 2024 EN', it: 'Â© 2024 IT' },
   },
 ]
 
@@ -45,6 +47,11 @@ async function addSampleData() {
       content.map((c) => ({ ...c, pageId: createdPage.id })),
     )
   }
+
+  const mediaSample = await loadMediaFromUrl(
+    'https://upload.wikimedia.org/wikipedia/commons/6/6a/PNG_Test.png',
+  )
+  await Media.create(mediaSample)
 }
 
 export default addSampleData
