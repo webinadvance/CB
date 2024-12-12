@@ -1,4 +1,3 @@
-// sampleData.js
 import { Page } from './models/page.js'
 import { Content } from './models/content.js'
 
@@ -7,48 +6,20 @@ const samplePages = [
     title: 'Home',
     slug: '',
     componentName: 'HomeComponent',
-    contentData: {
-      'main-content': {
-        en: 'EN',
-        it: 'IT',
-      },
-    },
   },
   {
     title: 'Test',
     slug: 'test',
     componentName: 'TestComponent',
-    contentData: {
-      'main-content': {
-        en: 'Dynamic content FROM TEST PAGE AAAA',
-        it: 'Contenuto Dinamico FROM TEST PAGE AAAA',
-      },
-    },
   },
   {
     title: 'Dynamic',
     slug: 'aaa/bbb',
     componentName: 'TestComponent2',
     paramSchema: ['item1', 'item2'],
-    contentData: {
-      'main-content': {
-        en: 'Dynamic content',
-        it: 'Contenuto Dinamico',
-      },
-      'main-content2': {
-        en: 'Dynamic content 2 FROM Dynamic PAGE',
-        it: 'Contenuto Dinamico 2 FROM Dynamic PAGE',
-      },
-    },
   },
   {
     title: 'Common',
-    contentData: {
-      footer: {
-        en: '© 2024 Palazzo Odescalchi EN',
-        it: '© 2024 Palazzo Odescalchi IT',
-      },
-    },
   },
 ]
 
