@@ -1,10 +1,9 @@
 <script>
   import { BaseComponent, getMediaPreviewUrl } from '$lib'
-  import Footer from '$lib/components/Footer.svelte'
   let src = getMediaPreviewUrl(1)
 </script>
 
 <BaseComponent {...$$props} let:pageData let:params let:content>
   <div>HomeComponent.svelte</div>
-  <!--  <Footer content={content('footer', 'Common')} />-->
+  <div>{content('footer', 'Common')}</div>
 </BaseComponent>
