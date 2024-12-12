@@ -1,4 +1,4 @@
 export const componentDependencies = {
-  TestComponent2: ['Common,Test'],
+  TestComponent2: ['Common'],
   HomeComponent: ['Common'],
 }
