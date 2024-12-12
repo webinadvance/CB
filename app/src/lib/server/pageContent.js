@@ -1,4 +1,4 @@
-﻿import { getServerLang } from '$lib/server/lang.js'
+import { getServerLang } from '$lib/server/lang.js'
 import { Page } from '$lib/database/models/page.js'
 
 export async function getPageContent(title) {

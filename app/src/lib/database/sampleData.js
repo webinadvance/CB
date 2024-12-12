@@ -1,26 +1,109 @@
-﻿import samplePages from '$lib/database/data/samplePages.js'
-import sampleMedia from '$lib/database/data/sampleMedia.js'
-import { Page } from '$lib/database/models/page.js'
-import { Media } from '$lib/database/models/media.js'
+// sampleData.js
+import { Page } from './models/page.js'
+import { Content } from './models/content.js'
+
+const samplePages = [
+  {
+    title: 'Home',
+    slug: '',
+    componentName: 'HomeComponent',
+    contentData: {
+      'main-content': {
+        en: 'EN',
+        it: 'IT',
+      },
+    },
+  },
+  {
+    title: 'Test',
+    slug: 'test',
+    componentName: 'TestComponent',
+    contentData: {
+      'main-content': {
+        en: 'Dynamic content FROM TEST PAGE AAAA',
+        it: 'Contenuto Dinamico FROM TEST PAGE AAAA',
+      },
+    },
+  },
+  {
+    title: 'Dynamic',
+    slug: 'aaa/bbb',
+    componentName: 'TestComponent2',
+    paramSchema: ['item1', 'item2'],
+    contentData: {
+      'main-content': {
+        en: 'Dynamic content',
+        it: 'Contenuto Dinamico',
+      },
+      'main-content2': {
+        en: 'Dynamic content 2 FROM Dynamic PAGE',
+        it: 'Contenuto Dinamico 2 FROM Dynamic PAGE',
+      },
+    },
+  },
+  {
+    title: 'Common',
+    contentData: {
+      footer: {
+        en: '© 2024 Palazzo Odescalchi EN',
+        it: '© 2024 Palazzo Odescalchi IT',
+      },
+    },
+  },
+]
+
+const sampleContent = [
+  { pageTitle: 'Home', key: 'main-content', value: { en: 'EN', it: 'IT' } },
+  {
+    pageTitle: 'Test',
+    key: 'main-content',
+    value: {
+      en: 'Dynamic content FROM TEST PAGE AAAA',
+      it: 'Contenuto Dinamico FROM TEST PAGE AAAA',
+    },
+  },
+  {
+    pageTitle: 'Dynamic',
+    key: 'main-content',
+    value: { en: 'Dynamic content', it: 'Contenuto Dinamico' },
+  },
+  {
+    pageTitle: 'Dynamic',
+    key: 'main-content2',
+    value: {
+      en: 'Dynamic content 2 FROM Dynamic PAGE',
+      it: 'Contenuto Dinamico 2 FROM Dynamic PAGE',
+    },
+  },
+  {
+    pageTitle: 'Common',
+    key: 'footer',
+    value: {
+      en: '© 2024 Palazzo Odescalchi EN',
+      it: '© 2024 Palazzo Odescalchi IT',
+    },
+  },
+]
 
 async function addSampleData() {
   try {
-    // Add sample pages
     for (const page of samplePages) {
-      await Page.create({ ...page, isPublished: true })
-      console.log(`Added page: ${page.title}`)
+      const createdPage = await Page.create({ ...page, isPublished: true })
+      const pageContent = sampleContent.filter(
+        (c) => c.pageTitle === page.title,
+      )
+      await Promise.all(
+        pageContent.map((c) =>
+          Content.create({
+            pageId: createdPage.id,
+            key: c.key,
+            value: c.value,
+          }),
+        ),
+      )
     }
-    console.log(`Total pages in database: ${await Page.count()}`)
-
-    // Add sample media
-    for (const media of sampleMedia) {
-      await Media.create(media)
-      console.log(`Added media: ${media.filename}`)
-    }
-    console.log(`Total media in database: ${await Media.count()}`)
   } catch (error) {
-    console.error('Failed to add sample data:', error.message)
-    if (error.original) console.error('SQL Error:', error.original)
+    console.error('Failed:', error)
     throw error
   }
 }
