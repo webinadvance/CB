@@ -3,7 +3,6 @@ import { getPageContent } from '$lib/server/pageContent.js'
 import { componentDependencies } from '$lib/utils/dependencies.js'
 
 const CONFIG = {
-  INCLUDE_PUBLISHED_ONLY: false,
   NO_MATCHING_PAGE_RESULT: { page: null },
 }
 
@@ -21,7 +20,7 @@ const generateRouteParams = (fullPath, page) =>
   )
 
 export async function load({ params }) {
-  const pages = await getAllPages(CONFIG.INCLUDE_PUBLISHED_ONLY)
+  const pages = await getAllPages()
   const matchingPage = findMatchingPage(params.path, pages)
   if (!matchingPage) return CONFIG.NO_MATCHING_PAGE_RESULT
 

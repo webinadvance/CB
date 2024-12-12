@@ -14,12 +14,6 @@ const localizeContent = (contentData) => {
   )
 }
 
-const parsePageData = (page) => ({
-  ...page,
-  contentData: localizeContent(JSON.parse(page.contentData || '{}')),
-  paramSchema: JSON.parse(page.paramSchema || '[]'),
-})
-
 export const getPageBySlug = async (slug) => {
   const page = await Page.findOne({
     where: { slug },
@@ -41,7 +35,7 @@ export const getPageBySlug = async (slug) => {
   return { ...plainPage, contentData: localizeContent(contentData) }
 }
 
-export const getAllPages = async (publishedOnly) => {
+export const getAllPages = async () => {
   const pages = await Page.findAll({
     where: {},
     include: [{ model: Content, as: 'contents' }],
