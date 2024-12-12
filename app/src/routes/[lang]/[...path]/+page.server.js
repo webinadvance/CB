@@ -30,7 +30,9 @@ export async function load({ params }) {
   const extraContent = Object.fromEntries(
     await Promise.all(
       (componentDependencies[pageDetails.componentName] || []).map(
-        async (pageTitle) => [pageTitle, await getPageContent(pageTitle)],
+        async (pageTitle) => {
+          return [pageTitle, await getPageContent(pageTitle)]
+        },
       ),
     ),
   )
