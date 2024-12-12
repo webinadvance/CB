@@ -1,16 +1,14 @@
 ﻿<script>
   import Loader from '$lib/components/Loader.svelte'
-  import { setContent } from '$lib/actions/content.js'
+  import { getContent, setContent } from '$lib/actions/content.js'
 
   /** @type {import('./$types').PageData} */
   export let data
 
-  $: getContent = (key, pageTitle = null) => {
+  $: content = setContent(data.page, (key, pageTitle) => {
     if (!pageTitle) return data.page?.contentData?.[key] || ''
-    return data.extraContent[pageTitle]?.[key] || ''
-  }
-
-  $: content = setContent(data.page, getContent)
+    return data.page?.extraContent?.[pageTitle]?.[key] || ''
+  })
 </script>
 
 <div class="p-4">
@@ -25,3 +23,4 @@
     />
   {/if}
 </div>
+//

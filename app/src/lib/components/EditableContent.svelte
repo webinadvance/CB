@@ -1,5 +1,8 @@
-﻿<script>
-  let { key, pageTitle, isEditing = false, content } = $props()
+<script>
+  import { getContent } from '$lib/actions/content.js'
+
+  let { key, pageTitle, isEditing = false } = $props()
+  const content = getContent()
   let { contentValue, initialValue } = $state({
     contentValue: '',
     initialValue: '',
@@ -43,6 +46,7 @@
 {:else}
   <div>{@html contentValue}</div>
 {/if}
+// // //
 
 <style>
 </style>
