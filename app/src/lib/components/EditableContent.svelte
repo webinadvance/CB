@@ -1,5 +1,5 @@
 <script>
-  let { key, page, class: cssClass = '' } = $props()
+  let { key, page, tag = 'div', class: cssClass = '' } = $props()
   import { getPageData } from '$lib/stores/pageStore'
 
   const EDITABLE = true
@@ -27,14 +27,17 @@
 </script>
 
 {#if EDITABLE}
-  <div
+  <svelte:element
+    this={tag}
     bind:this={editableRef}
     contenteditable="true"
     on:blur={save}
     class="{cssClass} outline-dashed outline-1 outline-red-500 hover:outline-red-500"
   >
     {text}
-  </div>
+  </svelte:element>
 {:else}
-  <div class={cssClass}>{text}</div>
+  <svelte:element this={tag} class={cssClass}>
+    {text}
+  </svelte:element>
 {/if}

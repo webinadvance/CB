@@ -3,5 +3,5 @@
 </script>
 
 <div>HomeComponent.svelte</div>
-<EditableContent key="main-content" class="inline-block max-w-xl" />
+<EditableContent tag="h1" key="main-content" class="inline-block max-w-xl" />
 <EditableContent key="footer" page="Common" class="inline-block" />
