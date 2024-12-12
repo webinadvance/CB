@@ -34,9 +34,9 @@
   <div
     bind:this={editableRef}
     contenteditable="true"
-    on:input={() => (contentValue = editableRef.textContent)}
-    on:blur={saveContent}
-    class="border border-dashed p-2 min-h-[2rem] focus:border-blue-400 focus:shadow-sm outline-none"
+    oninput={() => (contentValue = editableRef.textContent)}
+    onblur={saveContent}
+    class=""
   >
     {contentValue}
   </div>
