@@ -34,13 +34,20 @@
   }
 
   const updateContent = async (id) => {
+    await callApi('/api/content', 'PUT', {
+      id,
+      value: 'First Updated Content IT',
+      lang: 'it',
+    })
+    console.log('First Update Done')
+
     const response = await callApi('/api/content', 'PUT', {
       id,
-      value: 'Updated Content IT',
+      value: 'Second Updated Content IT',
       lang: 'it',
     })
     updateStatus = response
-    console.log('Updated Content:', response)
+    console.log('Second Update Done:', response)
   }
 
   const runTests = async () => {

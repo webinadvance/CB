@@ -16,12 +16,29 @@ export async function POST({ request }) {
       )
     }
 
+    // Check if a row exists for this key and pageTitle in the default language
+    const existingDefaultLangContent = await Content.findOne({
+      where: { pageTitle, key, lang: 'en' },
+    })
+
+    if (!existingDefaultLangContent && lang !== 'en') {
+      // Create a placeholder row for the default language
+      await Content.create({
+        pageTitle,
+        key,
+        value: 'Default Content EN', // Placeholder for the default language
+        lang: 'en',
+      })
+    }
+
+    // Create the requested content
     const newContent = await Content.create({
       pageTitle,
       key,
-      value: { [lang]: value },
+      value,
       lang,
     })
+
     return json(newContent, { status: 201 })
   } catch (error) {
     return json({ error: error.message }, { status: 500 })
@@ -68,9 +85,23 @@ export async function PUT({ request }) {
       return json({ error: 'Content not found' }, { status: 404 })
     }
 
-    content.value = { [lang]: value }
+    content.value = value
     content.lang = lang
     await content.save()
+
+    // Ensure a complementary `en` row exists if not already
+    const defaultContent = await Content.findOne({
+      where: { pageTitle: content.pageTitle, key: content.key, lang: 'en' },
+    })
+
+    if (!defaultContent && lang !== 'en') {
+      await Content.create({
+        pageTitle: content.pageTitle,
+        key: content.key,
+        value: 'Default Content EN', // Placeholder for the default language
+        lang: 'en',
+      })
+    }
 
     return json(content, { status: 200 })
   } catch (error) {
