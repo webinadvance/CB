@@ -1,9 +1,9 @@
 import { getServerLang } from '$lib/server/lang.js'
 import { Page } from '$lib/database/models/page.js'
 
-export async function getPageContent(title) {
+export async function getPageContent(pageTitle) {
   const page = await Page.findOne({
-    where: { title },
+    where: { pageTitle },
     raw: true,
   })
 

@@ -2,15 +2,15 @@ import { Page } from './models/page.js'
 import { Content } from './models/content.js'
 
 const samplePages = [
-  { title: 'Home', slug: '', componentName: 'HomeComponent' },
-  { title: 'Test', slug: 'test', componentName: 'TestComponent' },
+  { pageTitle: 'Home', slug: '', componentName: 'HomeComponent' },
+  { pageTitle: 'Test', slug: 'test', componentName: 'TestComponent' },
   {
-    title: 'Dynamic',
+    pageTitle: 'Dynamic',
     slug: 'aaa/bbb',
     componentName: 'TestComponent2',
     paramSchema: ['item1', 'item2'],
   },
-  { title: 'Common' },
+  { pageTitle: 'Common' },
 ]
 
 const sampleContent = [
@@ -40,7 +40,7 @@ const sampleContent = [
 async function addSampleData() {
   for (const page of samplePages) {
     const createdPage = await Page.create(page)
-    const content = sampleContent.filter((c) => c.pageTitle === page.title)
+    const content = sampleContent.filter((c) => c.pageTitle === page.pageTitle)
     await Content.bulkCreate(
       content.map((c) => ({ ...c, pageId: createdPage.id })),
     )

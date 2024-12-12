@@ -4,7 +4,11 @@ import { Page } from './page.js'
 
 const Content = sequelize.define('Content', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  pageId: { type: DataTypes.INTEGER, allowNull: false },
+  pageTitle: {
+    type: DataTypes.STRING(200),
+    allowNull: false,
+    references: { model: Page, key: 'pageTitle' },
+  },
   key: DataTypes.STRING(100),
   value: {
     type: DataTypes.TEXT,
@@ -17,7 +21,7 @@ const Content = sequelize.define('Content', {
   },
 })
 
-Page.hasMany(Content, { foreignKey: 'pageId', as: 'contents' })
-Content.belongsTo(Page, { foreignKey: 'pageId' })
+Page.hasMany(Content, { foreignKey: 'pageTitle', as: 'contents' })
+Content.belongsTo(Page, { foreignKey: 'pageTitle' })
 
 export { Content }

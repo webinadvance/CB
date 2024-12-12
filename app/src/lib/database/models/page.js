@@ -2,8 +2,7 @@ import sequelize from '$lib/database/config.js'
 import { DataTypes } from 'sequelize'
 
 const Page = sequelize.define('Page', {
-  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  title: DataTypes.STRING(200),
+  pageTitle: { type: DataTypes.STRING(200), primaryKey: true },
   slug: { type: DataTypes.STRING(200), unique: true, defaultValue: null },
   componentName: DataTypes.STRING(100),
   paramSchema: {
