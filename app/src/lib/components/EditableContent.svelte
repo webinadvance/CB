@@ -46,7 +46,3 @@
 {:else}
   <div>{@html contentValue}</div>
 {/if}
-// // //
-
-<style>
-</style>
