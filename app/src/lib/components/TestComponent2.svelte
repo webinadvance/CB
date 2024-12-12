@@ -1,5 +1,5 @@
 <script>
-  import { getPageData } from '$lib/actions/pageData.js'
+  import { getPageData } from '$lib/stores/pageStore'
   import EditableContent from '$lib/components/EditableContent.svelte'
   const pageData = getPageData()
 </script>

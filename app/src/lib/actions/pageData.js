@@ -1,4 +1,4 @@
-﻿import { getContext, setContext } from 'svelte'
+import { getContext, setContext } from 'svelte'
 
 const PAGE_DATA_KEY = Symbol()
 

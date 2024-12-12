@@ -1,9 +1,9 @@
 ﻿<script>
   import * as components from '$lib'
-  import { setPageData } from '$lib/actions/pageData'
+  import { setPageData } from '$lib/stores/pageStore'
   export let data
 
-  console.log(data.page)
+  console.log('AAA', data.page)
 
   $: setPageData(data.page)
 </script>

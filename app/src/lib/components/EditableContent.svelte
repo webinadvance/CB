@@ -1,6 +1,6 @@
 <script>
   let { key, page, class: cssClass = '' } = $props()
-  import { getPageData } from '$lib/actions/pageData'
+  import { getPageData } from '$lib/stores/pageStore'
 
   const EDITABLE = true
   const pageData = getPageData()

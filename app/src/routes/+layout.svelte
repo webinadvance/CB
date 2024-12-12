@@ -1,6 +1,14 @@
 <script>
   import '../app.css'
+  import EditableContent from '$lib/components/EditableContent.svelte'
+  import { pageData } from '$lib/stores/pageStore'
   let { children } = $props()
+
+  const data = $derived($pageData)
+
+  $effect(() => {
+    if ($pageData) console.log('Page Data:', $pageData)
+  })
 </script>
 
 <div class="flex flex-col min-h-screen">
@@ -21,6 +29,8 @@
   </main>
 
   <footer class="p-4 shadow">
-    <div class="text-center">© 2024 Palazzo Odescalchi</div>
+    <div class="text-center">
+      <EditableContent key="footer" page="Common" />
+    </div>
   </footer>
 </div>
