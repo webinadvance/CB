@@ -1,4 +1,4 @@
-﻿import { setServerLang } from '$lib/server/lang.js'
+import { setServerLang } from '$lib/server/lang.js'
 import initializeDatabase from '$lib/database/index.js'
 
 let dbInitialized = false

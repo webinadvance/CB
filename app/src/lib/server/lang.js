@@ -1,4 +1,4 @@
-﻿let currentLang = 'en'
+let currentLang = 'en'
 
 export const setServerLang = (lang) => {
   currentLang = lang

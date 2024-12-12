@@ -1,4 +1,4 @@
-﻿import { Media } from '$lib/database/models/media.js'
+import { Media } from '$lib/database/models/media.js'
 import crypto from 'crypto'
 
 export const getAllMedia = async () => {

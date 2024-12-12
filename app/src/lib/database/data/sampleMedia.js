@@ -1,4 +1,4 @@
-﻿import fetch from 'node-fetch'
+import fetch from 'node-fetch'
 
 export const loadMediaFromUrl = async (url) => {
   const response = await fetch(url)

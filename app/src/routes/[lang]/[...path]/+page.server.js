@@ -22,24 +22,24 @@ const generateRouteParams = (fullPath, page) =>
 export async function load({ params }) {
   const pages = await getAllPages()
   const matchingPage = findMatchingPage(params.path, pages)
+
   if (!matchingPage) return CONFIG.NO_MATCHING_PAGE_RESULT
 
   const pageDetails = await getPageBySlug(matchingPage.slug)
   if (!pageDetails) return CONFIG.NO_MATCHING_PAGE_RESULT
 
-  const extraContent = Object.fromEntries(
-    await Promise.all(
-      (componentDependencies[pageDetails.componentName] || []).map(
-        async (pageTitle) => {
-          return [pageTitle, await getPageContent(pageTitle)]
-        },
-      ),
-    ),
-  )
+  // Fetch extra content
+  const extraContent = {}
+  for (const pageTitle of componentDependencies[pageDetails.componentName] ||
+    []) {
+    extraContent[pageTitle] = await getPageContent(pageTitle)
+  }
 
   return {
-    page: pageDetails,
-    extraContent,
-    routeParams: generateRouteParams(params.path, pageDetails),
+    page: {
+      ...pageDetails,
+      extraContent, // Add extraContent to page object
+      routeParams: generateRouteParams(params.path, pageDetails),
+    },
   }
 }

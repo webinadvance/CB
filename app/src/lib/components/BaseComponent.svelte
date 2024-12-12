@@ -1,13 +1,13 @@
 <script>
-  /** @type {any} */
   export let pageData = {}
-  import { getContent } from '$lib/actions/content.js'
 
   $: params = pageData?.routeParams || {}
-  $: content = getContent()
+  $: content = (key, pageTitle = null) => {
+    if (pageTitle && pageData?.extraContent?.[pageTitle]?.contentData) {
+      return pageData.extraContent[pageTitle].contentData[key] || ''
+    }
+    return pageData?.contentData?.[key] || ''
+  }
 </script>
 
 <slot {pageData} {params} {content} />
-<!--<div>{JSON.stringify(params)}</div>-->
-<!--<div>{JSON.stringify(pageData)}</div>-->
-<!--<div>{JSON.stringify(content)}</div>-->

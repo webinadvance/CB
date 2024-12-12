@@ -55,8 +55,6 @@ export const getAllPages = async () => {
 
     const extraContent = localizeContent(contentData)
 
-    console.log('AAAA extraContent', extraContent)
-
     return { ...plainPage, contentData: extraContent }
   })
 }

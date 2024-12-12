@@ -1,4 +1,4 @@
-﻿import { Sequelize } from 'sequelize'
+import { Sequelize } from 'sequelize'
 import { env } from '$env/dynamic/private'
 
 console.log('Environment variables:', {
