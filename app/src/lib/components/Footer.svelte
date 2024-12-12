@@ -1,8 +1,7 @@
 <script>
-  /** @type {string} */
-  export let content = 'Default Footer Content' // Default value if no content is provided
+  import EditableContent from '$lib/components/EditableContent.svelte'
 </script>
 
-<footer>
-  <div>{content}</div>
-</footer>
+<div>
+  <EditableContent key="footer" page="Common" class="" />
+</div>

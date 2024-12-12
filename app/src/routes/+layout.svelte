@@ -1,7 +1,7 @@
 <script>
   import '../app.css'
-  import EditableContent from '$lib/components/EditableContent.svelte'
   import { pageData } from '$lib/stores/pageStore'
+  import Footer from '$lib/components/Footer.svelte'
   let { children } = $props()
 
   const data = $derived($pageData)
@@ -29,8 +29,6 @@
   </main>
 
   <footer class="p-4 shadow">
-    <div class="text-center">
-      <EditableContent key="footer" page="Common" />
-    </div>
+    <Footer />
   </footer>
 </div>
