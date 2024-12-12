@@ -3,8 +3,8 @@
 
   $: params = pageData?.routeParams || {}
   $: content = (key, pageTitle = null) => {
-    if (pageTitle && pageData?.extraContent?.[pageTitle]?.contentData) {
-      return pageData.extraContent[pageTitle].contentData[key] || ''
+    if (pageTitle && pageData?.extraContent?.[pageTitle]) {
+      return pageData.extraContent[pageTitle][key] || ''
     }
     return pageData?.contentData?.[key] || ''
   }
