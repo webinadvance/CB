@@ -6,7 +6,6 @@
     pageTitle: 'Home',
     key: 'test-key',
     value: 'Test Content EN',
-    lang: 'en',
   }
 
   let fetchedContent = null
@@ -34,20 +33,12 @@
   }
 
   const updateContent = async (id) => {
-    await callApi('/api/content', 'PUT', {
-      id,
-      value: 'First Updated Content IT',
-      lang: 'it',
-    })
-    console.log('First Update Done')
-
     const response = await callApi('/api/content', 'PUT', {
       id,
-      value: 'Second Updated Content IT',
-      lang: 'it',
+      value: 'Updated Content IT',
     })
     updateStatus = response
-    console.log('Second Update Done:', response)
+    console.log('Updated Content:', response)
   }
 
   const runTests = async () => {
