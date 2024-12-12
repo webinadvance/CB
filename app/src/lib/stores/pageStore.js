@@ -1,6 +1,8 @@
-﻿import { writable } from 'svelte/store'
+import { writable } from 'svelte/store'
 
 export const pageData = writable(null)
+
+export const pageSlugs = writable({})
 
 export function setPageData(data = {}) {
   pageData.set(data)

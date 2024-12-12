@@ -33,6 +33,9 @@ export async function load({ params, url }) {
   setServerLang(lang)
 
   const pages = await getAllPages()
+  const slugMapping = Object.fromEntries(
+    pages.map((p) => [p.pageTitle, p.slug]),
+  )
   const matchingPage = findMatchingPage(params.path, pages)
 
   if (!matchingPage) return CONFIG.NO_MATCHING_PAGE_RESULT
@@ -53,5 +56,6 @@ export async function load({ params, url }) {
       extraContent,
       routeParams: generateRouteParams(params.path, pageDetails),
     },
+    slugs: slugMapping,
   }
 }

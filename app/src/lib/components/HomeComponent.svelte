@@ -1,5 +1,6 @@
 <script>
   import EditableContent from '$lib/components/EditableContent.svelte'
+  import { buildPageUrl } from '$lib/utils/url'
 </script>
 
 <div>HomeComponent.svelte</div>
