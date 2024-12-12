@@ -6,7 +6,6 @@
 <div class="flex flex-col min-h-screen">
   <header class="p-4">
     <div class="w-full mx-auto flex justify-between items-center">
-      <img src="/logo.png" alt="Logo" class="h-12" />
       <nav>
         <ul class="flex gap-4">
           <li><a href="/home" class="hover:underline">Home</a></li>

@@ -1,25 +1,13 @@
 ﻿<script>
-  import Loader from '$lib/components/Loader.svelte'
-  import { getContent, setContent } from '$lib/actions/content.js'
-
-  /** @type {import('./$types').PageData} */
+  import * as components from '$lib'
+  import { setPageData } from '$lib/actions/pageData'
   export let data
 
-  $: content = setContent(data.page, (key, pageTitle) => {
-    if (!pageTitle) return data.page?.contentData?.[key] || ''
-    return data.page?.extraContent?.[pageTitle]?.[key] || ''
-  })
+  console.log(data.page)
+
+  $: setPageData(data.page)
 </script>
 
-<div class="p-4">
-  {#if data.page}
-    <Loader
-      componentName={data.page.componentName}
-      pageData={{
-        ...data.page,
-        routeParams: data.routeParams,
-        getExtraContent: getContent,
-      }}
-    />
-  {/if}
-</div>
+{#if data.page}
+  <svelte:component this={components[data.page.componentName]} />
+{/if}

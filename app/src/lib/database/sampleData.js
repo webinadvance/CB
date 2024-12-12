@@ -4,7 +4,12 @@ import { Media } from './models/media.js'
 import fetch from 'node-fetch'
 
 const samplePages = [
-  { pageTitle: 'Home', slug: '', componentName: 'HomeComponent' },
+  {
+    pageTitle: 'Home',
+    slug: '',
+    componentName: 'HomeComponent',
+    paramSchema: ['item1', 'item2'],
+  },
   { pageTitle: 'Test', slug: 'test', componentName: 'TestComponent' },
   {
     pageTitle: 'Dynamic',

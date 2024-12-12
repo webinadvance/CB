@@ -1,8 +1,8 @@
 <script>
-  import { BaseComponent } from '$lib'
-  import EditableContent from './EditableContent.svelte'
+  import { getPageData } from '$lib/actions/pageData.js'
+  import EditableContent from '$lib/components/EditableContent.svelte'
+  const pageData = getPageData()
 </script>
 
-<BaseComponent {...$$props}>
-  <EditableContent key="main-content" pageTitle="Home" isEditing={true} />
-</BaseComponent>
+<div>HomeComponent.svelte</div>
+<EditableContent key="main-content" />

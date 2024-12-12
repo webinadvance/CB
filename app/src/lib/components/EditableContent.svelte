@@ -1,48 +1,28 @@
 <script>
-  import { getContent } from '$lib/actions/content.js'
+  let { key } = $props()
+  import { getPageData } from '$lib/actions/pageData'
 
-  let { key, pageTitle, isEditing = false } = $props()
-  const content = getContent()
-  let { contentValue, initialValue } = $state({
-    contentValue: '',
-    initialValue: '',
-  })
+  const pageData = getPageData()
   let editableRef
+  let text = $state(pageData.contentData[key])
 
-  $effect(() => {
-    if (!initialValue) {
-      initialValue = pageTitle ? content(key, pageTitle) : content(key)
-      contentValue = initialValue
-    }
-  })
+  async function save() {
+    const newText = editableRef.textContent.trim()
+    if (newText === text) return
 
-  async function saveContent() {
-    const newValue = editableRef.textContent.trim()
-    if (newValue !== initialValue) {
-      await fetch('/api/content', {
-        method: 'POST',
-        body: JSON.stringify({
-          pageTitle,
-          key,
-          value: newValue,
-        }),
-        headers: { 'Content-Type': 'application/json' },
-      })
-      initialValue = newValue
-    }
+    await fetch('/api/content', {
+      method: 'POST',
+      body: JSON.stringify({
+        pageTitle: pageData.pageTitle,
+        key,
+        value: newText,
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+    text = newText
   }
 </script>
 
-{#if isEditing}
-  <div
-    bind:this={editableRef}
-    contenteditable="true"
-    oninput={() => (contentValue = editableRef.textContent)}
-    onblur={saveContent}
-    class=""
-  >
-    {contentValue}
-  </div>
-{:else}
-  <div>{@html contentValue}</div>
-{/if}
+<div bind:this={editableRef} contenteditable="true" onblur={save}>
+  {text}
+</div>
