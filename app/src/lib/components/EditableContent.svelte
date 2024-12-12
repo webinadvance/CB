@@ -2,6 +2,7 @@
   let { key, page, class: cssClass = '' } = $props()
   import { getPageData } from '$lib/actions/pageData'
 
+  const EDITABLE = true
   const pageData = getPageData()
   let editableRef
   let text = $state(
@@ -25,11 +26,15 @@
   }
 </script>
 
-<div
-  bind:this={editableRef}
-  contenteditable="true"
-  on:blur={save}
-  class={cssClass}
->
-  {text}
-</div>
+{#if EDITABLE}
+  <div
+    bind:this={editableRef}
+    contenteditable="true"
+    on:blur={save}
+    class={cssClass}
+  >
+    {text}
+  </div>
+{:else}
+  <div class={cssClass}>{text}</div>
+{/if}
