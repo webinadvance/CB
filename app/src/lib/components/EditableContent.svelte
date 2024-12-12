@@ -1,10 +1,12 @@
 <script>
-  let { key } = $props()
+  let { key, page } = $props()
   import { getPageData } from '$lib/actions/pageData'
 
   const pageData = getPageData()
   let editableRef
-  let text = $state(pageData.contentData[key])
+  let text = $state(
+    page ? pageData.extraContent[page][key] : pageData.contentData[key],
+  )
 
   async function save() {
     const newText = editableRef.textContent.trim()
@@ -13,7 +15,7 @@
     await fetch('/api/content', {
       method: 'POST',
       body: JSON.stringify({
-        pageTitle: pageData.pageTitle,
+        pageTitle: page || pageData.pageTitle,
         key,
         value: newText,
       }),
