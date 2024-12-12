@@ -22,7 +22,7 @@ const parsePageData = (page) => ({
 
 export const getPageBySlug = async (slug) => {
   const page = await Page.findOne({
-    where: { slug, isPublished: true },
+    where: { slug },
     include: [{ model: Content, as: 'contents' }],
     raw: false,
   })
@@ -43,7 +43,7 @@ export const getPageBySlug = async (slug) => {
 
 export const getAllPages = async (publishedOnly) => {
   const pages = await Page.findAll({
-    where: publishedOnly === 'true' ? { isPublished: true } : {},
+    where: {},
     include: [{ model: Content, as: 'contents' }],
     raw: false,
   })

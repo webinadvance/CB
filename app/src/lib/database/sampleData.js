@@ -59,7 +59,7 @@ const sampleContent = [
 async function addSampleData() {
   try {
     for (const page of samplePages) {
-      const createdPage = await Page.create({ ...page, isPublished: true })
+      const createdPage = await Page.create({ ...page })
       const pageContent = sampleContent.filter(
         (c) => c.pageTitle === page.title,
       )

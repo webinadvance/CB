@@ -3,7 +3,7 @@ import { Page } from '$lib/database/models/page.js'
 
 export async function getPageContent(title) {
   const page = await Page.findOne({
-    where: { title, isPublished: true },
+    where: { title },
     raw: true,
   })
 
