@@ -1,5 +1,5 @@
 <script>
-  let { key, page } = $props()
+  let { key, page, class: cssClass = '' } = $props()
   import { getPageData } from '$lib/actions/pageData'
 
   const pageData = getPageData()
@@ -25,6 +25,11 @@
   }
 </script>
 
-<div bind:this={editableRef} contenteditable="true" onblur={save}>
+<div
+  bind:this={editableRef}
+  contenteditable="true"
+  on:blur={save}
+  class={cssClass}
+>
   {text}
 </div>
