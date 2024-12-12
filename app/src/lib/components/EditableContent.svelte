@@ -31,7 +31,7 @@
     this={tag}
     bind:this={editableRef}
     contenteditable="true"
-    on:blur={save}
+    onblur={save}
     class="{cssClass} outline-dashed outline-1 outline-red-500 hover:outline-red-500"
   >
     {text}
