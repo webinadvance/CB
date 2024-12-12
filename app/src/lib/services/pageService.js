@@ -2,16 +2,14 @@ import { Page } from '$lib/database/models/page.js'
 import { Content } from '$lib/database/models/content.js'
 import { getServerLang } from '$lib/server/lang.js'
 
-const localizeContent = (contentData) => {
-  const lang = getServerLang()
-  return Object.fromEntries(
-    Object.entries(contentData).map(([key, content]) => [
-      key,
-      typeof content === 'object'
-        ? content[lang] || content['en'] || ''
-        : content,
-    ]),
-  )
+const localizeContent = (contents) => {
+  const lang = getServerLang() // Detect server-side language
+  return contents.reduce((acc, content) => {
+    if (!acc[content.key] || content.lang === lang) {
+      acc[content.key] = content.value // Prefer localized content
+    }
+    return acc
+  }, {})
 }
 
 export const getPageBySlug = async (slug) => {
@@ -24,17 +22,9 @@ export const getPageBySlug = async (slug) => {
   if (!page) return null
 
   const plainPage = page.get({ plain: true })
-  const contentData = plainPage.contents.reduce(
-    (acc, content) => ({
-      ...acc,
-      [content.key]: content.value,
-    }),
-    {},
-  )
+  const contentData = localizeContent(plainPage.contents)
 
-  const extraContent = localizeContent(contentData)
-
-  return { ...plainPage, contentData: extraContent }
+  return { ...plainPage, contentData }
 }
 
 export const getAllPages = async () => {
@@ -45,16 +35,8 @@ export const getAllPages = async () => {
 
   return pages.map((page) => {
     const plainPage = page.get({ plain: true })
-    const contentData = plainPage.contents.reduce(
-      (acc, content) => ({
-        ...acc,
-        [content.key]: content.value,
-      }),
-      {},
-    )
+    const contentData = localizeContent(plainPage.contents)
 
-    const extraContent = localizeContent(contentData)
-
-    return { ...plainPage, contentData: extraContent }
+    return { ...plainPage, contentData }
   })
 }

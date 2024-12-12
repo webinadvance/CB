@@ -28,17 +28,17 @@ export async function load({ params }) {
   const pageDetails = await getPageBySlug(matchingPage.slug)
   if (!pageDetails) return CONFIG.NO_MATCHING_PAGE_RESULT
 
-  // Fetch extra content
   const extraContent = {}
   for (const pageTitle of componentDependencies[pageDetails.componentName] ||
     []) {
-    extraContent[pageTitle] = await getPageContent(pageTitle)
+    const content = await getPageContent(pageTitle)
+    extraContent[pageTitle] = content ? content.contentData : {}
   }
 
   return {
     page: {
       ...pageDetails,
-      extraContent, // Add extraContent to page object
+      extraContent, // Add localized extraContent
       routeParams: generateRouteParams(params.path, pageDetails),
     },
   }

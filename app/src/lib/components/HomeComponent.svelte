@@ -2,17 +2,16 @@
   import { BaseComponent, getMediaPreviewUrl } from '$lib'
   let src = getMediaPreviewUrl(1)
 
-  // Test content data
   let testContent = {
     pageTitle: 'Home',
     key: 'test-key',
     value: 'Test Content EN',
+    lang: 'en',
   }
 
   let fetchedContent = null
   let updateStatus = null
 
-  // Helper function for API calls
   const callApi = async (url, method, body = null) => {
     try {
       const response = await fetch(url, {
@@ -28,42 +27,26 @@
     }
   }
 
-  // Test: Add new content
   const addContent = async () => {
     const response = await callApi('/api/content', 'POST', testContent)
     console.log('Added Content:', response)
     return response
   }
 
-  // Test: Get content by ID
-  const getContent = async (id) => {
-    const response = await callApi(`/api/content?id=${id}`, 'GET')
-    fetchedContent = response
-    console.log('Fetched Content:', response)
-  }
-
-  // Test: Update content
   const updateContent = async (id) => {
-    const updatedValue = {
-      en: fetchedContent.value.en,
-      it: 'Contenuto IT',
-    }
-
     const response = await callApi('/api/content', 'PUT', {
       id,
-      value: updatedValue,
+      value: 'Updated Content IT',
+      lang: 'it',
     })
     updateStatus = response
     console.log('Updated Content:', response)
   }
 
-  // Run tests on mount
   const runTests = async () => {
     const added = await addContent()
     if (added?.id) {
-      await getContent(added.id)
       await updateContent(added.id)
-      await getContent(added.id) // Fetch again to confirm update
     }
   }
 

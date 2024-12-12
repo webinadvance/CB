@@ -3,7 +3,7 @@ import { Page } from '$lib/database/models/page.js'
 import { Content } from '$lib/database/models/content.js'
 
 export async function getPageContent(pageTitle) {
-  const lang = getServerLang()
+  const lang = getServerLang() // Get the language from the server context
 
   const page = await Page.findOne({
     where: { pageTitle },
@@ -18,13 +18,14 @@ export async function getPageContent(pageTitle) {
 
   const plainPage = page.get({ plain: true })
 
-  const contentData = plainPage.contents.reduce(
-    (acc, content) => ({
-      ...acc,
-      [content.key]: content.value[lang] || content.value['en'] || '',
-    }),
-    {},
-  )
-  
+  // Reduce content to a transparent structure
+  const contentData = plainPage.contents.reduce((acc, content) => {
+    // Use the content matching the requested language, fallback to 'en'
+    if (!acc[content.key] || content.lang === lang) {
+      acc[content.key] = content.value
+    }
+    return acc
+  }, {})
+
   return { ...plainPage, contentData }
 }

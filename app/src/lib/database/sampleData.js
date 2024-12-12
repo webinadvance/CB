@@ -16,26 +16,55 @@ const samplePages = [
 ]
 
 const sampleContent = [
-  { pageTitle: 'Home', key: 'main-content', value: { en: 'EN', it: 'IT' } },
+  { pageTitle: 'Home', key: 'main-content', value: 'EN', lang: 'en' },
+  { pageTitle: 'Home', key: 'main-content', value: 'IT', lang: 'it' },
   {
     pageTitle: 'Test',
     key: 'main-content',
-    value: { en: 'Dynamic content', it: 'Contenuto Dinamico' },
+    value: 'Dynamic content',
+    lang: 'en',
+  },
+  {
+    pageTitle: 'Test',
+    key: 'main-content',
+    value: 'Contenuto Dinamico',
+    lang: 'it',
   },
   {
     pageTitle: 'Dynamic',
     key: 'main-content',
-    value: { en: 'Content 1', it: 'Contenuto 1' },
+    value: 'Content 1',
+    lang: 'en',
+  },
+  {
+    pageTitle: 'Dynamic',
+    key: 'main-content',
+    value: 'Contenuto 1',
+    lang: 'it',
   },
   {
     pageTitle: 'Dynamic',
     key: 'main-content2',
-    value: { en: 'Content 2', it: 'Contenuto 2' },
+    value: 'Content 2',
+    lang: 'en',
+  },
+  {
+    pageTitle: 'Dynamic',
+    key: 'main-content2',
+    value: 'Contenuto 2',
+    lang: 'it',
   },
   {
     pageTitle: 'Common',
     key: 'footer',
-    value: { en: 'Â© 2024 EN', it: 'Â© 2024 IT' },
+    value: '© 2024 EN',
+    lang: 'en',
+  },
+  {
+    pageTitle: 'Common',
+    key: 'footer',
+    value: '© 2024 IT',
+    lang: 'it',
   },
 ]
 

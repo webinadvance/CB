@@ -7,7 +7,7 @@ import { Content } from '$lib/database/models/content.js'
  */
 export async function POST({ request }) {
   try {
-    const { pageTitle, key, value } = await request.json()
+    const { pageTitle, key, value, lang = 'en' } = await request.json()
 
     if (!pageTitle || !key || !value) {
       return json(
@@ -19,7 +19,8 @@ export async function POST({ request }) {
     const newContent = await Content.create({
       pageTitle,
       key,
-      value: { en: value },
+      value: { [lang]: value },
+      lang,
     })
     return json(newContent, { status: 201 })
   } catch (error) {
@@ -53,11 +54,11 @@ export async function GET({ url }) {
  */
 export async function PUT({ request }) {
   try {
-    const { id, value } = await request.json()
+    const { id, value, lang } = await request.json()
 
-    if (!id || !value) {
+    if (!id || !value || !lang) {
       return json(
-        { error: 'Missing required fields: id, value' },
+        { error: 'Missing required fields: id, value, lang' },
         { status: 400 },
       )
     }
@@ -67,7 +68,8 @@ export async function PUT({ request }) {
       return json({ error: 'Content not found' }, { status: 404 })
     }
 
-    content.value = { en: value }
+    content.value = { [lang]: value }
+    content.lang = lang
     await content.save()
 
     return json(content, { status: 200 })
