@@ -5,7 +5,7 @@ import { get } from 'svelte/store'
 export function buildPageUrl(pageTitle, params = {}) {
   const slugs = get(pageSlugs)
   const slug = slugs[pageTitle] || ''
-  const lang = get(langStore) // Get the client-side language from the store
+  const lang = get(langStore)
 
   let url = `/${lang}`
   if (slug) url += `/${slug}`
