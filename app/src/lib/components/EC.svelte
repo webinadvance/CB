@@ -1,6 +1,5 @@
-<!-- FILE: app/src/lib/components/EC.svelte -->
 <script>
-  import { getPageData } from '$lib/stores/pageStore'
+  import { pageData } from '$lib/stores/pageStore'
   import { createEventDispatcher } from 'svelte'
 
   export let key
@@ -12,28 +11,27 @@
   export let isList = false
 
   const dispatch = createEventDispatcher()
-  const pageData = getPageData()
   let editableRef
 
   $: content = pg
-    ? pageData.extraContent[pg]?.[key]
-    : pageData.contentData?.[key]
+    ? $pageData.extraContent[pg]?.[key]
+    : $pageData.contentData?.[key]
 
   $: items = isList
     ? Array.from(
         new Set(
-          Object.keys(pageData.contentData || {})
+          Object.keys($pageData.contentData || {})
             .filter((k) => k.startsWith(`${key}.`))
             .map((k) => k.split('.')[1]),
         ),
       )
         .sort((a, b) => a - b)
         .map((index) => {
-          const fields = Object.keys(pageData.contentData)
+          const fields = Object.keys($pageData.contentData)
             .filter((k) => k.startsWith(`${key}.${index}.`))
             .reduce((acc, k) => {
               const prop = k.split('.').pop()
-              acc[prop] = pageData.contentData[k] || ''
+              acc[prop] = $pageData.contentData[k] || ''
               return acc
             }, {})
           return fields
@@ -49,17 +47,32 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          pageTitle: pg || pageData.pageTitle,
+          pageTitle: pg || $pageData.pageTitle,
           key,
           value: newText,
         }),
       })
-      content = newText
+
+      pageData.update((data) => ({
+        ...data,
+        contentData: {
+          ...data.contentData,
+          [key]: newText,
+        },
+      }))
     }
   }
 
   function addItem() {
-    items = [...items, { title: '', desc: '' }]
+    const newIndex = items.length
+    pageData.update((data) => ({
+      ...data,
+      contentData: {
+        ...data.contentData,
+        [`${key}.${newIndex}.title`]: '',
+        [`${key}.${newIndex}.desc`]: '',
+      },
+    }))
   }
 
   async function removeItem(index) {
@@ -67,12 +80,31 @@
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        pageTitle: pg || pageData.pageTitle,
+        pageTitle: pg || $pageData.pageTitle,
         key,
         index,
       }),
     })
-    items = items.filter((_, i) => i !== index)
+
+    pageData.update((data) => {
+      const contentData = {}
+      let newIndex = 0
+
+      Object.entries(data.contentData).forEach(([k, v]) => {
+        if (!k.startsWith(`${key}.`)) {
+          contentData[k] = v
+          return
+        }
+
+        const [prefix, idx, field] = k.split('.')
+        if (Number(idx) === index) return
+
+        const adjustedIdx = Number(idx) > index ? Number(idx) - 1 : Number(idx)
+        contentData[`${prefix}.${adjustedIdx}.${field}`] = v
+      })
+
+      return { ...data, contentData }
+    })
   }
 </script>
 
@@ -102,8 +134,8 @@
   .item {
     @apply border border-gray-200 p-4 mb-4;
   }
+
   button {
     @apply mt-2;
   }
 </style>
-//
