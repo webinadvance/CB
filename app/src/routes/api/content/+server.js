@@ -35,60 +35,17 @@ export async function POST({ request }) {
 export async function DELETE({ request }) {
   try {
     const { pageTitle, key, index } = await request.json()
-    const currentLang = get(langStore)
 
-    if (pageTitle === undefined || key === undefined || index === undefined) {
-      return json(
-        { error: 'Missing fields: pageTitle, key, index' },
-        { status: 400 },
-      )
+    const deleteQuery = {
+      where: {
+        pageTitle,
+        key:
+          index !== undefined ? { [Op.startsWith]: `${key}.${index}.` } : key,
+      },
     }
 
-    // Start transaction
-    const transaction = await sequelize.transaction()
-
-    try {
-      // Delete the specified index
-      const prefix = `${key}.${index}.`
-      await Content.destroy({
-        where: {
-          pageTitle,
-          key: { [Op.like]: `${prefix}%` },
-          lang: currentLang,
-        },
-        transaction,
-      })
-
-      // Find all keys with index > deleted index
-      const higherKeys = await Content.findAll({
-        where: {
-          pageTitle,
-          key: { [Op.like]: `${key}.${index + 1}.%` },
-          lang: currentLang,
-        },
-        transaction,
-      })
-
-      // Update each higher key to decrement the index
-      for (const content of higherKeys) {
-        const parts = content.key.split('.')
-        const higherIndex = parseInt(parts[1], 10)
-        const newIndex = higherIndex - 1
-        parts[1] = newIndex.toString()
-        const newKey = parts.join('.')
-
-        await Content.update(
-          { key: newKey },
-          { where: { id: content.id }, transaction },
-        )
-      }
-
-      await transaction.commit()
-      return new Response(null, { status: 204 })
-    } catch (error) {
-      await transaction.rollback()
-      throw error
-    }
+    await Content.destroy(deleteQuery)
+    return new Response(null, { status: 204 })
   } catch (error) {
     return json({ error: error.message }, { status: 500 })
   }
