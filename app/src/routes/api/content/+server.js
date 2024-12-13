@@ -7,23 +7,18 @@ export async function POST({ request }) {
     let { pageTitle, key, value, lang } = await request.json()
     lang = lang || getServerLang()
 
-    if (!pageTitle || !key || !value) {
-      return json(
-        { error: 'Missing fields: pageTitle, key, value' },
-        { status: 400 },
-      )
+    if (!pageTitle || !key) {
+      return json({ error: 'Missing fields: pageTitle, key' }, { status: 400 })
+    }
+
+    if (!value?.trim()) {
+      await Content.destroy({ where: { pageTitle, key, lang } })
+      return new Response(null, { status: 204 })
     }
 
     const [content, created] = await Content.upsert(
-      {
-        pageTitle,
-        key,
-        value,
-        lang,
-      },
-      {
-        returning: true,
-      },
+      { pageTitle, key, value, lang },
+      { returning: true },
     )
 
     return json(content, { status: created ? 201 : 200 })

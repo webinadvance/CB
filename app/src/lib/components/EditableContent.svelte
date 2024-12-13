@@ -1,12 +1,19 @@
 <script>
-  let { key, page, tag = 'div', class: cssClass = '' } = $props()
+  let {
+    key,
+    page,
+    tag = 'div',
+    class: cssClass = '',
+    placeholder = 'Content not found',
+  } = $props()
   import { getPageData } from '$lib/stores/pageStore'
 
-  const EDITABLE = true
   const pageData = getPageData()
   let editableRef
   let text = $state(
-    page ? pageData.extraContent[page][key] : pageData.contentData[key],
+    page
+      ? pageData.extraContent[page]?.[key]
+      : pageData.contentData?.[key] || placeholder,
   )
 
   async function save() {
@@ -15,29 +22,23 @@
 
     await fetch('/api/content', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         pageTitle: page || pageData.pageTitle,
         key,
         value: newText,
       }),
-      headers: { 'Content-Type': 'application/json' },
     })
     text = newText
   }
 </script>
 
-{#if EDITABLE}
-  <svelte:element
-    this={tag}
-    bind:this={editableRef}
-    contenteditable="true"
-    onblur={save}
-    class="{cssClass} outline-dashed outline-1 outline-red-500 hover:outline-red-500"
-  >
-    {text}
-  </svelte:element>
-{:else}
-  <svelte:element this={tag} class={cssClass}>
-    {text}
-  </svelte:element>
-{/if}
+<svelte:element
+  this={tag}
+  bind:this={editableRef}
+  contenteditable={import.meta.env.DEV}
+  on:blur={save}
+  class={`${cssClass} ${import.meta.env.DEV ? 'outline-dashed outline-1 outline-red-500 hover:outline-red-500' : ''}`}
+>
+  {text}
+</svelte:element>
