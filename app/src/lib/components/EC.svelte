@@ -18,24 +18,28 @@
     : $pageData.contentData?.[key]
 
   $: items = isList
-    ? Array.from(
-        new Set(
-          Object.keys($pageData.contentData || {})
-            .filter((k) => k.startsWith(`${key}.`))
-            .map((k) => k.split('.')[1]),
-        ),
-      )
-        .sort((a, b) => a - b)
-        .map((index) => {
-          const fields = Object.keys($pageData.contentData)
-            .filter((k) => k.startsWith(`${key}.${index}.`))
-            .reduce((acc, k) => {
-              const prop = k.split('.').pop()
-              acc[prop] = $pageData.contentData[k] || ''
-              return acc
-            }, {})
-          return fields
-        })
+    ? Object.keys($pageData.contentData || {}).filter((k) =>
+        k.startsWith(`${key}.`),
+      ).length
+      ? Array.from(
+          new Set(
+            Object.keys($pageData.contentData || {})
+              .filter((k) => k.startsWith(`${key}.`))
+              .map((k) => k.split('.')[1]),
+          ),
+        )
+          .sort((a, b) => a - b)
+          .map((index) => {
+            const fields = Object.keys($pageData.contentData)
+              .filter((k) => k.startsWith(`${key}.${index}.`))
+              .reduce((acc, k) => {
+                const prop = k.split('.').pop()
+                acc[prop] = $pageData.contentData[k] || ''
+                return acc
+              }, {})
+            return fields
+          })
+      : [{ title: placeholder, desc: placeholder }]
     : null
 
   async function save() {
