@@ -32,19 +32,42 @@ export async function POST({ request }) {
   }
 }
 
+// In DELETE API
 export async function DELETE({ request }) {
   try {
     const { pageTitle, key, index } = await request.json()
 
-    const deleteQuery = {
+    // 1. Delete target items
+    await Content.destroy({
       where: {
         pageTitle,
-        key:
-          index !== undefined ? { [Op.startsWith]: `${key}.${index}.` } : key,
+        key: { [Op.startsWith]: `${key}.${index}.` },
       },
-    }
+    })
 
-    await Content.destroy(deleteQuery)
+    // 2. Fix indexes for remaining items
+    const remainingItems = await Content.findAll({
+      where: {
+        pageTitle,
+        key: { [Op.startsWith]: `${key}.` },
+      },
+      order: [['key', 'ASC']],
+    })
+
+    // 3. Update indexes sequentially
+    await sequelize.transaction(async (t) => {
+      for (let i = 0; i < remainingItems.length; i++) {
+        const item = remainingItems[i]
+        const [_, currentIndex, field] = item.key.split('.')
+        if (Number(currentIndex) !== Math.floor(i / 2)) {
+          await Content.update(
+            { key: `${key}.${Math.floor(i / 2)}.${field}` },
+            { where: { id: item.id }, transaction: t },
+          )
+        }
+      }
+    })
+
     return new Response(null, { status: 204 })
   } catch (error) {
     return json({ error: error.message }, { status: 500 })
