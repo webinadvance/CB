@@ -2,10 +2,6 @@ import { DataTypes } from 'sequelize'
 import sequelize from '$lib/database/config.js'
 import { Page } from './page.js'
 
-import { DataTypes } from 'sequelize'
-import sequelize from '$lib/database/config.js'
-import { Page } from './page.js'
-
 const Content = sequelize.define(
   'Content',
   {

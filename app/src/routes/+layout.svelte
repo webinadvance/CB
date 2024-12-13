@@ -29,7 +29,7 @@
 
   <button
     class="fixed bottom-4 right-4 p-3 bg-slate-700 hover:bg-slate-800 rounded-full text-white shadow-lg transition-colors"
-    on:click={() => ($isEditable = !$isEditable)}
+    onclick={() => ($isEditable = !$isEditable)}
   >
     <PenSquare size={20} class={$isEditable ? 'text-green-400' : ''} />
   </button>
