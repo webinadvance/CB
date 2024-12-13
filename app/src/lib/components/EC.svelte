@@ -9,6 +9,8 @@
   export let placeholder = 'Content not found'
   export let p = null
   export let isList = false
+  import { isEditable } from '$lib/stores/editorStore'
+  import { get } from 'svelte/store'
 
   const dispatch = createEventDispatcher()
   let editableRef
@@ -126,9 +128,9 @@
   <svelte:element
     this={tag}
     bind:this={editableRef}
-    contenteditable={import.meta.env.DEV}
+    contenteditable={get(isEditable)}
     on:blur={save}
-    class={`${cssClass} ${import.meta.env.DEV ? 'outline-dashed outline-1 outline-red-500 hover:outline-red-500' : ''}`}
+    class={`${cssClass} ${get(isEditable) ? 'outline-dashed outline-1 outline-red-500 hover:outline-red-500' : ''}`}
   >
     {content || placeholder}
   </svelte:element>

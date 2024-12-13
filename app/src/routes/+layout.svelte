@@ -5,10 +5,6 @@
   let { children } = $props()
 
   const data = $derived($pageData)
-
-  $effect(() => {
-    if ($pageData) console.log('Page Data:', $pageData)
-  })
 </script>
 
 <div class="flex flex-col min-h-screen">
