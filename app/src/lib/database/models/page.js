@@ -17,4 +17,3 @@ const Page = sequelize.define('Page', {
 })
 
 export { Page }
-//

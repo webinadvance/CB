@@ -1,3 +1,4 @@
+<!-- FILE: app/src/lib/components/EC.svelte -->
 <script>
   import { getPageData } from '$lib/stores/pageStore'
   import { createEventDispatcher } from 'svelte'
@@ -25,16 +26,18 @@
             .filter((k) => k.startsWith(`${key}.`))
             .map((k) => k.split('.')[1]),
         ),
-      ).map((index) => {
-        const fields = Object.keys(pageData.contentData)
-          .filter((k) => k.startsWith(`${key}.${index}.`))
-          .reduce((acc, k) => {
-            const prop = k.split('.').pop()
-            acc[prop] = pageData.contentData[k] || ''
-            return acc
-          }, {})
-        return fields
-      })
+      )
+        .sort((a, b) => a - b)
+        .map((index) => {
+          const fields = Object.keys(pageData.contentData)
+            .filter((k) => k.startsWith(`${key}.${index}.`))
+            .reduce((acc, k) => {
+              const prop = k.split('.').pop()
+              acc[prop] = pageData.contentData[k] || ''
+              return acc
+            }, {})
+          return fields
+        })
     : null
 
   async function save() {
@@ -55,55 +58,20 @@
     }
   }
 
-  async function saveList() {
-    const updates = items.flatMap((item, index) => [
-      {
-        pageTitle: pg || pageData.pageTitle,
-        key: `${key}.${index}.title`,
-        value: item.title,
-      },
-      {
-        pageTitle: pg || pageData.pageTitle,
-        key: `${key}.${index}.desc`,
-        value: item.desc,
-      },
-    ])
-
-    await Promise.all(
-      updates.map((update) =>
-        fetch('/api/content', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(update),
-        }),
-      ),
-    )
-  }
-
   function addItem() {
     items = [...items, { title: '', desc: '' }]
-    saveList()
   }
 
   async function removeItem(index) {
-    const prefix = `${key}.${index}`
-    const keysToDelete = Object.keys(pageData.contentData).filter((k) =>
-      k.startsWith(prefix),
-    )
-
-    await Promise.all(
-      keysToDelete.map((key) =>
-        fetch('/api/content', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            pageTitle: pg || pageData.pageTitle,
-            key,
-          }),
-        }),
-      ),
-    )
-
+    await fetch('/api/content', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pageTitle: pg || pageData.pageTitle,
+        key,
+        index,
+      }),
+    })
     items = items.filter((_, i) => i !== index)
   }
 </script>

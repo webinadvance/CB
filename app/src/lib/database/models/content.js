@@ -47,4 +47,3 @@ Page.hasMany(Content, { foreignKey: 'pageTitle', as: 'contents' })
 Content.belongsTo(Page, { foreignKey: 'pageTitle' })
 
 export { Content }
-//
