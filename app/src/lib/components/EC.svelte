@@ -10,7 +10,6 @@
   export let p = null
   export let isList = false
   import { isEditable } from '$lib/stores/editorStore'
-  import { get } from 'svelte/store'
 
   const dispatch = createEventDispatcher()
   let editableRef
@@ -128,13 +127,14 @@
   <svelte:element
     this={tag}
     bind:this={editableRef}
-    contenteditable={get(isEditable)}
+    contenteditable={$isEditable}
     on:blur={save}
-    class={`${cssClass} ${get(isEditable) ? 'outline-dashed outline-1 outline-red-500 hover:outline-red-500' : ''}`}
+    class={`${cssClass} ${$isEditable ? 'outline-dashed outline-1 outline-red-500 hover:outline-red-500' : ''}`}
   >
     {content || placeholder}
   </svelte:element>
 {/if}
+//
 
 <style>
   .item {

@@ -1,13 +1,13 @@
 import { Sequelize } from 'sequelize'
 import { env } from '$env/dynamic/private'
 
-console.log('Environment variables:', {
-  NODE_ENV: env.NODE_ENV,
-  DB_HOST: env.DB_HOST,
-  DB_NAME: env.DB_NAME,
-  DB_USER: env.DB_USER,
-  DB_INSTANCE: env.DB_INSTANCE,
-})
+// console.log('Environment variables:', {
+//   NODE_ENV: env.NODE_ENV,
+//   DB_HOST: env.DB_HOST,
+//   DB_NAME: env.DB_NAME,
+//   DB_USER: env.DB_USER,
+//   DB_INSTANCE: env.DB_INSTANCE,
+// })
 
 const environment = env.NODE_ENV || 'development'
 

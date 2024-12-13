@@ -29,7 +29,6 @@ export async function load({ params, url }) {
     ? params.lang
     : 'en'
 
-  console.log('AAA', params)
   setServerLang(lang)
 
   const pages = await getAllPages()

@@ -2,6 +2,9 @@
   import '../app.css'
   import { pageData } from '$lib/stores/pageStore'
   import Footer from '$lib/components/Footer.svelte'
+  import { isEditable } from '$lib/stores/editorStore'
+  import { PenSquare } from 'lucide-svelte'
+
   let { children } = $props()
 
   const data = $derived($pageData)
@@ -24,7 +27,15 @@
     {@render children()}
   </main>
 
+  <button
+    class="fixed bottom-4 right-4 p-3 bg-slate-700 hover:bg-slate-800 rounded-full text-white shadow-lg transition-colors"
+    on:click={() => ($isEditable = !$isEditable)}
+  >
+    <PenSquare size={20} class={$isEditable ? 'text-green-400' : ''} />
+  </button>
+
   <footer class="p-4 shadow">
     <Footer />
   </footer>
 </div>
+//

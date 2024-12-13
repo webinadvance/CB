@@ -12,7 +12,7 @@ export async function getPageContent(pageTitle) {
   })
 
   if (!page) {
-    console.log('No page found for:', pageTitle)
+    // console.log('No page found for:', pageTitle)
     return null
   }
 
