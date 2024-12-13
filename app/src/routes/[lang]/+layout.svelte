@@ -1,5 +1,5 @@
 <script>
-  import '../app.css'
+  import '../../app.css'
   import { pageData } from '$lib/stores/pageStore'
   import Footer from '$lib/components/Footer.svelte'
   import { isEditable } from '$lib/stores/editorStore'
