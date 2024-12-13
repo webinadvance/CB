@@ -13,4 +13,3 @@ export function getPageData() {
   pageData.subscribe((data) => (value = data))()
   return value
 }
-//
