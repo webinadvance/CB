@@ -7,6 +7,10 @@
 
   let { children } = $props()
 
+  // Proper derivation
+  const editable = $derived(() => $isEditable)
+
+  // Access derived state
   const data = $derived($pageData)
 </script>
 
@@ -29,9 +33,9 @@
 
   <button
     class="fixed bottom-4 right-4 p-3 bg-slate-700 hover:bg-slate-800 rounded-full text-white shadow-lg transition-colors"
-    onclick={() => ($isEditable = !$isEditable)}
+    on:click={() => isEditable.update((value) => !value)}
   >
-    <PenSquare size={20} class={$isEditable ? 'text-green-400' : ''} />
+    <PenSquare size={20} class={editable ? 'text-green-400' : ''} />
   </button>
 
   <footer class="p-4 shadow">
