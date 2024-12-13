@@ -9,8 +9,6 @@
   let { children } = $props()
 
   const data = $derived($pageData)
-
-  console.log('AAAAAAAAAAAAA', $page.data)
 </script>
 
 <div class="flex flex-col min-h-screen">
