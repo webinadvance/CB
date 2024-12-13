@@ -134,7 +134,6 @@
     {content || placeholder}
   </svelte:element>
 {/if}
-//
 
 <style>
   .item {

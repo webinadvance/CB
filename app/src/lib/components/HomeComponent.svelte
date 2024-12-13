@@ -7,10 +7,7 @@
 
 <EC key="dataList" isList class="list-container">
   <div slot="item" let:item let:index>
-    {JSON.stringify(index)}
-    {JSON.stringify(item)}
     <EC key={`dataList.${index}.title`} p="title" />
     <EC key={`dataList.${index}.desc`} p="desc" />
   </div>
 </EC>
-//
