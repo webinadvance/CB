@@ -122,6 +122,10 @@
     {/each}
     <button on:click={addItem}>Add Item</button>
   </div>
+{:else if !isEditable}
+  <svelte:element this={tag} class={cssClass}>
+    {content || placeholder}
+  </svelte:element>
 {:else}
   <svelte:element
     this={tag}
