@@ -31,21 +31,16 @@ export async function POST({ request }) {
 
 export async function DELETE({ request }) {
   try {
-    const { id } = await request.json()
+    const { pageTitle, key } = await request.json()
+    const lang = get(langStore)
 
-    if (!id) {
-      return json({ error: 'Content ID is required' }, { status: 400 })
+    if (!pageTitle || !key) {
+      return json({ error: 'Missing fields: pageTitle, key' }, { status: 400 })
     }
 
-    const content = await Content.findByPk(id)
-    if (!content) {
-      return json({ error: 'Content not found' }, { status: 404 })
-    }
-
-    await content.destroy()
+    await Content.destroy({ where: { pageTitle, key, lang } })
     return new Response(null, { status: 204 })
   } catch (error) {
     return json({ error: error.message }, { status: 500 })
   }
 }
-//

@@ -94,12 +94,11 @@
     await Promise.all(
       keysToDelete.map((key) =>
         fetch('/api/content', {
-          method: 'POST',
+          method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             pageTitle: pg || pageData.pageTitle,
             key,
-            value: '',
           }),
         }),
       ),
