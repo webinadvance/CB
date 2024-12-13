@@ -8,8 +8,8 @@
 
 <EC key="dataList" isList class="list-container">
   <div slot="item" let:item let:index>
-    <EC key={`dataList.${index}.title`} p="title" />
-    <EC key={`dataList.${index}.desc`} p="desc" />
+    <EC key={`dataList.${index}.title`} />
+    <EC key={`dataList.${index}.desc`} />
   </div>
 </EC>
 

@@ -7,7 +7,6 @@
   export let tag = 'div'
   export let cssClass = ''
   export let placeholder = 'Content not found'
-  export let p = null
   export let isList = false
   import { isEditable } from '$lib/stores/editorStore'
 

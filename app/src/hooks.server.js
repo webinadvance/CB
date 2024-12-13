@@ -1,13 +1,13 @@
 import { setServerLang } from '$lib/server/lang.js'
 import initializeDatabase from '$lib/database/index.js'
 
-let dbInitialized = false
+// let dbInitialized = false
 
 export async function handle({ event, resolve }) {
-  if (!dbInitialized) {
-    await initializeDatabase()
-    dbInitialized = true
-  }
+  // if (!dbInitialized) {
+  //   await initializeDatabase()
+  //   dbInitialized = true
+  // }
   const pathSegments = event.url.pathname.split('/')
   const lang = ['en', 'it', 'fr', 'es'].includes(pathSegments[1])
     ? pathSegments[1]
