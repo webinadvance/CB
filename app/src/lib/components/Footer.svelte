@@ -1,7 +1,7 @@
 <script>
-  import EditableContent from '$lib/components/EditableContent.svelte'
+  import EC from '$lib/components/EC.svelte'
 </script>
 
 <div>
-  <EditableContent key="footer" page="Common" class="" />
+  <EC key="footer" page="Common" class="" />
 </div>
