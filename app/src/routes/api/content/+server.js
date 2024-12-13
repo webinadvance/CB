@@ -4,6 +4,7 @@ import { Content } from '$lib/database/models/content.js'
 import { Op } from 'sequelize'
 import { get } from 'svelte/store'
 import { langStore } from '$lib/stores/langStore.js'
+import sequelize from '$lib/database/config.js'
 
 export async function POST({ request }) {
   try {
@@ -34,42 +35,60 @@ export async function POST({ request }) {
 export async function DELETE({ request }) {
   try {
     const { pageTitle, key, index } = await request.json()
-    const lang = get(langStore)
+    const currentLang = get(langStore)
 
-    if (!pageTitle || !key || index === undefined) {
+    if (pageTitle === undefined || key === undefined || index === undefined) {
       return json(
         { error: 'Missing fields: pageTitle, key, index' },
         { status: 400 },
       )
     }
 
-    // Delete the specified index
-    const prefix = `${key}.${index}.`
-    await Content.destroy({
-      where: {
-        pageTitle,
-        key: { [Op.like]: `${prefix}%` },
-        lang,
-      },
-    })
+    // Start transaction
+    const transaction = await sequelize.transaction()
 
-    // Find all higher indices and decrement them
-    const higherKeys = await Content.findAll({
-      where: {
-        pageTitle,
-        key: { [Op.like]: `${key}.${index + 1}.%` },
-        lang,
-      },
-    })
+    try {
+      // Delete the specified index
+      const prefix = `${key}.${index}.`
+      await Content.destroy({
+        where: {
+          pageTitle,
+          key: { [Op.like]: `${prefix}%` },
+          lang: currentLang,
+        },
+        transaction,
+      })
 
-    for (const content of higherKeys) {
-      const parts = content.key.split('.')
-      const currentIndex = parseInt(parts[1], 10)
-      const newKey = [key, currentIndex - 1, ...parts.slice(2)].join('.')
-      await Content.update({ key: newKey }, { where: { id: content.id } })
+      // Find all keys with index > deleted index
+      const higherKeys = await Content.findAll({
+        where: {
+          pageTitle,
+          key: { [Op.like]: `${key}.${index + 1}.%` },
+          lang: currentLang,
+        },
+        transaction,
+      })
+
+      // Update each higher key to decrement the index
+      for (const content of higherKeys) {
+        const parts = content.key.split('.')
+        const higherIndex = parseInt(parts[1], 10)
+        const newIndex = higherIndex - 1
+        parts[1] = newIndex.toString()
+        const newKey = parts.join('.')
+
+        await Content.update(
+          { key: newKey },
+          { where: { id: content.id }, transaction },
+        )
+      }
+
+      await transaction.commit()
+      return new Response(null, { status: 204 })
+    } catch (error) {
+      await transaction.rollback()
+      throw error
     }
-
-    return new Response(null, { status: 204 })
   } catch (error) {
     return json({ error: error.message }, { status: 500 })
   }
