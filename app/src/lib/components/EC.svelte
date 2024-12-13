@@ -25,10 +25,16 @@
             .filter((k) => k.startsWith(`${key}.`))
             .map((k) => k.split('.')[1]),
         ),
-      ).map((index) => ({
-        title: pageData.contentData[`${key}.${index}.title`] || '',
-        desc: pageData.contentData[`${key}.${index}.desc`] || '',
-      }))
+      ).map((index) => {
+        const fields = Object.keys(pageData.contentData)
+          .filter((k) => k.startsWith(`${key}.${index}.`))
+          .reduce((acc, k) => {
+            const prop = k.split('.').pop()
+            acc[prop] = pageData.contentData[k] || ''
+            return acc
+          }, {})
+        return fields
+      })
     : null
 
   async function save() {
@@ -79,9 +85,27 @@
     saveList()
   }
 
-  function removeItem(index) {
+  async function removeItem(index) {
+    const prefix = `${key}.${index}`
+    const keysToDelete = Object.keys(pageData.contentData).filter((k) =>
+      k.startsWith(prefix),
+    )
+
+    await Promise.all(
+      keysToDelete.map((key) =>
+        fetch('/api/content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pageTitle: pg || pageData.pageTitle,
+            key,
+            value: '',
+          }),
+        }),
+      ),
+    )
+
     items = items.filter((_, i) => i !== index)
-    saveList()
   }
 </script>
 
