@@ -1,31 +1,31 @@
 <script>
   let {
     key,
-    page,
+    pg,
     tag = 'div',
     class: cssClass = '',
     placeholder = 'Content not found',
-    propName = null,
+    p = null,
   } = $props()
 
   import { getPageData } from '$lib/stores/pageStore'
 
   const pageData = getPageData()
   let editableRef
-  const rawContent = page
-    ? pageData.extraContent[page]?.[key]
+  const rawContent = pg
+    ? pageData.extraContent[pg]?.[key]
     : pageData.contentData?.[key]
-  let content = propName ? JSON.parse(rawContent || '{}')[propName] : rawContent
+  let content = p ? JSON.parse(rawContent || '{}')[p] : rawContent
   let text = $state(content || placeholder)
 
   async function save() {
     const newText = editableRef.textContent.trim()
     if (newText === text) return
 
-    const value = propName
+    const value = p
       ? JSON.stringify({
           ...JSON.parse(rawContent || '{}'),
-          [propName]: newText,
+          [p]: newText,
         })
       : newText
 
@@ -33,7 +33,7 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        pageTitle: page || pageData.pageTitle,
+        pageTitle: pg || pageData.pageTitle,
         key,
         value,
       }),

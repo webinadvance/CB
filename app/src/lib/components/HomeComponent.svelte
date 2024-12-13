@@ -5,6 +5,6 @@
 <div>HomeComponent.svelte</div>
 <EC tag="h1" key="main-content" class="inline-block max-w-xl" />
 <EC tag="div" key="main-content-not-found" class="" />
-<EC key="footer" page="Common" class="inline-block" />
+<EC key="footer" pg="Common" class="inline-block" />
 
-<EC key="data" propName="title" />
+<EC key="data" p="title" />
