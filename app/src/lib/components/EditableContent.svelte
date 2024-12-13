@@ -5,20 +5,29 @@
     tag = 'div',
     class: cssClass = '',
     placeholder = 'Content not found',
+    propName = null,
   } = $props()
+
   import { getPageData } from '$lib/stores/pageStore'
 
   const pageData = getPageData()
   let editableRef
-  let text = $state(
-    page
-      ? pageData.extraContent[page]?.[key]
-      : pageData.contentData?.[key] || placeholder,
-  )
+  const rawContent = page
+    ? pageData.extraContent[page]?.[key]
+    : pageData.contentData?.[key]
+  let content = propName ? JSON.parse(rawContent || '{}')[propName] : rawContent
+  let text = $state(content || placeholder)
 
   async function save() {
     const newText = editableRef.textContent.trim()
     if (newText === text) return
+
+    const value = propName
+      ? JSON.stringify({
+          ...JSON.parse(rawContent || '{}'),
+          [propName]: newText,
+        })
+      : newText
 
     await fetch('/api/content', {
       method: 'POST',
@@ -26,7 +35,7 @@
       body: JSON.stringify({
         pageTitle: page || pageData.pageTitle,
         key,
-        value: newText,
+        value,
       }),
     })
     text = newText
