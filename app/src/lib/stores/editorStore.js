@@ -1,3 +1,3 @@
 import { writable } from 'svelte/store'
 
-export const isEditable = writable(true)
+export const isEditable = writable(false)
