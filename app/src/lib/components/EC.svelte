@@ -5,7 +5,6 @@
   export let key
   export let pg
   export let tag = 'div'
-  export let cssClass = ''
   export let placeholder = 'Content not found'
   export let isList = false
   import { isEditable } from '$lib/stores/editorStore'
@@ -113,17 +112,17 @@
 </script>
 
 {#if isList}
-  <div class={cssClass}>
+  <div class={$$props.class || ''}>
     {#each items as item, index}
-      <div class="item">
+      <div class="">
         <slot name="item" {item} {index} />
-        <button on:click={() => removeItem(index)}>Remove</button>
+        <button class="mt-2" on:click={() => removeItem(index)}>Remove</button>
       </div>
     {/each}
     <button on:click={addItem}>Add Item</button>
   </div>
 {:else if !isEditable}
-  <svelte:element this={tag} class={cssClass}>
+  <svelte:element this={tag} class={$$props.class || ''}>
     {content || placeholder}
   </svelte:element>
 {:else}
@@ -132,18 +131,8 @@
     bind:this={editableRef}
     contenteditable={$isEditable}
     on:blur={save}
-    class={`${cssClass} ${$isEditable ? 'outline-dashed outline-1 outline-red-500 hover:outline-red-500' : ''}`}
+    class={`${$$props.class || ''} ${$isEditable ? 'outline-dashed outline-1 outline-red-500 hover:outline-red-500' : ''}`}
   >
     {content || placeholder}
   </svelte:element>
 {/if}
-
-<style>
-  .item {
-    @apply border border-gray-200 p-4 mb-4;
-  }
-
-  button {
-    @apply mt-2;
-  }
-</style>

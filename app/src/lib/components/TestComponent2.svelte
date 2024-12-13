@@ -4,11 +4,11 @@
 </script>
 
 <div>TestComponent2.svelte</div>
-<EC key="footer" pg="Common" cssClass="inline-block bg-black" />
+<EC key="footer" tag="span" pg="Common" class="bg-gray-700" />
 
 <EC key="dataList" isList class="list-container">
   <div slot="item" let:item let:index>
-    <EC key={`dataList.${index}.title`} />
+    <EC key={`dataList.${index}.title`} class="bg-gray-700" />
     <EC key={`dataList.${index}.desc`} />
   </div>
 </EC>

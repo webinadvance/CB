@@ -4,7 +4,7 @@
 </script>
 
 <div>HomeComponent.svelte</div>
-<EC key="footer" pg="Common" class="inline-block" />
+<EC key="footer" pg="Common" class="bg-gray-700" />
 
 <EC key="dataList" isList class="list-container">
   <div slot="item" let:item let:index>
