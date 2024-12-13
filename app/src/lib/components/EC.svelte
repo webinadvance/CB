@@ -14,13 +14,10 @@
   const pageData = getPageData()
   let editableRef
 
-  $: rawContent = pg
+  $: content = pg
     ? pageData.extraContent[pg]?.[key]
     : pageData.contentData?.[key]
 
-  $: content = p ? JSON.parse(rawContent || '{}')[p] : rawContent
-
-  // Load list items from DB
   $: items = isList
     ? Array.from(
         new Set(
@@ -29,10 +26,8 @@
             .map((k) => k.split('.')[1]),
         ),
       ).map((index) => ({
-        title: JSON.parse(pageData.contentData[`${key}.${index}.title`] || '{}')
-          .title,
-        desc: JSON.parse(pageData.contentData[`${key}.${index}.desc`] || '{}')
-          .desc,
+        title: pageData.contentData[`${key}.${index}.title`],
+        desc: pageData.contentData[`${key}.${index}.desc`],
       }))
     : null
 
@@ -41,17 +36,13 @@
       const newText = editableRef.textContent.trim()
       if (newText === content) return
 
-      const value = p
-        ? JSON.stringify({ ...JSON.parse(rawContent || '{}'), [p]: newText })
-        : newText
-
       await fetch('/api/content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           pageTitle: pg || pageData.pageTitle,
           key,
-          value,
+          value: newText,
         }),
       })
       content = newText
@@ -59,15 +50,28 @@
   }
 
   async function saveList() {
-    await fetch('/api/content', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    const updates = items.flatMap((item, index) => [
+      {
         pageTitle: pg || pageData.pageTitle,
-        key,
-        value: JSON.stringify(items),
-      }),
-    })
+        key: `${key}.${index}.title`,
+        value: item.title,
+      },
+      {
+        pageTitle: pg || pageData.pageTitle,
+        key: `${key}.${index}.desc`,
+        value: item.desc,
+      },
+    ])
+
+    await Promise.all(
+      updates.map((update) =>
+        fetch('/api/content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(update),
+        }),
+      ),
+    )
   }
 
   function addItem() {
@@ -107,7 +111,6 @@
   .item {
     @apply border border-gray-200 p-4 mb-4;
   }
-
   button {
     @apply mt-2;
   }
