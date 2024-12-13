@@ -1,7 +1,9 @@
 ﻿import { langStore } from '$lib/stores/langStore'
 
 export const load = ({ data }) => {
-  langStore.set(data.lang)
+  if (data.lang === 'it' || data.lang === 'en') {
+    langStore.set(data.lang)
+  }
   return {
     lang: data.lang,
   }

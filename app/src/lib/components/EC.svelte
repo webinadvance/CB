@@ -26,8 +26,8 @@
             .map((k) => k.split('.')[1]),
         ),
       ).map((index) => ({
-        title: pageData.contentData[`${key}.${index}.title`],
-        desc: pageData.contentData[`${key}.${index}.desc`],
+        title: pageData.contentData[`${key}.${index}.title`] || '',
+        desc: pageData.contentData[`${key}.${index}.desc`] || '',
       }))
     : null
 

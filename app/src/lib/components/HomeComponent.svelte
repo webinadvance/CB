@@ -12,7 +12,7 @@
 <!--<EC key="data" p="desc" />-->
 
 <!-- New list handling EC component -->
-<EC key="dataList2" isList class="list-container">
+<EC key="dataList" isList class="list-container">
   <div slot="item" let:item let:index>
     <EC key={`dataList.${index}.title`} p="title" />
     <EC key={`dataList.${index}.desc`} p="desc" />
