@@ -1,5 +1,6 @@
 <script>
   import EC from '$lib/components/EC.svelte'
+  import { buildPageUrl } from '$lib/utils/url.js'
 </script>
 
 <div>HomeComponent.svelte</div>
@@ -11,3 +12,5 @@
     <EC key={`dataList.${index}.desc`} p="desc" />
   </div>
 </EC>
+
+<div><a href={buildPageUrl('Dynamic')}>GO TO TEST</a></div>
