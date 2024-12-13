@@ -5,6 +5,7 @@ import { Op } from 'sequelize'
 import { get } from 'svelte/store'
 import { langStore } from '$lib/stores/langStore.js'
 import sequelize from '$lib/database/config.js'
+import { queryCache } from '$lib/cache/queryCache.js'
 
 export async function POST({ request }) {
   try {
@@ -26,6 +27,7 @@ export async function POST({ request }) {
       { returning: true },
     )
 
+    queryCache.flushAll()
     return json(content, { status: created ? 201 : 200 })
   } catch (error) {
     return json({ error: error.message }, { status: 500 })
@@ -36,6 +38,8 @@ export async function DELETE({ request }) {
   try {
     let { pageTitle, key, index, lang } = await request.json()
     lang = lang || get(langStore)
+
+    queryCache.flushAll()
 
     await Content.destroy({
       where: {
