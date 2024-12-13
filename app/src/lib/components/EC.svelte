@@ -1,16 +1,13 @@
 <script>
   import { getPageData } from '$lib/stores/pageStore'
-  import { createEventDispatcher } from 'svelte'
 
   export let key
   export let pg
   export let tag = 'div'
   export let cssClass = ''
   export let placeholder = 'Content not found'
-  export let p = null
   export let isList = false
 
-  const dispatch = createEventDispatcher()
   const pageData = getPageData()
   let editableRef
 
@@ -19,22 +16,10 @@
     : pageData.contentData?.[key]
 
   $: items = isList
-    ? Array.from(
-        new Set(
-          Object.keys(pageData.contentData || {})
-            .filter((k) => k.startsWith(`${key}.`))
-            .map((k) => k.split('.')[1]),
-        ),
-      ).map((index) => {
-        const fields = Object.keys(pageData.contentData)
-          .filter((k) => k.startsWith(`${key}.${index}.`))
-          .reduce((acc, k) => {
-            const prop = k.split('.').pop()
-            acc[prop] = pageData.contentData[k] || ''
-            return acc
-          }, {})
-        return fields
-      })
+    ? Object.entries(pageData.contentData || {})
+        .filter(([k]) => k.startsWith(`${key}.`))
+        .sort((a, b) => a[1].listIndex - b[1].listIndex)
+        .map(([k, v]) => v)
     : null
 
   async function save() {
@@ -55,34 +40,8 @@
     }
   }
 
-  async function saveList() {
-    const updates = items.flatMap((item, index) => [
-      {
-        pageTitle: pg || pageData.pageTitle,
-        key: `${key}.${index}.title`,
-        value: item.title,
-      },
-      {
-        pageTitle: pg || pageData.pageTitle,
-        key: `${key}.${index}.desc`,
-        value: item.desc,
-      },
-    ])
-
-    await Promise.all(
-      updates.map((update) =>
-        fetch('/api/content', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(update),
-        }),
-      ),
-    )
-  }
-
   function addItem() {
     items = [...items, { title: '', desc: '' }]
-    saveList()
   }
 
   async function removeItem(index) {

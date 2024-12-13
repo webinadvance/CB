@@ -32,6 +32,7 @@ const Content = sequelize.define(
       allowNull: false,
       defaultValue: 'en',
     },
+    listIndex: { type: DataTypes.INTEGER, defaultValue: null },
   },
   {
     indexes: [
