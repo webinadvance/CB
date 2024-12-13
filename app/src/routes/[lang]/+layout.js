@@ -5,6 +5,7 @@ export const load = ({ data }) => {
     langStore.set(data.lang)
   }
   return {
+    ...data,
     lang: data.lang,
   }
 }

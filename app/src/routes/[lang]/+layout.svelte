@@ -4,10 +4,13 @@
   import Footer from '$lib/components/Footer.svelte'
   import { isEditable } from '$lib/stores/editorStore'
   import { PenSquare } from 'lucide-svelte'
+  import { page } from '$app/stores'
 
   let { children } = $props()
 
   const data = $derived($pageData)
+
+  console.log('AAAAAAAAAAAAA', $page.data)
 </script>
 
 <div class="flex flex-col min-h-screen">
@@ -38,5 +41,17 @@
 
   <footer class="p-4 shadow">
     <Footer />
+
+    {#if $page.data.session}
+      <p>Welcome, {$page.data.session.user?.name}!</p>
+      <form method="post" action="/auth/signout">
+        <button type="submit">Sign out</button>
+      </form>
+    {:else}
+      <p>Please sign in to access this content.</p>
+      <form method="post" action="/auth/signin">
+        <button type="submit">Sign in</button>
+      </form>
+    {/if}
   </footer>
 </div>
