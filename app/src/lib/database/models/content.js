@@ -32,7 +32,6 @@ const Content = sequelize.define(
       allowNull: false,
       defaultValue: 'en',
     },
-    listIndex: { type: DataTypes.INTEGER, defaultValue: null },
   },
   {
     indexes: [
@@ -48,3 +47,4 @@ Page.hasMany(Content, { foreignKey: 'pageTitle', as: 'contents' })
 Content.belongsTo(Page, { foreignKey: 'pageTitle' })
 
 export { Content }
+//

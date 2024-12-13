@@ -5,7 +5,8 @@ import { langStore } from '$lib/stores/langStore.js'
 
 export async function POST({ request }) {
   try {
-    let { pageTitle, key, value, lang, listIndex } = await request.json()
+    let { pageTitle, key, value, lang } = await request.json()
+
     lang = lang || get(langStore)
 
     if (!pageTitle || !key) {
@@ -18,7 +19,7 @@ export async function POST({ request }) {
     }
 
     const [content, created] = await Content.upsert(
-      { pageTitle, key, value, lang, listIndex },
+      { pageTitle, key, value, lang },
       { returning: true },
     )
 
