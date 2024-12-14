@@ -22,6 +22,9 @@ export async function handle({ event, resolve }) {
     setServerLang(lang)
   }
 
+  event.request.maxBodyLength = 50 * 1024 * 1024 // 50MB
+
   // Delegate to the Auth handler
   return authHandle({ event, resolve })
 }
+//
