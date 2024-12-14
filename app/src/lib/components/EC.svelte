@@ -5,6 +5,7 @@
   import { createEventDispatcher } from 'svelte'
   import { ImageIcon } from 'lucide-svelte'
   import { Edit2 } from 'lucide-svelte'
+  import { Trash2 } from 'lucide-svelte'
 
   export let key
   export let pg
@@ -48,6 +49,26 @@
           })
       : [{ title: placeholder, desc: placeholder }]
     : null
+
+  async function deleteImage() {
+    await fetch(`/api/media/${content}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pageTitle: pg || $pageData.pageTitle,
+        key,
+        lang: $langStore,
+      }),
+    })
+
+    pageData.update((data) => ({
+      ...data,
+      contentData: {
+        ...data.contentData,
+        [key]: '',
+      },
+    }))
+  }
 
   async function handleImageUpload(e) {
     try {
@@ -158,7 +179,8 @@
 
   {#if content}
     <div
-      class={`outline-dashed outline-1 outline-red-500 hover:outline-red-500 relative group ${$$props.class || ''}`}
+      class="outline-dashed outline-1 outline-red-500 hover:outline-red-500 relative group {$$props.class ||
+        ''}"
     >
       <img
         src={`/api/media/serve/${content}`}
@@ -167,10 +189,20 @@
       />
       {#if $isEditable}
         <div
-          class="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-          on:click={() => fileInput.click()}
+          class="absolute inset-0 flex items-center justify-center gap-4 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          <Edit2 class="text-white" />
+          <button
+            class="p-2 hover:bg-black/20 rounded-full"
+            on:click={() => fileInput.click()}
+          >
+            <Edit2 class="text-white" />
+          </button>
+          <button
+            class="p-2 hover:bg-black/20 rounded-full"
+            on:click={deleteImage}
+          >
+            <Trash2 class="text-white" />
+          </button>
         </div>
       {/if}
     </div>
