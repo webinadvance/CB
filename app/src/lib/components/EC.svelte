@@ -178,17 +178,17 @@
   />
 
   {#if content}
-    <div
-      class="relative group {$$props.class || ''} {$isEditable
-        ? 'outline-dashed outline-1 outline-red-500 hover:outline-red-500'
-        : ''}"
-    >
-      <img
-        src={`/api/media/serve/${content}`}
-        alt={key}
-        class="w-full h-full object-cover"
-      />
-      {#if $isEditable}
+    <img
+      src={`/api/media/serve/${content}`}
+      alt={key}
+      class={`w-full h-full object-cover ${$$props.class} ${
+        $isEditable
+          ? 'outline-dashed outline-1 outline-red-500 hover:outline-red-500'
+          : ''
+      }`}
+    />
+    {#if $isEditable}
+      <div class="relative group {$$props.class || ''}">
         <div
           class="absolute inset-0 flex items-center justify-center gap-4 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity"
         >
@@ -205,8 +205,8 @@
             <Trash2 class="text-white" />
           </button>
         </div>
-      {/if}
-    </div>
+      </div>
+    {/if}
   {:else if $isEditable}
     <div class={$$props.class}>
       <div
