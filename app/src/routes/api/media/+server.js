@@ -11,8 +11,20 @@ export async function GET({ url }) {
   return json(media)
 }
 
+export const config = {
+  api: {
+    bodyParser: false,
+    bodySize: '50mb',
+  },
+}
+
 export async function POST({ request }) {
   const transaction = await sequelize.transaction()
+
+  const contentLength = request.headers.get('content-length')
+  if (contentLength && parseInt(contentLength) > 50 * 1024 * 1024) {
+    return json({ error: 'File too large' }, { status: 413 })
+  }
 
   try {
     const formData = await request.formData()
@@ -58,3 +70,4 @@ export async function POST({ request }) {
     return json({ error: error.message }, { status: 500 })
   }
 }
+//
