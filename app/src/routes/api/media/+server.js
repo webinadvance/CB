@@ -11,14 +11,6 @@ export async function GET({ url }) {
   return json(media)
 }
 
-export const config = {
-  api: {
-    bodyParser: false,
-    bodySize: '50mb',
-  },
-}
-
-//
 export async function POST({ request }) {
   const transaction = await sequelize.transaction()
 

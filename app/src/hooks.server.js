@@ -4,10 +4,6 @@ import { handle as authHandle } from './lib/auth/config.js'
 
 let dbInitialized = false
 
-export const config = {
-  maxBodySize: 50_000_000, // 50MB
-}
-
 export async function handle({ event, resolve }) {
   // Initialize the database (run once)
   if (!dbInitialized) {
@@ -26,8 +22,7 @@ export async function handle({ event, resolve }) {
     setServerLang(lang)
   }
 
-  event.request.maxBodyLength = 50 * 1024 * 1024 // 50MB
-
   // Delegate to the Auth handler
   return authHandle({ event, resolve })
 }
+//
