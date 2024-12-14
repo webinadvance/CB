@@ -169,26 +169,25 @@
 </script>
 
 {#if image}
-  <input
-    type="file"
-    accept="image/*"
-    bind:this={fileInput}
-    on:change={handleImageUpload}
-    class="hidden"
-  />
-
   {#if content}
-    <div
-      class="relative group {$$props.class || ''} {$isEditable
-        ? 'outline-dashed outline-1 outline-red-500 hover:outline-red-500'
-        : ''}"
-    >
-      <img
-        src={`/api/media/serve/${content}`}
-        alt={key}
-        class="w-full h-full object-cover"
-      />
-      {#if $isEditable}
+    {#if $isEditable}
+      <div
+        class="relative group {$$props.class || ''} {$isEditable
+          ? 'outline-dashed outline-1 outline-red-500 hover:outline-red-500'
+          : ''}"
+      >
+        <img
+          src={`/api/media/serve/${content}`}
+          alt={key}
+          class="w-full h-full object-cover"
+        />
+        <input
+          type="file"
+          accept="image/*"
+          bind:this={fileInput}
+          on:change={handleImageUpload}
+          class="hidden"
+        />
         <div
           class="absolute inset-0 flex items-center justify-center gap-4 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity"
         >
@@ -205,10 +204,24 @@
             <Trash2 class="text-white" />
           </button>
         </div>
-      {/if}
-    </div>
+      </div>
+    {/if}
+    {#if !$isEditable}
+      <img
+        src={`/api/media/serve/${content}`}
+        alt={key}
+        class={$$props.class}
+      />
+    {/if}
   {:else if $isEditable}
     <div class={$$props.class}>
+      <input
+        type="file"
+        accept="image/*"
+        bind:this={fileInput}
+        on:change={handleImageUpload}
+        class="hidden"
+      />
       <div
         class={`${$$props.class || ''} bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg 
       flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors`}
