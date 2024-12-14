@@ -7,7 +7,7 @@
 
 <!--<EC key="hero3" image class="max-w-sm inline-block h-48" />-->
 <!--<EC key="hero4" image class="max-w-sm inline-block h-48" />-->
-<!--<EC key="hero7" image class="max-w-sm inline-block h-48" />-->
+<EC key="hero10" image class="max-w-sm inline-block h-48" />
 
 <EC key="footer" pg="Common" class="bg-gray-700" />
 
