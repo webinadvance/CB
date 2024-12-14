@@ -179,8 +179,9 @@
 
   {#if content}
     <div
-      class="outline-dashed outline-1 outline-red-500 hover:outline-red-500 relative group {$$props.class ||
-        ''}"
+      class="relative group {$$props.class || ''} {$isEditable
+        ? 'outline-dashed outline-1 outline-red-500 hover:outline-red-500'
+        : ''}"
     >
       <img
         src={`/api/media/serve/${content}`}
@@ -206,19 +207,17 @@
         </div>
       {/if}
     </div>
-  {:else}
-    <div
-      class={`${$$props.class || ''} bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg 
-      flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors
-      ${!$isEditable ? 'pointer-events-none opacity-50' : ''}`}
-      on:click={() => {
-        console.log('clicked', $isEditable)
-        if ($isEditable) fileInput?.click()
-      }}
-    >
-      <ImageIcon class="w-12 h-12 text-gray-400 mb-2" />
-      <p class="text-sm text-gray-500">Click to upload image</p>
-      <p class="text-xs text-gray-400 mt-1">{key}</p>
+  {:else if $isEditable}
+    <div class={$$props.class}>
+      <div
+        class={`${$$props.class || ''} bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg 
+      flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors`}
+        on:click={() => fileInput?.click()}
+      >
+        <ImageIcon class="w-12 h-12 text-gray-400 mb-2" />
+        <p class="text-sm text-gray-500">Click to upload image</p>
+        <p class="text-xs text-gray-400 mt-1">{key}</p>
+      </div>
     </div>
   {/if}
 {:else if isList}

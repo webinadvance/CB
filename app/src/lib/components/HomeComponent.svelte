@@ -5,7 +5,7 @@
 
 <div>HomeComponent.svelte</div>
 
-<EC key="hero3" image class="max-w-sm inline-block" />
+<EC key="hero3" image class="max-w-sm inline-block h-48" />
 
 <EC key="footer" pg="Common" class="bg-gray-700" />
 

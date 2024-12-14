@@ -1,9 +1,5 @@
 ﻿import { json } from '@sveltejs/kit'
-import {
-  getMediaById,
-  updateMedia,
-  deleteMedia,
-} from '$lib/services/mediaService.js'
+import { getMediaById, updateMedia } from '$lib/services/mediaService.js'
 import { queryCache } from '$lib/cache/queryCache.js'
 import { Content } from '$lib/database/models/content.js'
 import { Media } from '$lib/database/models/media.js'
@@ -41,41 +37,26 @@ export async function DELETE({ params, request }) {
 
   try {
     const body = await request.json()
-    console.log('DELETE Request body:', body)
     const { pageTitle, key, lang } = body
 
-    console.log('Deleting Media:', params.id)
     const deletedMedia = await Media.destroy({
       where: { id: params.id },
       transaction,
     })
-    console.log('Media deletion result:', deletedMedia)
 
     if (pageTitle && key) {
-      console.log('Deleting Content:', { pageTitle, key, lang })
-      const contentDeleted = await Content.destroy({
+      await Content.destroy({
         where: { pageTitle, key, lang },
         transaction,
-      })
-      console.log('Content deletion result:', contentDeleted)
-    } else {
-      console.log('Skipping Content deletion - missing params:', {
-        pageTitle,
-        key,
-        lang,
       })
     }
 
     await transaction.commit()
-    console.log('Transaction committed')
     queryCache.flushAll()
-    console.log('Cache flushed')
 
     return json({ success: true })
   } catch (error) {
-    console.error('DELETE Error:', error)
     await transaction.rollback()
-    console.log('Transaction rolled back')
     return json({ error: error.message }, { status: 500 })
   }
 }
