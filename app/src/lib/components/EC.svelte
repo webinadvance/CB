@@ -4,6 +4,7 @@
   import { isEditable } from '$lib/stores/editorStore'
   import { createEventDispatcher } from 'svelte'
   import { ImageIcon } from 'lucide-svelte'
+  import { Edit2 } from 'lucide-svelte'
 
   export let key
   export let pg
@@ -156,12 +157,23 @@
   />
 
   {#if content}
-    <img
-      src={`/api/media/serve/${content}`}
-      alt={key}
-      class={`${$$props.class || ''} cursor-pointer ${$isEditable ? 'outline-dashed outline-1 outline-red-500 hover:outline-red-500' : ''}`}
-      on:click={() => $isEditable && fileInput.click()}
-    />
+    <div
+      class={`outline-dashed outline-1 outline-red-500 hover:outline-red-500 relative group ${$$props.class || ''}`}
+    >
+      <img
+        src={`/api/media/serve/${content}`}
+        alt={key}
+        class="w-full h-full object-cover"
+      />
+      {#if $isEditable}
+        <div
+          class="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+          on:click={() => fileInput.click()}
+        >
+          <Edit2 class="text-white" />
+        </div>
+      {/if}
+    </div>
   {:else}
     <div
       class={`${$$props.class || ''} bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg 
