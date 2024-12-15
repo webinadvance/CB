@@ -12,4 +12,6 @@
 
 <!--<ECImage key={'aaa1'} class="max-w-72" />-->
 
-<ECText key={'text1'} />
+<ECList key="myimagelist15" let:itemKey>
+  <ECText key={itemKey} />
+</ECList>
