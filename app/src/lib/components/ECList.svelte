@@ -6,48 +6,54 @@
   let items = []
 
   $: {
-    const existingItems = Object.entries($pageData.contentData || {})
-      .filter(([k, v]) => k.startsWith(`${key}.`) && v)
-      .map(([k]) => Number(k.split('.')[1]))
-      .sort((a, b) => a - b)
+    console.log('$pageData.contentData', $pageData.contentData)
 
-    items = existingItems.map((_, idx) => idx)
+    const groupedItems = Object.entries($pageData.contentData || {})
+      .filter(([k]) => k.startsWith(`${key}`))
+      .reduce((acc, [fullKey, value]) => {
+        const groupedMatch = fullKey.match(
+          new RegExp(`^${key}\\[([a-zA-Z0-9_]+)\\]\\.([0-9]+)$`), // Match grouped keys
+        )
+        const ungroupedMatch = fullKey.match(
+          new RegExp(`^${key}\\.([0-9]+)$`), // Match ungrouped keys
+        )
 
-    existingItems.forEach((oldIndex, newIndex) => {
-      if (oldIndex !== newIndex) {
-        const oldKey = `${key}.${oldIndex}`
-        const newKey = `${key}.${newIndex}`
-        const value = $pageData.contentData[oldKey]
+        if (groupedMatch) {
+          const [, prop, index] = groupedMatch
+          const numericIndex = Number(index)
+          if (!acc[numericIndex]) acc[numericIndex] = { index: numericIndex }
+          acc[numericIndex][prop] = value
+        } else if (ungroupedMatch) {
+          const [, index] = ungroupedMatch
+          const numericIndex = Number(index)
+          acc[numericIndex] = { index: numericIndex, value }
+        }
+        return acc
+      }, [])
 
-        pageData.update((data) => ({
-          ...data,
-          contentData: {
-            ...data.contentData,
-            [newKey]: value,
-            [oldKey]: undefined,
-          },
-        }))
-      }
-    })
+    console.log('groupedItems', groupedItems)
+
+    items = Object.values(groupedItems).sort((a, b) => a.index - b.index)
   }
 
+  console.log('items', items)
+
   function addNewItem() {
-    items = [...items, items.length]
+    const newIndex = items.length
+    items = [...items, { index: newIndex }]
   }
 </script>
 
 {#if !$isEditable}
   <div class={$$props.class}>
-    {#each items as index}
-      <slot itemKey={`${key}.${index}`} timestamp={Date.now()} />
+    {#each items as item}
+      <slot baseKey={key} {...item} />
     {/each}
   </div>
-{/if}
-{#if $isEditable}
+{:else}
   <div class="relative {$$props.class}">
-    {#each items as item, index}
-      <slot itemKey={`${key}.${index}`} timestamp={Date.now()} />
-      {#if index === items.length - 1}{/if}
+    {#each items as item}
+      <slot baseKey={key} index={item.index} />
     {/each}
     <button
       class="opacity-80 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded flex-shrink-0"

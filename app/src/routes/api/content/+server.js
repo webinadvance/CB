@@ -1,5 +1,4 @@
-﻿// FILE: app/src/routes/api/content/+server.js
-import { json } from '@sveltejs/kit'
+﻿import { json } from '@sveltejs/kit'
 import { Content } from '$lib/database/models/content.js'
 import { Op } from 'sequelize'
 import { get } from 'svelte/store'
@@ -17,10 +16,10 @@ export async function POST({ request }) {
       return json({ error: 'Missing fields: pageTitle, key' }, { status: 400 })
     }
 
-    if (!value?.trim()) {
-      await Content.destroy({ where: { pageTitle, key, lang } })
-      return new Response(null, { status: 204 })
-    }
+    // if (!value?.trim()) {
+    //   await Content.destroy({ where: { pageTitle, key, lang } })
+    //   return new Response(null, { status: 204 })
+    // }
 
     const [content, created] = await Content.upsert(
       { pageTitle, key, value, lang },

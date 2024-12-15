@@ -42,7 +42,7 @@
 
 {#if !$isEditable}
   <svelte:element this={tag} class={$$props.class || ''}>
-    {content || placeholder}
+    {content === null || content === undefined ? placeholder : content}
   </svelte:element>
 {:else}
   <svelte:element
@@ -52,6 +52,6 @@
     on:blur={save}
     class={`${$$props.class || ''} ${$isEditable ? 'outline-dashed outline-1 outline-red-500 hover:outline-red-500' : ''}`}
   >
-    {content || placeholder}
+    {content === null || content === undefined ? placeholder : content}
   </svelte:element>
 {/if}
