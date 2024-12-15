@@ -8,6 +8,8 @@
   export let key
   let fileInput
 
+  console.log('ECImage key', key)
+
   // Reactive content binding
   $: content = $pageData.contentData?.[key]
 
@@ -106,3 +108,4 @@
 {:else if content}
   <img src={`/api/media/serve/${content}`} alt={key} class={$$props.class} />
 {/if}
+//

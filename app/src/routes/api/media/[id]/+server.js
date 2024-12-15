@@ -4,6 +4,7 @@ import { queryCache } from '$lib/cache/queryCache.js'
 import { Content } from '$lib/database/models/content.js'
 import { Media } from '$lib/database/models/media.js'
 import sequelize from '$lib/database/config.js'
+import { Op } from 'sequelize'
 
 export async function GET({ params }) {
   try {
@@ -38,8 +39,9 @@ export async function DELETE({ params, request }) {
   try {
     const body = await request.json()
     const { pageTitle, key, lang } = body
+    const baseKey = key.split('.')[0]
 
-    const deletedMedia = await Media.destroy({
+    await Media.destroy({
       where: { id: params.id },
       transaction,
     })
@@ -49,14 +51,38 @@ export async function DELETE({ params, request }) {
         where: { pageTitle, key, lang },
         transaction,
       })
+
+      const remainingItems = await Content.findAll({
+        where: {
+          pageTitle,
+          key: { [Op.like]: `${baseKey}.%` },
+          lang,
+        },
+        order: [
+          [
+            sequelize.literal(
+              `CAST(SUBSTRING([key], CHARINDEX('.', [key]) + 1, LEN([key])) AS INTEGER)`,
+            ),
+            'ASC',
+          ],
+        ],
+        transaction,
+      })
+
+      for (let i = 0; i < remainingItems.length; i++) {
+        await remainingItems[i].update(
+          { key: `${baseKey}.${i}` },
+          { transaction },
+        )
+      }
     }
 
     await transaction.commit()
     queryCache.flushAll()
-
     return json({ success: true })
   } catch (error) {
     await transaction.rollback()
+    console.log(error)
     return json({ error: error.message }, { status: 500 })
   }
 }
