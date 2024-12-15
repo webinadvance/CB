@@ -43,6 +43,8 @@
 
   async function deleteImage() {
     try {
+      console.log('ECImage: Deleting image', { key, content })
+
       await fetch(`/api/media/${content}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
@@ -53,15 +55,19 @@
         }),
       })
 
-      pageData.update((data) => ({
-        ...data,
-        contentData: { ...data.contentData, [key]: '' },
-      }))
-
-      if (key.includes('.')) {
-        const [listKey, imageIndex] = key.split('.')
-        listStore.set({ deleteItem: { key, listKey } })
-      }
+      // Update pageData store
+      pageData.update((data) => {
+        const newContentData = { ...data.contentData }
+        delete newContentData[key]
+        console.log('ECImage: Updated pageData after deletion', {
+          oldKey: key,
+          newContentData,
+        })
+        return {
+          ...data,
+          contentData: newContentData,
+        }
+      })
     } catch (err) {
       console.error('Delete error:', err)
     }
@@ -122,3 +128,4 @@
     alt={key}
   />
 {/if}
+//

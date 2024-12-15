@@ -1,25 +1,44 @@
 ﻿<script>
   import { pageData } from '$lib/stores/pageStore'
   import { isEditable } from '$lib/stores/editorStore'
-  import { listStore } from '$lib/stores/listStore'
 
   export let key
   let items = []
 
-  $: items = Array.from(
-    new Set(
-      Object.keys($pageData.contentData || {})
-        .filter((k) => k.startsWith(`${key}.`))
-        .map((k) => Number(k.split('.')[1])),
-    ),
-  ).sort((a, b) => a - b)
+  $: {
+    console.log('ECList: Processing items', {
+      contentData: $pageData.contentData,
+    })
 
-  $: if ($listStore.deleteItem?.listKey === key) {
-    const [_, indexToRemove] = $listStore.deleteItem.key.split('.')
-    items = items
-      .filter((i) => i !== Number(indexToRemove))
-      .map((_, index) => index)
-    listStore.set({ deleteItem: { key: '', listKey: '' } })
+    const existingItems = Object.entries($pageData.contentData || {})
+      .filter(([k, v]) => k.startsWith(`${key}.`) && v)
+      .map(([k]) => Number(k.split('.')[1]))
+      .sort((a, b) => a - b)
+
+    console.log('ECList: Existing items', { existingItems })
+
+    // Reindex to fill gaps
+    items = existingItems.map((_, idx) => idx)
+
+    // Update store with reindexed items if needed
+    existingItems.forEach((oldIndex, newIndex) => {
+      if (oldIndex !== newIndex) {
+        const oldKey = `${key}.${oldIndex}`
+        const newKey = `${key}.${newIndex}`
+        const value = $pageData.contentData[oldKey]
+
+        console.log('ECList: Reindexing', { oldKey, newKey, value })
+
+        pageData.update((data) => ({
+          ...data,
+          contentData: {
+            ...data.contentData,
+            [newKey]: value,
+            [oldKey]: undefined,
+          },
+        }))
+      }
+    })
   }
 </script>
 
