@@ -6,8 +6,6 @@
   let items = []
 
   $: {
-    console.log('$pageData.contentData', $pageData.contentData)
-
     const groupedItems = Object.entries($pageData.contentData || {})
       .filter(([k]) => k.startsWith(`${key}`))
       .reduce((acc, [fullKey, value]) => {
