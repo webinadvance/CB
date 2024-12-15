@@ -5,17 +5,12 @@
   export let key
   let items = []
 
+  // Recalculate items based on $pageData updates
   $: {
-    console.log('ECList: Processing items', {
-      contentData: $pageData.contentData,
-    })
-
     const existingItems = Object.entries($pageData.contentData || {})
       .filter(([k, v]) => k.startsWith(`${key}.`) && v)
       .map(([k]) => Number(k.split('.')[1]))
       .sort((a, b) => a - b)
-
-    console.log('ECList: Existing items', { existingItems })
 
     // Reindex to fill gaps
     items = existingItems.map((_, idx) => idx)
@@ -26,8 +21,6 @@
         const oldKey = `${key}.${oldIndex}`
         const newKey = `${key}.${newIndex}`
         const value = $pageData.contentData[oldKey]
-
-        console.log('ECList: Reindexing', { oldKey, newKey, value })
 
         pageData.update((data) => ({
           ...data,
@@ -40,11 +33,28 @@
       }
     })
   }
+
+  function addNewItem() {
+    // Add a new item at the next available index
+    items = [...items, items.length]
+  }
 </script>
 
-{#each items as index}
-  <slot itemKey={`${key}.${index}`} timestamp={Date.now()} />
-{/each}
-{#if $isEditable && items.every((i) => $pageData.contentData[`${key}.${i}`])}
-  <slot itemKey={`${key}.${items.length}`} />
-{/if}
+<div>
+  {#each items as index}
+    <slot itemKey={`${key}.${index}`} timestamp={Date.now()} />
+  {/each}
+  <!--{#if $isEditable && items.every((i) => $pageData.contentData[`${key}.${i}`])}-->
+  <!--  <slot itemKey={`${key}.${items.length}`} />-->
+  <!--{/if}-->
+
+  {#if $isEditable}
+    <!-- Add Item Button -->
+    <button
+      class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+      on:click={addNewItem}
+    >
+      Add Item
+    </button>
+  {/if}
+</div>

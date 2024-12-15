@@ -2,6 +2,7 @@
   import { pageData } from '$lib/stores/pageStore'
   import { langStore } from '$lib/stores/langStore'
   import { isEditable } from '$lib/stores/editorStore'
+  export let uniqueKey
 
   export let key
   export let pg
@@ -12,15 +13,11 @@
 
   $: content = pg
     ? $pageData.extraContent[pg]?.[key]
-    : $pageData.contentData?.[key]
-
-  console.log('ECText: Rendering', { key, pg, content })
+    : $pageData.contentData?.[key] || ''
 
   async function save() {
     const newText = editableRef.textContent.trim()
     if (newText === content) return
-
-    console.log('ECText: Saving', { key, newText })
 
     await fetch('/api/content', {
       method: 'POST',
@@ -40,6 +37,14 @@
         [key]: newText,
       },
     }))
+  }
+
+  // $: {
+  //   console.warn('PageData Update:', $pageData.contentData)
+  // }
+
+  $: {
+    console.warn('key:', key)
   }
 </script>
 
