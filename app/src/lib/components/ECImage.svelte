@@ -72,6 +72,8 @@
       console.error('Delete error:', err)
     }
   }
+
+  $: imgSrc = content ? `/api/media/serve/${content}?t=${Date.now()}` : ''
 </script>
 
 {#if $isEditable}
@@ -79,11 +81,7 @@
     class="relative group outline-dashed outline-1 outline-red-500 hover:outline-red-500 {$$props.class}"
   >
     {#if content}
-      <img
-        src={`/api/media/serve/${content}${$isEditable ? `?t=${timestamp}` : ''}`}
-        class={$$props.class}
-        alt={key}
-      />
+      <img src={imgSrc} class={$$props.class} alt={key} />
     {/if}
     <input
       type="file"
@@ -122,10 +120,6 @@
     </div>
   </div>
 {:else if content}
-  <img
-    src={`/api/media/serve/${content}${$isEditable ? `?t=${timestamp}` : ''}`}
-    class={$$props.class}
-    alt={key}
-  />
+  <img src={imgSrc} class={$$props.class} alt={key} />
 {/if}
 //
