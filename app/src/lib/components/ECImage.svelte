@@ -60,9 +60,7 @@
 
       if (key.includes('.')) {
         const [listKey, imageIndex] = key.split('.')
-        listStore.set({
-          deleteItem: { key: `${listKey}.${imageIndex}`, listKey },
-        })
+        listStore.set({ deleteItem: { key, listKey } })
       }
     } catch (err) {
       console.error('Delete error:', err)

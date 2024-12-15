@@ -25,4 +25,3 @@ export async function handle({ event, resolve }) {
   // Delegate to the Auth handler
   return authHandle({ event, resolve })
 }
-//
