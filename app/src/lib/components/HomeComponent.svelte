@@ -6,18 +6,10 @@
 
 <div>HomeComponent.svelte</div>
 
-<ECList
-  key="myimagelist1322"
-  class="flex items-center content-center"
-  let:itemKey
->
+<ECList key="images" class="flex items-center content-center h-80" let:itemKey>
   <ECImage key={itemKey} class="max-w-72" />
 </ECList>
 
-<!--<ECImage key={'aaa1'} class="max-w-72" />-->
-
-<ECList key="text2230" let:itemKey>
+<ECList key="text" let:itemKey>
   <ECText key={itemKey} />
 </ECList>
-
-//

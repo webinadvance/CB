@@ -50,7 +50,7 @@
       {#if index === items.length - 1}{/if}
     {/each}
     <button
-      class="absolute top-0 left-0 opacity-80 opacity-80 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded flex-shrink-0"
+      class="opacity-80 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded flex-shrink-0"
       on:click={addNewItem}
     >
       Add New
