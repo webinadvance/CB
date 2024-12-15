@@ -1,12 +1,13 @@
 <script>
-  import EC from '$lib/components/EC.svelte'
-  import ECList from '$lib/components/ECList.svelte'
+  import ECImage from '$lib/components/ECImage.svelte'
 </script>
 
 <div>HomeComponent.svelte</div>
 
-<ECList key="images">
-  <svelte:fragment slot="default" let:index let:parentKey>
-    <EC key={`${parentKey}.${index}`} image class="w-32 h-32" />
-  </svelte:fragment>
-</ECList>
+<!--<EC key="image" isList class="list-container">-->
+<!--  <div slot="item" let:item let:index>-->
+<!--    <EC image key={`myimage`} />-->
+<!--  </div>-->
+<!--</EC>-->
+
+<ECImage key="myimage" />
