@@ -12,11 +12,9 @@
       .filter(([k]) => k.startsWith(`${key}`))
       .reduce((acc, [fullKey, value]) => {
         const groupedMatch = fullKey.match(
-          new RegExp(`^${key}\\[([a-zA-Z0-9_]+)\\]\\.([0-9]+)$`), // Match grouped keys
+          new RegExp(`^${key}\\[([a-zA-Z0-9_]+)\\]\\.([0-9]+)$`),
         )
-        const ungroupedMatch = fullKey.match(
-          new RegExp(`^${key}\\.([0-9]+)$`), // Match ungrouped keys
-        )
+        const ungroupedMatch = fullKey.match(new RegExp(`^${key}\\.([0-9]+)$`))
 
         if (groupedMatch) {
           const [, prop, index] = groupedMatch

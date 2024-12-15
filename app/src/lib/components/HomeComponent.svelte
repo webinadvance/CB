@@ -7,7 +7,7 @@
 <div>HomeComponent.svelte</div>
 
 <ECList
-  key="images2"
+  key="images2111"
   class="flex items-center content-center h-80"
   let:baseKey
   let:index
@@ -19,7 +19,7 @@
 <br />
 <br />
 
-<ECList key="text3" let:baseKey let:index>
+<ECList key="text3111" let:baseKey let:index>
   AAA<ECText key={`${baseKey}[title].${index}`} />
   BBB<ECText key={`${baseKey}[desc].${index}`} />
 </ECList>

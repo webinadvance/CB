@@ -16,11 +16,6 @@ export async function POST({ request }) {
       return json({ error: 'Missing fields: pageTitle, key' }, { status: 400 })
     }
 
-    // if (!value?.trim()) {
-    //   await Content.destroy({ where: { pageTitle, key, lang } })
-    //   return new Response(null, { status: 204 })
-    // }
-
     const [content, created] = await Content.upsert(
       { pageTitle, key, value, lang },
       { returning: true },
