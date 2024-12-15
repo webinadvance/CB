@@ -1,19 +1,12 @@
 <script>
   import EC from '$lib/components/EC.svelte'
-  import { buildPageUrl } from '$lib/utils/url.js'
+  import ECList from '$lib/components/ECList.svelte'
 </script>
 
 <div>HomeComponent.svelte</div>
 
-<EC key="hero10" image class="max-w-sm inline-block h-48" />
-
-<EC key="footer" pg="Common" class="bg-gray-700" />
-
-<EC key="dataList" isList class="list-container">
-  <div slot="item" let:item let:index>
-    <EC key={`dataList.${index}.title`} />
-    <EC key={`dataList.${index}.desc`} />
-  </div>
-</EC>
-
-<div><a href={buildPageUrl('Dynamic')}>GO TO TEST</a></div>
+<ECList key="images">
+  <svelte:fragment slot="default" let:index let:parentKey>
+    <EC key={`${parentKey}.${index}`} image class="w-32 h-32" />
+  </svelte:fragment>
+</ECList>
