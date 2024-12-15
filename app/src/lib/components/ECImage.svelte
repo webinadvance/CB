@@ -4,6 +4,7 @@
   import { isEditable } from '$lib/stores/editorStore'
   import { ImageIcon } from 'lucide-svelte'
   import { Edit2, Trash2 } from 'lucide-svelte'
+  export let timestamp = ''
 
   export let key
   let fileInput
@@ -67,7 +68,11 @@
     class="relative group outline-dashed outline-1 outline-red-500 hover:outline-red-500 {$$props.class}"
   >
     {#if content}
-      <img src={`/api/media/serve/${content}`} alt={key} />
+      <img
+        src={`/api/media/serve/${content}${$isEditable ? `?t=${timestamp}` : ''}`}
+        class={$$props.class}
+        alt={key}
+      />
     {/if}
     <input
       type="file"
@@ -106,6 +111,10 @@
     </div>
   </div>
 {:else if content}
-  <img src={`/api/media/serve/${content}`} alt={key} class={$$props.class} />
+  <img
+    src={`/api/media/serve/${content}${$isEditable ? `?t=${timestamp}` : ''}`}
+    class={$$props.class}
+    alt={key}
+  />
 {/if}
 //

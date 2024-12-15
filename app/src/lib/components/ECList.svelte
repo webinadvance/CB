@@ -26,7 +26,7 @@
 
 <div>
   {#each items as index}
-    <slot itemKey={`${key}.${index}`} />
+    <slot itemKey={`${key}.${index}`} timestamp={Date.now()} />
   {/each}
   {#if $isEditable}
     <slot itemKey={`${key}.${items.length}`} />
