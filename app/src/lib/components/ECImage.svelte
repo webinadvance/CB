@@ -122,4 +122,3 @@
 {:else if content}
   <img src={imgSrc} class={$$props.class} alt={key} />
 {/if}
-//

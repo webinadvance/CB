@@ -42,11 +42,9 @@
   }
 </script>
 
-<div>
-  {#each items as index}
-    <slot itemKey={`${key}.${index}`} timestamp={Date.now()} />
-  {/each}
-  {#if $isEditable && items.every((i) => $pageData.contentData[`${key}.${i}`])}
-    <slot itemKey={`${key}.${items.length}`} />
-  {/if}
-</div>
+{#each items as index}
+  <slot itemKey={`${key}.${index}`} timestamp={Date.now()} />
+{/each}
+{#if $isEditable && items.every((i) => $pageData.contentData[`${key}.${i}`])}
+  <slot itemKey={`${key}.${items.length}`} />
+{/if}
