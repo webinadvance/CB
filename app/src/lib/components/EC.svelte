@@ -23,8 +23,6 @@
     ? $pageData.extraContent[pg]?.[key]
     : $pageData.contentData?.[key]
 
-  console.log('AAA pageData', $pageData)
-
   $: items = isList
     ? Object.keys($pageData.contentData || {}).filter((k) =>
         k.startsWith(`${key}.`),
@@ -264,4 +262,3 @@
     {content || placeholder}
   </svelte:element>
 {/if}
-//

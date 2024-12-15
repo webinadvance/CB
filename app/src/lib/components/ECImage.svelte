@@ -4,12 +4,12 @@
   import { isEditable } from '$lib/stores/editorStore'
   import { ImageIcon } from 'lucide-svelte'
   import { Edit2, Trash2 } from 'lucide-svelte'
+  import { createEventDispatcher } from 'svelte'
   export let timestamp = ''
+  import { listStore } from '$lib/stores/listStore'
 
   export let key
   let fileInput
-
-  console.log('ECImage key', key)
 
   // Reactive content binding
   $: content = $pageData.contentData?.[key]
@@ -57,6 +57,13 @@
         ...data,
         contentData: { ...data.contentData, [key]: '' },
       }))
+
+      if (key.includes('.')) {
+        const [listKey, imageIndex] = key.split('.')
+        listStore.set({
+          deleteItem: { key: `${listKey}.${imageIndex}`, listKey },
+        })
+      }
     } catch (err) {
       console.error('Delete error:', err)
     }
@@ -117,4 +124,3 @@
     alt={key}
   />
 {/if}
-//

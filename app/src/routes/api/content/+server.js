@@ -7,6 +7,26 @@ import { langStore } from '$lib/stores/langStore.js'
 import sequelize from '$lib/database/config.js'
 import { queryCache } from '$lib/cache/queryCache.js'
 
+export async function GET({ url }) {
+  const key = url.searchParams.get('key')
+  const pageTitle = url.searchParams.get('pageTitle')
+
+  const items = await Content.findAll({
+    where: {
+      pageTitle,
+      key: { [Op.like]: `${key}.%` },
+    },
+    order: [['key', 'ASC']],
+  })
+
+  return json({
+    items: items.map((item) => ({
+      key: item.key,
+      value: item.value,
+    })),
+  })
+}
+
 export async function POST({ request }) {
   try {
     let { pageTitle, key, value, lang } = await request.json()
@@ -76,4 +96,3 @@ export async function DELETE({ request }) {
     return json({ error: error.message }, { status: 500 })
   }
 }
-//
