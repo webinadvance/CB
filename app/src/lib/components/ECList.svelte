@@ -1,6 +1,7 @@
 ﻿<script>
   import { pageData } from '$lib/stores/pageStore'
   import { isEditable } from '$lib/stores/editorStore'
+  import { Plus } from 'lucide-svelte'
 
   export let key
   let items = []
@@ -40,21 +41,27 @@
   }
 </script>
 
-<div>
-  {#each items as index}
-    <slot itemKey={`${key}.${index}`} timestamp={Date.now()} />
-  {/each}
-  <!--{#if $isEditable && items.every((i) => $pageData.contentData[`${key}.${i}`])}-->
-  <!--  <slot itemKey={`${key}.${items.length}`} />-->
-  <!--{/if}-->
-
-  {#if $isEditable}
-    <!-- Add Item Button -->
+{#if !$isEditable}
+  <div class={$$props.class}>
+    {#each items as index}
+      <slot itemKey={`${key}.${index}`} timestamp={Date.now()} />
+    {/each}
+  </div>
+{/if}
+{#if $isEditable}
+  <div class="relative {$$props.class}">
+    {#each items as item, index}
+      <slot itemKey={`${key}.${index}`} timestamp={Date.now()} />
+      {#if index === items.length - 1}
+        <!--        <button-->
+        <!--          class="absolute top-0 left-0 opacity-80 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded flex-shrink-0"-->
+        <!--          on:click={addNewItem}>Add New</button-->
+        <!--        >-->
+      {/if}
+    {/each}
     <button
-      class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-      on:click={addNewItem}
+      class="absolute top-0 left-0 opacity-80 opacity-80 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded flex-shrink-0"
+      on:click={addNewItem}>Add New</button
     >
-      Add Item
-    </button>
-  {/if}
-</div>
+  </div>
+{/if}

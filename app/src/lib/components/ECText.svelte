@@ -38,14 +38,6 @@
       },
     }))
   }
-
-  // $: {
-  //   console.warn('PageData Update:', $pageData.contentData)
-  // }
-
-  $: {
-    console.warn('key:', key)
-  }
 </script>
 
 {#if !$isEditable}
