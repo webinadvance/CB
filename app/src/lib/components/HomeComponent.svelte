@@ -10,4 +10,4 @@
 <!--  </div>-->
 <!--</EC>-->
 
-<ECImage key="myimage" />
+<ECImage key="myimage" class="max-w-72" />
