@@ -75,7 +75,9 @@
       class="hidden"
     />
     <div
-      class="absolute inset-0 flex items-center justify-center gap-4 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity"
+      class={content
+        ? 'absolute opacity-0 transition-opacity bg-black/30 group-hover:opacity-100 inset-0 flex items-center justify-center gap-4'
+        : ''}
     >
       {#if content}
         <button
@@ -92,7 +94,7 @@
         </button>
       {:else}
         <div
-          class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors w-full h-full"
+          class="h-36 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors w-full h-full"
           on:click={() => fileInput?.click()}
         >
           <ImageIcon class="w-12 h-12 text-gray-400 mb-2" />
