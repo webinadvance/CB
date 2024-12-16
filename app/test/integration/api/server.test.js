@@ -40,6 +40,18 @@ describe('Content DELETE Integration Test', () => {
       { pageTitle: 'Home', key: 'A10.0', value: 'A10.0', lang: 'en' },
       { pageTitle: 'Home', key: 'A10.1', value: 'A10.1', lang: 'en' },
       { pageTitle: 'Home', key: 'A10.2', value: 'A10.2', lang: 'en' },
+      {
+        pageTitle: 'Home',
+        key: 'SIMPLE-KEY1',
+        value: 'SIMPLE-KEY1',
+        lang: 'en',
+      },
+      {
+        pageTitle: 'Home',
+        key: 'SIMPLE-KEY2',
+        value: 'SIMPLE-KEY2',
+        lang: 'en',
+      },
     ])
   })
   afterEach(async () => await Content.destroy({ where: {} }))
@@ -163,5 +175,33 @@ describe('Content DELETE Integration Test', () => {
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
     })
+  })
+
+  test('DELETE SIMPLE-KEY2', async () => {
+    const mockRequest = {
+      json: jest
+        .fn()
+        .mockResolvedValue({ pageTitle: 'Home', fullKey: 'SIMPLE-KEY2' }),
+    }
+    const response = await DELETE({ request: mockRequest })
+    expect(response.status).toBe(204)
+
+    const a10Content = await Content.findAll({
+      where: { pageTitle: 'Home', key: { [Op.like]: '%SIMPLE-KEY%' } },
+      order: [['key', 'ASC']],
+      raw: true,
+    })
+
+    expect(a10Content).toEqual([
+      {
+        id: expect.any(Number),
+        pageTitle: 'Home',
+        key: 'SIMPLE-KEY1',
+        value: 'SIMPLE-KEY1',
+        lang: 'en',
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      },
+    ])
   })
 })
