@@ -14,11 +14,12 @@
     ? $pageData.extraContent[pg]?.[key]
     : $pageData.contentData?.[key] || ''
 
+  import { getContext } from 'svelte'
+
   async function save(event) {
-    const newContent = event.target.textContent // Get changed content directly
+    const newContent = event.target.textContent
     console.log('Save:', newContent)
 
-    // Immediate save request
     try {
       await fetch('/api/content', {
         method: 'POST',
@@ -30,18 +31,14 @@
           lang: $langStore,
         }),
       })
-
-      // Update the store with new content
-      // pageData.update((data) => ({
-      //   ...data,
-      //   contentData: {
-      //     ...data.contentData,
-      //     [key]: newContent,
-      //   },
-      // }))
     } catch (error) {
       console.error('Error saving content:', error)
     }
+  }
+
+  const parentEvent = getContext('parentEvent')
+  function deleteText() {
+    parentEvent?.(key)
   }
 </script>
 
@@ -50,12 +47,20 @@
     {currentContent || placeholder}
   </svelte:element>
 {:else}
-  <svelte:element
-    this={tag}
-    contenteditable="true"
-    on:input={save}
-    class={`${$$props.class || ''} ${$isEditable ? 'outline-dashed outline-1 outline-red-500' : ''}`}
-  >
-    {currentContent || placeholder}
-  </svelte:element>
+  <div class="relative">
+    <svelte:element
+      this={tag}
+      contenteditable="true"
+      on:input={save}
+      class={`${$$props.class || ''} ${$isEditable ? 'outline-dashed outline-1 outline-red-500' : ''}`}
+    >
+      {currentContent || placeholder}
+    </svelte:element>
+    <button
+      class="absolute top-0 right-0 bg-red-500 text-white rounded p-1 text-sm hover:bg-red-700"
+      on:click={deleteText}
+    >
+      Delete
+    </button>
+  </div>
 {/if}
