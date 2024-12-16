@@ -1,31 +1,30 @@
-name: Deploy to Production
+name: Ignite the Production Launchpad
 
 on:
   push:
-    branches: [ castello ]
+    branches: [castello]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node.js
+      - name: Invoke Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Build locally
+          
+      - name: Forge the Build
         working-directory: ./app
         run: |
           npm install
           npm run build
-
-      - name: Run Tests
+          
+      - name: Unleash the Tests
         working-directory: ./app
         run: npm test
-        
-      - name: Deploy to server
+
+      - name: Embark on the Server Expedition
         env:
           HOST: ${{ secrets.HOST }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -33,9 +32,9 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          
+
           echo -e "Host *\n\tStrictHostKeyChecking no\n\tPort 2222\n\t" > ~/.ssh/config
-          
+
           # Copy only the necessary files
           rsync -avz -e "ssh -i ~/.ssh/deploy_key -p 2222" --delete \
             --exclude='.git*' \
@@ -44,10 +43,9 @@ jobs:
             --exclude='src' \
             --exclude='static' \
             app/build/ root@$HOST:/var/www/kymera.cloud/build/
-          
+
           rsync -avz -e "ssh -i ~/.ssh/deploy_key -p 2222" \
             app/package.json app/package-lock.json root@$HOST:/var/www/kymera.cloud/
-
           ssh -i ~/.ssh/deploy_key -p 2222 root@$HOST << 'ENDSSH'
             cd /var/www/kymera.cloud
             export NODE_ENV=production
