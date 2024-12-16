@@ -29,77 +29,46 @@ export async function POST({ request }) {
 }
 
 export async function DELETE({ request }) {
-  try {
-    const { pageTitle, fullKey, lang: requestLang } = await request.json()
+  const { pageTitle, fullKey, lang: requestLang } = await request.json()
+  const lang = requestLang || get(langStore)
+  if (!pageTitle || !fullKey)
+    return json({ error: 'Invalid input parameters.' }, { status: 400 })
 
-    // Extract the language or fallback to langStore
-    const lang = requestLang || get(langStore)
+  const keyPatternWithTag = /^([^\[]+)\[([^\]]+)\]\.(\d+)$/
+  const keyPatternNoTag = /^([^\[]+)\.(\d+)$/
+  const matchWithTag = fullKey.match(keyPatternWithTag)
+  const matchNoTag = fullKey.match(keyPatternNoTag)
 
-    // Validate input
-    if (!pageTitle || !fullKey) {
-      return json({ error: 'Invalid input parameters.' }, { status: 400 })
-    }
-
-    // Check if the key is in {key}[{tag}].{index} format
-    const keyPatternWithTag = /^([^\[]+)\[([^\]]+)\]\.(\d+)$/
-    const matchWithTag = fullKey.match(keyPatternWithTag)
-
-    // Check if the key is in {key}.{index} format
-    const keyPatternNoTag = /^([^\[]+)\.(\d+)$/
-    const matchNoTag = fullKey.match(keyPatternNoTag)
-
-    // Prepare transaction
-    await sequelize.transaction(async (t) => {
-      if (matchWithTag) {
-        // Extract components for {key}[{tag}].{index}
-        const [, key, tag, indexString] = matchWithTag
-        const index = Number(indexString)
-
-        // Handle deletion for keys with brackets
-        const bracketPattern = `${key}[${tag}].${index}`
+  await sequelize.transaction(async (t) => {
+    if (matchWithTag) {
+      const [, key, tag, index] = matchWithTag
+      await Content.destroy({
+        where: { pageTitle, key: { [Op.eq]: `${key}[${tag}].${index}` }, lang },
+        transaction: t,
+      })
+    } else if (matchNoTag) {
+      const [, key, index] = matchNoTag
+      const items = await Content.findAll({
+        where: { pageTitle, key: { [Op.like]: `${key}.%` }, lang },
+        order: [['key', 'ASC']],
+        transaction: t,
+      })
+      const itemToDelete = items.find(
+        (item) => Number(item.key.split('.').pop()) === Number(index),
+      )
+      if (itemToDelete) {
         await Content.destroy({
-          where: { pageTitle, key: { [Op.eq]: bracketPattern }, lang },
-          transaction: t,
-        })
-      } else if (matchNoTag) {
-        // Extract components for {key}.{index}
-        const [, key, indexString] = matchNoTag
-        const index = Number(indexString)
-
-        // Handle deletion for keys without brackets
-        const items = await Content.findAll({
-          where: {
-            pageTitle,
-            key: { [Op.like]: `${key}.%` },
-            lang,
-          },
-          order: [['key', 'ASC']],
-          transaction: t,
-        })
-
-        const itemToDelete = items.find((item) => {
-          const matches = item.key.match(/^(.+?)\.(\d+)$/)
-          return matches && Number(matches[2]) === index
-        })
-
-        if (itemToDelete) {
-          await Content.destroy({
-            where: { id: itemToDelete.id },
-            transaction: t,
-          })
-        }
-      } else {
-        // Handle deletion for simple keys (keys that don't match the patterns)
-        await Content.destroy({
-          where: { pageTitle, key: { [Op.eq]: fullKey }, lang },
+          where: { id: itemToDelete.id },
           transaction: t,
         })
       }
-    })
+    } else {
+      await Content.destroy({
+        where: { pageTitle, key: { [Op.eq]: fullKey }, lang },
+        transaction: t,
+      })
+    }
+  })
 
-    return new Response(null, { status: 204 })
-  } catch (error) {
-    console.error(error)
-    return json({ error: error.message }, { status: 500 })
-  }
+  return new Response(null, { status: 204 })
 }
