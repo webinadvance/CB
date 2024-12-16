@@ -1,17 +1,17 @@
 ﻿// FILE: app/src/lib/components/ECText.test.js
 import { describe, expect, test, vi } from 'vitest'
-import { cleanup, render } from '@testing-library/svelte' // Added render import
+import { cleanup, render } from '@testing-library/svelte'
 import ECText from './ECText.svelte'
 
 vi.mock('$app/environment', () => ({ browser: true }))
 
+let mockStoreSubscriber = null
+
 vi.mock('$lib/stores/pageStore', () => ({
   pageData: {
     subscribe: (fn) => {
-      fn({
-        contentData: { testKey: 'Test Content' },
-        extraContent: { testPage: { testKey: 'Extra Content' } },
-      })
+      mockStoreSubscriber = fn
+      fn({ contentData: {} })
       return () => {}
     },
     update: vi.fn(),
@@ -28,33 +28,22 @@ vi.mock('$lib/stores/editorStore', () => ({
   },
 }))
 
-afterEach(cleanup)
-
-test('component exists', () => {
-  expect(ECText).toBeTruthy()
+afterEach(() => {
+  cleanup()
+  vi.clearAllMocks()
 })
 
-test('renders contentData', async () => {
-  await vi.dynamicImportSettled()
-  const { container } = render(ECText, { props: { key: 'testKey' } })
-  expect(container).toBeTruthy()
-})
-
-test('renders custom content', async () => {
-  vi.mock('$lib/stores/pageStore', () => ({
-    pageData: {
-      subscribe: (fn) => {
-        fn({
-          contentData: {
-            myKey: 'testData',
-          },
-        })
-        return () => {}
-      },
-      update: vi.fn(),
-    },
-  }))
-
+test('renders placeholder when empty', () => {
   const { container } = render(ECText, { props: { key: 'myKey' } })
-  expect(container.textContent).toBe('testData')
+  expect(container.textContent).toBe('Content not found')
+})
+
+test('updates content from store', async () => {
+  const { container } = render(ECText, { props: { key: 'myKey' } })
+  await vi.dynamicImportSettled()
+
+  mockStoreSubscriber({ contentData: { myKey: 'New Content' } })
+  await Promise.resolve() // Wait for reactive update
+
+  expect(container.textContent).toBe('New Content')
 })
