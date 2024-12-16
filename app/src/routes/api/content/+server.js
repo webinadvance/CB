@@ -28,6 +28,25 @@ export async function POST({ request }) {
   }
 }
 
+const reindexContent = async (
+  items,
+  keyPattern,
+  deletedIndex,
+  transaction,
+  generateNewKey,
+) => {
+  for (const item of items) {
+    const match = item.key.match(keyPattern)
+    if (match && +match[match.length - 1] > +deletedIndex) {
+      const newKey = generateNewKey(match)
+      await Content.update(
+        { key: newKey },
+        { where: { id: item.id }, transaction },
+      )
+    }
+  }
+}
+
 export async function DELETE({ request }) {
   const { pageTitle, fullKey, lang: requestLang } = await request.json()
   const lang = requestLang || get(langStore)
@@ -40,84 +59,44 @@ export async function DELETE({ request }) {
   const matchNoTag = fullKey.match(keyPatternNoTag)
 
   await sequelize.transaction(async (t) => {
+    const destroyContent = (pattern, params = {}) =>
+      Content.destroy({
+        where: { pageTitle, lang, ...params, key: { [Op.like]: pattern } },
+        transaction: t,
+      })
+
     if (matchWithTag) {
-      const [, key, tag, index] = matchWithTag
+      const [, key, , index] = matchWithTag
       const prefixPattern =
         sequelize.dialect.name === 'mssql' ? `${key}[[]%]` : `${key}[%]`
-
-      // Find all matching items to reindex
       const items = await Content.findAll({
-        where: {
-          pageTitle,
-          key: { [Op.like]: `${prefixPattern}.%` },
-          lang,
-        },
+        where: { pageTitle, key: { [Op.like]: `${prefixPattern}.%` }, lang },
         order: [['key', 'ASC']],
         transaction: t,
       })
-
-      // Delete target index
-      await Content.destroy({
-        where: {
-          pageTitle,
-          key: { [Op.like]: `${prefixPattern}.${index}` },
-          lang,
-        },
-        transaction: t,
-      })
-
-      // Reindex remaining items
-      for (const item of items) {
-        const itemMatch = item.key.match(keyPatternWithTag)
-        if (itemMatch) {
-          const [, , itemTag, itemIndex] = itemMatch
-          if (+itemIndex > +index) {
-            const newKey = `${key}[${itemTag}].${+itemIndex - 1}`
-            await Content.update(
-              { key: newKey },
-              {
-                where: { id: item.id },
-                transaction: t,
-              },
-            )
-          }
-        }
-      }
+      await destroyContent(`${prefixPattern}.${index}`)
+      await reindexContent(
+        items,
+        keyPatternWithTag,
+        index,
+        t,
+        (m) => `${m[1]}[${m[2]}].${+m[3] - 1}`,
+      )
     } else if (matchNoTag) {
       const [, key, index] = matchNoTag
-      // Similar reindexing logic for non-tagged items
       const items = await Content.findAll({
-        where: {
-          pageTitle,
-          key: { [Op.like]: `${key}.%` },
-          lang,
-        },
+        where: { pageTitle, key: { [Op.like]: `${key}.%` }, lang },
         order: [['key', 'ASC']],
         transaction: t,
       })
-
-      await Content.destroy({
-        where: {
-          pageTitle,
-          key: { [Op.like]: `${key}.${index}` },
-          lang,
-        },
-        transaction: t,
-      })
-
-      for (const item of items) {
-        const itemMatch = item.key.match(keyPatternNoTag)
-        if (itemMatch && +itemMatch[2] > +index) {
-          const newKey = `${key}.${+itemMatch[2] - 1}`
-          await Content.update(
-            { key: newKey },
-            {
-              where: { id: item.id },
-              transaction: t,
-            },
-          )
-        }
-      }
+      await destroyContent(`${key}.${index}`)
+      await reindexContent(
+        items,
+        keyPatternNoTag,
+        index,
+        t,
+        (m) => `${key}.${+m[2] - 1}`,
+      )
     } else {
       await Content.destroy({
         where: { pageTitle, key: { [Op.eq]: fullKey }, lang },
@@ -125,6 +104,5 @@ export async function DELETE({ request }) {
       })
     }
   })
-
   return new Response(null, { status: 204 })
 }
