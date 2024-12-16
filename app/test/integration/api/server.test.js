@@ -48,7 +48,7 @@ describe('Content DELETE Integration Test', () => {
     const mockRequest = {
       json: jest
         .fn()
-        .mockResolvedValue({ pageTitle: 'Home', key: 'A9', index: 1 }),
+        .mockResolvedValue({ pageTitle: 'Home', fullKey: 'A9[title].1' }),
     }
     const response = await DELETE({ request: mockRequest })
     expect(response.status).toBe(204)
@@ -123,7 +123,7 @@ describe('Content DELETE Integration Test', () => {
     const mockRequest = {
       json: jest
         .fn()
-        .mockResolvedValue({ pageTitle: 'Home', key: 'A10', index: 1 }),
+        .mockResolvedValue({ pageTitle: 'Home', fullKey: 'A10.1' }),
     }
     const response = await DELETE({ request: mockRequest })
     expect(response.status).toBe(204)

@@ -42,7 +42,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         pageTitle: $pageData.pageTitle,
-        key,
+        fullKey: key,
         index: $pageData.index,
       }),
     })

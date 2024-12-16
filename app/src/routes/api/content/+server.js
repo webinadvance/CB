@@ -30,27 +30,43 @@ export async function POST({ request }) {
 
 export async function DELETE({ request }) {
   try {
-    const { pageTitle, key, index, lang: requestLang } = await request.json()
+    const { pageTitle, fullKey, lang: requestLang } = await request.json()
+
+    // Extract the language or fallback to langStore
     const lang = requestLang || get(langStore)
 
-    if (!pageTitle || !key || typeof index !== 'number') {
+    // Validate input
+    if (!pageTitle || !fullKey) {
       return json({ error: 'Invalid input parameters.' }, { status: 400 })
     }
 
-    const hasBrackets = !!(await Content.findOne({
-      where: { pageTitle, key: { [Op.like]: `${key}[%].%` }, lang },
-      attributes: ['id'],
-      raw: true,
-    }))
+    // Check if the key is in {key}[{tag}].{index} format
+    const keyPatternWithTag = /^([^\[]+)\[([^\]]+)\]\.(\d+)$/
+    const matchWithTag = fullKey.match(keyPatternWithTag)
 
+    // Check if the key is in {key}.{index} format
+    const keyPatternNoTag = /^([^\[]+)\.(\d+)$/
+    const matchNoTag = fullKey.match(keyPatternNoTag)
+
+    // Prepare transaction
     await sequelize.transaction(async (t) => {
-      if (hasBrackets) {
-        const bracketPattern = `${key}[%].${index}`
+      if (matchWithTag) {
+        // Extract components for {key}[{tag}].{index}
+        const [, key, tag, indexString] = matchWithTag
+        const index = Number(indexString)
+
+        // Handle deletion for keys with brackets
+        const bracketPattern = `${key}[${tag}].${index}`
         await Content.destroy({
-          where: { pageTitle, key: { [Op.like]: bracketPattern }, lang },
+          where: { pageTitle, key: { [Op.eq]: bracketPattern }, lang },
           transaction: t,
         })
-      } else {
+      } else if (matchNoTag) {
+        // Extract components for {key}.{index}
+        const [, key, indexString] = matchNoTag
+        const index = Number(indexString)
+
+        // Handle deletion for keys without brackets
         const items = await Content.findAll({
           where: {
             pageTitle,
@@ -72,6 +88,8 @@ export async function DELETE({ request }) {
             transaction: t,
           })
         }
+      } else {
+        throw new Error('Invalid fullKey format.')
       }
     })
 
