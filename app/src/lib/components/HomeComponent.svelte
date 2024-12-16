@@ -6,10 +6,10 @@
 
 <div>HomeComponent.svelte</div>
 
-<ECImage key={`NEWWWWWWWWWWWWW`} class="max-w-72" />
-<br />
-<br />
-<ECText key={`NEWTEXTXXXX`} />
+<!--<ECImage key={`NEWWWWWWWWWWWWW`} class="max-w-72" />-->
+<!--<br />-->
+<!--<br />-->
+<!--<ECText key={`NEWTEXTXXXX`} />-->
 
 <!--<ECList-->
 <!--  key="myBaseKeyB"-->
@@ -24,7 +24,7 @@
 <br />
 <br />
 
-<!--<ECList key="textError2" let:baseKey let:index>-->
-<!--  TITLE<ECText key={`${baseKey}[title].${index}`} />-->
-<!--  DESC<ECText key={`${baseKey}[desc].${index}`} />-->
-<!--</ECList>-->
+<ECList key="A1" let:baseKey let:index>
+  TITLE<ECText key={`${baseKey}[title].${index}`} />
+  DESC<ECText key={`${baseKey}[desc].${index}`} />
+</ECList>

@@ -30,43 +30,46 @@ export async function POST({ request }) {
 
 export async function DELETE({ request }) {
   try {
-    let { pageTitle, key, index, lang } = await request.json()
-    lang = lang || get(langStore)
+    // Parse request body
+    const body = await request.json()
+    console.log('Request Body:', body)
 
-    queryCache.flushAll()
+    const { pageTitle, key, index, lang: requestLang } = body
+    const lang = requestLang || get(langStore)
+    console.log('Parameters:', { pageTitle, key, index, lang })
 
-    await Content.destroy({
+    // Define pattern to delete with proper escaping for SQL Server
+    // In SQL Server, to match a literal '[', use '[[]'
+    const deletePattern = `${key}[[]%.${index}`
+    console.log('Delete Pattern:', deletePattern)
+
+    // Fetch records before deletion
+    const beforeDelete = await Content.findAll({
+      where: { pageTitle, lang },
+      raw: true,
+    })
+    console.log('DB State Before Deletion:', beforeDelete)
+
+    // Delete matching records
+    const deletedCount = await Content.destroy({
       where: {
         pageTitle,
-        key: { [Op.startsWith]: `${key}.${index}.` },
+        key: { [Op.like]: deletePattern },
         lang,
       },
     })
+    console.log(`Number of Records Deleted: ${deletedCount}`)
 
-    const remainingItems = await Content.findAll({
-      where: {
-        pageTitle,
-        key: { [Op.startsWith]: `${key}.` },
-        lang,
-      },
-      order: [['key', 'ASC']],
+    // Fetch records after deletion
+    const afterDelete = await Content.findAll({
+      where: { pageTitle, lang },
+      raw: true,
     })
-
-    await sequelize.transaction(async (t) => {
-      for (let i = 0; i < remainingItems.length; i++) {
-        const item = remainingItems[i]
-        const [_, currentIndex, field] = item.key.split('.')
-        if (Number(currentIndex) !== Math.floor(i / 2)) {
-          await Content.update(
-            { key: `${key}.${Math.floor(i / 2)}.${field}` },
-            { where: { id: item.id }, transaction: t },
-          )
-        }
-      }
-    })
+    console.log('DB State After Deletion:', afterDelete)
 
     return new Response(null, { status: 204 })
   } catch (error) {
+    console.error('Error During DELETE Operation:', error)
     return json({ error: error.message }, { status: 500 })
   }
 }
