@@ -9,37 +9,39 @@
   export let placeholder = 'Content not found'
 
   let currentContent = ''
-  let saveTimeout
-
-  console.log('$pageData.contentData', $pageData.contentData)
 
   $: currentContent = pg
     ? $pageData.extraContent[pg]?.[key]
     : $pageData.contentData?.[key] || ''
 
-  async function save() {
-    clearTimeout(saveTimeout)
-    saveTimeout = setTimeout(async () => {
-      console.log('save', currentContent)
+  async function save(event) {
+    const newContent = event.target.textContent // Get changed content directly
+    console.log('Save:', newContent)
+
+    // Immediate save request
+    try {
       await fetch('/api/content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           pageTitle: pg || $pageData.pageTitle,
           key,
-          value: currentContent,
+          value: newContent,
           lang: $langStore,
         }),
       })
 
-      pageData.update((data) => ({
-        ...data,
-        contentData: {
-          ...data.contentData,
-          [key]: currentContent,
-        },
-      }))
-    }, 500)
+      // Update the store with new content
+      // pageData.update((data) => ({
+      //   ...data,
+      //   contentData: {
+      //     ...data.contentData,
+      //     [key]: newContent,
+      //   },
+      // }))
+    } catch (error) {
+      console.error('Error saving content:', error)
+    }
   }
 </script>
 
@@ -51,7 +53,6 @@
   <svelte:element
     this={tag}
     contenteditable="true"
-    bind:textContent={currentContent}
     on:input={save}
     class={`${$$props.class || ''} ${$isEditable ? 'outline-dashed outline-1 outline-red-500' : ''}`}
   >
