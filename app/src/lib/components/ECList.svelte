@@ -37,12 +37,10 @@
 
   function handleDndConsider(e) {
     items = [...e.detail.items]
-    console.log('Consider:', e.detail.items)
   }
 
   async function handleDndFinalize(e) {
     items = [...e.detail.items]
-    console.log('Finalize:', e.detail.items)
   }
 
   async function addNewItem() {
