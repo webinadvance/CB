@@ -11,6 +11,8 @@
   let currentContent = ''
   let saveTimeout
 
+  console.log('$pageData.contentData', $pageData.contentData)
+
   $: currentContent = pg
     ? $pageData.extraContent[pg]?.[key]
     : $pageData.contentData?.[key] || ''
