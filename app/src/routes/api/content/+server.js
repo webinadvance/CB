@@ -89,7 +89,11 @@ export async function DELETE({ request }) {
           })
         }
       } else {
-        throw new Error('Invalid fullKey format.')
+        // Handle deletion for simple keys (keys that don't match the patterns)
+        await Content.destroy({
+          where: { pageTitle, key: { [Op.eq]: fullKey }, lang },
+          transaction: t,
+        })
       }
     })
 
