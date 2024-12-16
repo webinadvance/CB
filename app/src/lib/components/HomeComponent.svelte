@@ -24,7 +24,12 @@
 <br />
 <br />
 
-<ECList key="A3" let:baseKey let:index>
+<!--<ECList key="A8" let:baseKey let:index>-->
+<!--  TITLE<ECText key={`${baseKey}.${index}`} />-->
+<!--  &lt;!&ndash;  DESC<ECText key={`${baseKey}[desc].${index}`} />&ndash;&gt;-->
+<!--</ECList>-->
+
+<ECList key="A9" let:baseKey let:index>
   TITLE<ECText key={`${baseKey}[title].${index}`} />
   DESC<ECText key={`${baseKey}[desc].${index}`} />
 </ECList>

@@ -34,3 +34,5 @@ const sequelize = new Sequelize(env.DB_NAME, env.DB_USER, env.DB_PASSWORD, {
 })
 
 export default sequelize
+//
+//

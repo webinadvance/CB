@@ -1,4 +1,4 @@
-﻿import sequelize from '$lib/database/config.js'
+import sequelize from '$lib/database/config.js'
 import { Page } from './models/page.js'
 import { env } from '$env/dynamic/private'
 import addSampleData from './sampleData.js'
@@ -27,3 +27,4 @@ async function initializeDatabase() {
 }
 
 export default initializeDatabase
+//

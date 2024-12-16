@@ -42,6 +42,8 @@
 
   async function deleteItem(index) {
     // Call API
+    console.log('index', index)
+
     await fetch('/api/content', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },

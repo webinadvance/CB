@@ -1,4 +1,4 @@
-﻿import { DataTypes, Model } from 'sequelize'
+import { DataTypes, Model } from 'sequelize'
 import sequelize from '$lib/database/config.js'
 
 class Media extends Model {}
@@ -54,3 +54,5 @@ Media.init(
 )
 
 export { Media }
+//
+//
