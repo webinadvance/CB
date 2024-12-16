@@ -18,6 +18,7 @@
   async function save() {
     clearTimeout(saveTimeout)
     saveTimeout = setTimeout(async () => {
+      console.log('save', currentContent)
       await fetch('/api/content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

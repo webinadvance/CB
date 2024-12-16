@@ -27,12 +27,11 @@
         return acc
       }, [])
 
-    console.log('groupedItems', groupedItems)
-
     items = Object.values(groupedItems).sort((a, b) => a.index - b.index)
-  }
 
-  console.log('items', items)
+    // console.log('items', items)
+    // console.log('$pageData.contentData', $pageData.contentData)
+  }
 
   function addNewItem() {
     const newIndex = items.length

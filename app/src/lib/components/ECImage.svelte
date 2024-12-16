@@ -43,8 +43,6 @@
 
   async function deleteImage() {
     try {
-      console.log('ECImage: Deleting image', { key, content })
-
       await fetch(`/api/media/${content}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
@@ -55,19 +53,23 @@
         }),
       })
 
-      // Update pageData store
-      pageData.update((data) => {
-        const newContentData = { ...data.contentData }
-        delete newContentData[key]
-        console.log('ECImage: Updated pageData after deletion', {
-          oldKey: key,
-          newContentData,
-        })
-        return {
-          ...data,
-          contentData: newContentData,
-        }
+      const baseKey = key.split('.')[0]
+      const entries = Object.entries($pageData.contentData)
+        .filter(([k]) => k.startsWith(`${baseKey}.`))
+        .sort(([a], [b]) => Number(a.split('.')[1]) - Number(b.split('.')[1]))
+        .filter(([k]) => k !== key)
+
+      const newContentData = { ...$pageData.contentData }
+      delete newContentData[key]
+
+      entries.forEach(([oldKey, value], idx) => {
+        delete newContentData[oldKey]
+        newContentData[`${baseKey}.${idx}`] = value
       })
+
+      $pageData.contentData = newContentData
+
+      console.log('newContentData', newContentData)
     } catch (err) {
       console.error('Delete error:', err)
     }
