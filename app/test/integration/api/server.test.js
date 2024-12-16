@@ -204,4 +204,43 @@ describe('Content DELETE Integration Test', () => {
       },
     ])
   })
+
+  test('DELETE TEST1[A].1', async () => {
+    await Content.bulkCreate([
+      { pageTitle: 'Home', key: 'TEST1[A].0', value: '1', lang: 'en' },
+      { pageTitle: 'Home', key: 'TEST1[B].0', value: '2', lang: 'en' },
+      { pageTitle: 'Home', key: 'TEST1[A].1', value: '3', lang: 'en' },
+      { pageTitle: 'Home', key: 'TEST1[B].1', value: '4', lang: 'en' },
+      { pageTitle: 'Home', key: 'TEST1[A].2', value: '5', lang: 'en' },
+      { pageTitle: 'Home', key: 'TEST1[B].2', value: '6', lang: 'en' },
+    ])
+
+    const mockRequest = {
+      json: jest.fn().mockResolvedValue({
+        pageTitle: 'Home',
+        fullKey: 'TEST1[A].1',
+      }),
+    }
+
+    const response = await DELETE({ request: mockRequest })
+    expect(response.status).toBe(204)
+
+    const remainingContent = await Content.findAll({
+      where: { pageTitle: 'Home', key: { [Op.like]: 'TEST1%' } },
+      order: [['key', 'ASC']],
+      raw: true,
+    })
+
+    expect(remainingContent).not.toContainEqual({
+      id: expect.any(Number),
+      pageTitle: 'Home',
+      key: 'TEST1[A].1',
+      value: '3',
+      lang: 'en',
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String),
+    })
+
+    expect(remainingContent.length).toBe(5)
+  })
 })
