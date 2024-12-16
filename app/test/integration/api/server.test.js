@@ -60,27 +60,12 @@ describe('Content DELETE Integration Test', () => {
       raw: true,
     })
 
-    expect(remainingContent).not.toContainEqual({
-      id: expect.any(Number),
-      pageTitle: 'Home',
-      key: 'TEST1[A].1',
-      value: '3',
-      lang: 'en',
-      createdAt: expect.any(String),
-      updatedAt: expect.any(String),
-    })
-
-    expect(remainingContent).not.toContainEqual({
-      id: expect.any(Number),
-      pageTitle: 'Home',
-      key: 'TEST1[B].1',
-      value: '4',
-      lang: 'en',
-      createdAt: expect.any(String),
-      updatedAt: expect.any(String),
-    })
-
-    expect(remainingContent.length).toBe(4)
+    expect(remainingContent).toEqual([
+      expect.objectContaining({ key: 'TEST1[A].0', value: '1' }),
+      expect.objectContaining({ key: 'TEST1[A].1', value: '5' }),
+      expect.objectContaining({ key: 'TEST1[B].0', value: '2' }),
+      expect.objectContaining({ key: 'TEST1[B].1', value: '6' }),
+    ])
   })
 
   test('DELETE TEST1.1 (no tag)', async () => {
@@ -106,17 +91,10 @@ describe('Content DELETE Integration Test', () => {
       raw: true,
     })
 
-    expect(remainingContent).not.toContainEqual({
-      id: expect.any(Number),
-      pageTitle: 'Home',
-      key: 'TEST1.1',
-      value: '2',
-      lang: 'en',
-      createdAt: expect.any(String),
-      updatedAt: expect.any(String),
-    })
-
-    expect(remainingContent.length).toBe(2)
+    expect(remainingContent).toEqual([
+      expect.objectContaining({ key: 'TEST1.0', value: '1' }),
+      expect.objectContaining({ key: 'TEST1.1', value: '3' }),
+    ])
   })
 
   test('DELETE SIMPLE-KEY', async () => {

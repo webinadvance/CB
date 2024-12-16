@@ -3,7 +3,7 @@
   import { pageData } from '$lib/stores/pageStore'
   import Footer from '$lib/components/Footer.svelte'
   import { isEditable } from '$lib/stores/editorStore'
-  import { PenSquare, RefreshCw } from 'lucide-svelte'
+  import { PenSquare, CloudDownload } from 'lucide-svelte'
   import { page } from '$app/stores'
   import { invalidateAll } from '$app/navigation'
 
@@ -35,7 +35,7 @@
         class="p-3 bg-slate-700 hover:bg-slate-800 rounded-full text-white shadow-lg"
         onclick={() => invalidateAll()}
       >
-        <RefreshCw size={20} />
+        <CloudDownload size={20} />
       </button>
       <button
         class="p-3 bg-slate-700 hover:bg-slate-800 rounded-full text-white shadow-lg"
