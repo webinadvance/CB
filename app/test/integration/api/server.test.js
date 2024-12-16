@@ -100,7 +100,7 @@ describe('Content DELETE Integration Test', () => {
         {
           id: expect.any(Number),
           pageTitle: 'Home',
-          key: 'A9[title].1',
+          key: 'A9[title].2',
           value: '5',
           lang: 'en',
           createdAt: expect.any(String),
@@ -109,7 +109,7 @@ describe('Content DELETE Integration Test', () => {
         {
           id: expect.any(Number),
           pageTitle: 'Home',
-          key: 'A9[desc].1',
+          key: 'A9[desc].2',
           value: '6',
           lang: 'en',
           createdAt: expect.any(String),
@@ -118,6 +118,7 @@ describe('Content DELETE Integration Test', () => {
       ]),
     )
   })
+
   test('DELETE A10.1', async () => {
     const mockRequest = {
       json: jest
@@ -146,7 +147,7 @@ describe('Content DELETE Integration Test', () => {
       {
         id: expect.any(Number),
         pageTitle: 'Home',
-        key: 'A10.1',
+        key: 'A10.2',
         value: 'A10.2',
         lang: 'en',
         createdAt: expect.any(String),

@@ -36,43 +36,21 @@
     items = [...items, { index: newIndex }]
   }
 
-  function handleEvent(event) {
-    console.log('items', items)
-
-    // Log the raw input event
-    console.log('Event received:', event)
-
-    // Log the key and the regular expression being used
-    console.log('Key:', key)
-    console.log(
-      'Generated RegExp:',
-      new RegExp(`^${key}\\[[^\\]]+\\]\\.(\\d+)$`),
-    )
-
-    // Attempt to match the event against the RegExp
+  async function handleDelete(event) {
+    await fetch(`/api/content/${event}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pageTitle: $pageData.pageTitle,
+        key,
+        index: $pageData.index,
+      }),
+    })
     const match = event.match(new RegExp(`^${key}\\[[^\\]]+\\]\\.(\\d+)$`))
-    console.log('Match result:', match)
-
-    if (match) {
-      // Parse the index to be removed from the match
-      const indexToRemove = Number(match[1])
-      console.log('Index to remove:', indexToRemove)
-
-      // Log items before the filter operation
-      console.log('Items before removal:', items)
-
-      // Filter the items array to remove the one with the specified index
-      items = items.filter((item) => item.index !== indexToRemove)
-
-      // Log items after the filter operation
-      console.log('Items after removal:', items)
-    } else {
-      // If no match, log that the event did not match
-      console.log('No matching pattern found for the event')
-    }
+    if (match) items = items.filter((item) => item.index !== +match[1])
   }
 
-  setContext('parentEvent', handleEvent)
+  setContext('parentEvent', handleDelete)
 </script>
 
 {#if !$isEditable}
@@ -84,7 +62,7 @@
 {:else}
   <div class="relative {$$props.class}">
     {#each items as item}
-      <slot baseKey={key} index={item.index} onEvent={(e) => handleEvent(e)} />
+      <slot baseKey={key} index={item.index} onEvent={(e) => handleDelete(e)} />
     {/each}
     <button
       class="opacity-80 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded flex-shrink-0"

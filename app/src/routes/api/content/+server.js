@@ -50,27 +50,6 @@ export async function DELETE({ request }) {
           where: { pageTitle, key: { [Op.like]: bracketPattern }, lang },
           transaction: t,
         })
-
-        const remainingItems = await Content.findAll({
-          where: { pageTitle, key: { [Op.like]: `${key}[%].%` }, lang },
-          order: [['key', 'ASC']],
-          transaction: t,
-        })
-
-        for (const item of remainingItems) {
-          const matches = item.key.match(/^(.+?)\[(.+?)\]\.(\d+)$/)
-          if (matches) {
-            const [_, baseKey, tag, oldIndex] = matches
-            if (Number(oldIndex) > index) {
-              const newIndex = Number(oldIndex) - 1
-              const newKey = `${baseKey}[${tag}].${newIndex}`
-              await Content.update(
-                { key: newKey },
-                { where: { id: item.id }, transaction: t },
-              )
-            }
-          }
-        }
       } else {
         const items = await Content.findAll({
           where: {
@@ -92,22 +71,6 @@ export async function DELETE({ request }) {
             where: { id: itemToDelete.id },
             transaction: t,
           })
-
-          for (const item of items) {
-            const matches = item.key.match(/^(.+?)\.(\d+)$/)
-            if (matches) {
-              const [_, baseKey, oldIndex] = matches
-              const numIndex = Number(oldIndex)
-              if (numIndex > index) {
-                const newIndex = numIndex - 1
-                const newKey = `${baseKey}.${newIndex}`
-                await Content.update(
-                  { key: newKey },
-                  { where: { id: item.id }, transaction: t },
-                )
-              }
-            }
-          }
         }
       }
     })

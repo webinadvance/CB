@@ -37,6 +37,7 @@
   }
 
   const parentEvent = getContext('parentEvent')
+
   function deleteText() {
     parentEvent?.(key)
   }
