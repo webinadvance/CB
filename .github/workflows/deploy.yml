@@ -21,6 +21,10 @@ jobs:
           npm install
           npm run build
 
+      - name: Run Tests
+        working-directory: ./app
+        run: npm test
+        
       - name: Deploy to server
         env:
           HOST: ${{ secrets.HOST }}

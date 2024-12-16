@@ -6,7 +6,8 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "jest"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
