@@ -45,7 +45,10 @@ export async function DELETE({ request }) {
       await Content.destroy({
         where: {
           pageTitle,
-          key: { [Op.like]: `${key}[%].${index}` },
+          key:
+            sequelize.dialect.name === 'mssql'
+              ? { [Op.like]: `${key}[[]%].${index}` }
+              : { [Op.like]: `${key}[%].${index}` },
           lang,
         },
         transaction: t,

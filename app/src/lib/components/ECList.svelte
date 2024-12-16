@@ -2,6 +2,7 @@
   import { pageData } from '$lib/stores/pageStore'
   import { isEditable } from '$lib/stores/editorStore'
   import { setContext } from 'svelte'
+  import { invalidateAll } from '$app/navigation'
 
   export let key
   let items = []
@@ -46,8 +47,7 @@
         lang: $pageData.lang || undefined,
       }),
     })
-    const match = event.match(new RegExp(`^${key}\\[[^\\]]+\\]\\.(\\d+)$`))
-    if (match) items = items.filter((item) => item.index !== +match[1])
+    await invalidateAll()
   }
 
   setContext('parentEvent', handleDelete)
