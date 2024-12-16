@@ -3,6 +3,7 @@
   import { isEditable } from '$lib/stores/editorStore'
   import { setContext } from 'svelte'
   import { invalidateAll } from '$app/navigation'
+  import { dndzone } from 'svelte-dnd-action'
 
   export let key
   let items = []
@@ -19,12 +20,14 @@
         if (groupedMatch) {
           const [, prop, index] = groupedMatch
           const numericIndex = Number(index)
-          if (!acc[numericIndex]) acc[numericIndex] = { index: numericIndex }
-          acc[numericIndex][prop] = value
-        } else if (ungroupedMatch) {
-          const [, index] = ungroupedMatch
-          const numericIndex = Number(index)
-          acc[numericIndex] = { index: numericIndex, value }
+          if (!acc[numericIndex]) {
+            acc[numericIndex] = {
+              id: `item-${numericIndex}`,
+              index: numericIndex,
+              props: {},
+            }
+          }
+          acc[numericIndex].props[prop] = value
         }
         return acc
       }, [])
@@ -32,9 +35,19 @@
     items = Object.values(groupedItems).sort((a, b) => a.index - b.index)
   }
 
+  function handleDndConsider(e) {
+    items = [...e.detail.items]
+    console.log('Consider:', e.detail.items)
+  }
+
+  async function handleDndFinalize(e) {
+    items = [...e.detail.items]
+    console.log('Finalize:', e.detail.items)
+  }
+
   async function addNewItem() {
     const newIndex = items.length
-    items = [...items, { index: newIndex }]
+    items = [...items, { id: `item-${newIndex}`, index: newIndex }]
   }
 
   async function handleDelete(event) {
@@ -61,11 +74,31 @@
   </div>
 {:else}
   <div class="relative {$$props.class}">
-    {#each items as item}
-      <slot baseKey={key} index={item.index} onEvent={(e) => handleDelete(e)} />
-    {/each}
+    <div
+      use:dndzone={{
+        items,
+        flipDurationMs: 200,
+        dropTargetStyle: { outline: '2px dashed #4a5568' },
+        dragDisabled: false,
+      }}
+      on:consider={handleDndConsider}
+      on:finalize={handleDndFinalize}
+      class="space-y-2"
+    >
+      {#each items as item (item.id)}
+        <div
+          class="cursor-move hover:bg-gray-50 p-2 rounded border border-transparent hover:border-gray-200"
+        >
+          <slot
+            baseKey={key}
+            index={item.index}
+            onEvent={(e) => handleDelete(e)}
+          />
+        </div>
+      {/each}
+    </div>
     <button
-      class="opacity-80 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded flex-shrink-0"
+      class="mt-4 opacity-80 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded flex-shrink-0"
       on:click={addNewItem}
     >
       Add New
