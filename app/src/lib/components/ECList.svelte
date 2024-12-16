@@ -32,7 +32,7 @@
     items = Object.values(groupedItems).sort((a, b) => a.index - b.index)
   }
 
-  function addNewItem() {
+  async function addNewItem() {
     const newIndex = items.length
     items = [...items, { index: newIndex }]
   }
