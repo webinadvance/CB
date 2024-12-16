@@ -30,8 +30,7 @@ export async function POST({ request }) {
 
 export async function DELETE({ request }) {
   try {
-    const body = await request.json()
-    const { pageTitle, key, index, lang: requestLang } = body
+    const { pageTitle, key, index, lang: requestLang } = await request.json()
     const lang = requestLang || get(langStore)
 
     if (!pageTitle || !key || typeof index !== 'number') {
@@ -44,43 +43,70 @@ export async function DELETE({ request }) {
       raw: true,
     }))
 
-    const escapedKey = key.replace(/[[\]]/g, (x) => (x === '[' ? '[[]' : '[]]'))
-    const deletePattern = hasBrackets
-      ? `${escapedKey}[%].${index}`
-      : `${key}.${index}`
-    const reindexPattern = hasBrackets ? `${escapedKey}[%].%` : `${key}.%`
-    const deleteCondition = hasBrackets
-      ? { [Op.like]: deletePattern }
-      : { [Op.eq]: deletePattern }
-
     await sequelize.transaction(async (t) => {
-      await Content.destroy({
-        where: { pageTitle, key: deleteCondition, lang },
-        transaction: t,
-      })
+      if (hasBrackets) {
+        const bracketPattern = `${key}[%].${index}`
+        await Content.destroy({
+          where: { pageTitle, key: { [Op.like]: bracketPattern }, lang },
+          transaction: t,
+        })
 
-      const remainingItems = await Content.findAll({
-        where: { pageTitle, key: { [Op.like]: reindexPattern }, lang },
-        order: [['key', 'ASC']],
-        raw: true,
-        transaction: t,
-      })
+        const remainingItems = await Content.findAll({
+          where: { pageTitle, key: { [Op.like]: `${key}[%].%` }, lang },
+          order: [['key', 'ASC']],
+          transaction: t,
+        })
 
-      const regex = hasBrackets ? /^(.+?)\[(.+?)\]\.(\d+)$/ : /^(.+?)\.(\d+)$/
+        for (const item of remainingItems) {
+          const matches = item.key.match(/^(.+?)\[(.+?)\]\.(\d+)$/)
+          if (matches) {
+            const [_, baseKey, tag, oldIndex] = matches
+            if (Number(oldIndex) > index) {
+              const newIndex = Number(oldIndex) - 1
+              const newKey = `${baseKey}[${tag}].${newIndex}`
+              await Content.update(
+                { key: newKey },
+                { where: { id: item.id }, transaction: t },
+              )
+            }
+          }
+        }
+      } else {
+        const items = await Content.findAll({
+          where: {
+            pageTitle,
+            key: { [Op.like]: `${key}.%` },
+            lang,
+          },
+          order: [['key', 'ASC']],
+          transaction: t,
+        })
 
-      for (const item of remainingItems) {
-        const matches = item.key.match(regex)
-        if (matches) {
-          const [_, baseKey, tagOrIndex, oldIndex] = matches
-          const newIndex = Number(oldIndex) - 1
-          if (Number(oldIndex) > index) {
-            const newKey = hasBrackets
-              ? `${baseKey}[${tagOrIndex}].${newIndex}`
-              : `${baseKey}.${newIndex}`
-            await Content.update(
-              { key: newKey },
-              { where: { id: item.id }, transaction: t },
-            )
+        const itemToDelete = items.find((item) => {
+          const matches = item.key.match(/^(.+?)\.(\d+)$/)
+          return matches && Number(matches[2]) === index
+        })
+
+        if (itemToDelete) {
+          await Content.destroy({
+            where: { id: itemToDelete.id },
+            transaction: t,
+          })
+
+          for (const item of items) {
+            const matches = item.key.match(/^(.+?)\.(\d+)$/)
+            if (matches) {
+              const [_, baseKey, oldIndex] = matches
+              const numIndex = Number(oldIndex)
+              if (numIndex > index) {
+                const newIndex = numIndex - 1
+                const newKey = `${baseKey}.${newIndex}`
+                await Content.update(
+                  { key: newKey },
+                  { where: { id: item.id }, transaction: t },
+                )
+              }
+            }
           }
         }
       }
@@ -88,7 +114,7 @@ export async function DELETE({ request }) {
 
     return new Response(null, { status: 204 })
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return json({ error: error.message }, { status: 500 })
   }
 }

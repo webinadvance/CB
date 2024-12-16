@@ -2,6 +2,7 @@
 import { DELETE } from './+server.js'
 import { Content } from '$lib/database/models/content.js'
 import { Page } from '$lib/database/models/page.js'
+import { Op } from 'sequelize'
 
 jest.mock(
   '@sveltejs/kit',
@@ -43,7 +44,7 @@ describe('Content DELETE Integration Test', () => {
   })
   afterEach(async () => await Content.destroy({ where: {} }))
   afterAll(async () => await Content.sequelize.close())
-  test('deletes content and reindexes remaining items', async () => {
+  test('DELETE A9[title].1', async () => {
     const mockRequest = {
       json: jest
         .fn()
@@ -116,5 +117,50 @@ describe('Content DELETE Integration Test', () => {
         },
       ]),
     )
+  })
+  test('DELETE A10.1', async () => {
+    const mockRequest = {
+      json: jest
+        .fn()
+        .mockResolvedValue({ pageTitle: 'Home', key: 'A10', index: 1 }),
+    }
+    const response = await DELETE({ request: mockRequest })
+    expect(response.status).toBe(204)
+
+    const a10Content = await Content.findAll({
+      where: { pageTitle: 'Home', key: { [Op.like]: 'A10.%' } },
+      order: [['key', 'ASC']],
+      raw: true,
+    })
+
+    expect(a10Content).toEqual([
+      {
+        id: expect.any(Number),
+        pageTitle: 'Home',
+        key: 'A10.0',
+        value: 'A10.0',
+        lang: 'en',
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      },
+      {
+        id: expect.any(Number),
+        pageTitle: 'Home',
+        key: 'A10.1',
+        value: 'A10.2',
+        lang: 'en',
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      },
+    ])
+    expect(a10Content).not.toContainEqual({
+      id: expect.any(Number),
+      pageTitle: 'Home',
+      key: 'A10.1',
+      value: 'A10.1',
+      lang: 'en',
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String),
+    })
   })
 })
