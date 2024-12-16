@@ -11,14 +11,14 @@
 <!--<br />-->
 <!--<ECText key={`NEWTEXTXXXX`} />-->
 
-<!--<ECList-->
-<!--  key="myBaseKeyB"-->
-<!--  class="flex items-center content-center h-80"-->
-<!--  let:baseKey-->
-<!--  let:index-->
-<!--&gt;-->
-<!--  <ECImage key={`${baseKey}.${index}`} class="max-w-72" />-->
-<!--</ECList>-->
+<ECList
+  key="myBaseKeyB"
+  class="flex items-center content-center h-80"
+  let:baseKey
+  let:index
+>
+  <ECImage key={`${baseKey}.${index}`} class="max-w-72" />
+</ECList>
 
 <br />
 <br />

@@ -3,8 +3,9 @@
   import { pageData } from '$lib/stores/pageStore'
   import Footer from '$lib/components/Footer.svelte'
   import { isEditable } from '$lib/stores/editorStore'
-  import { PenSquare } from 'lucide-svelte'
+  import { PenSquare, RefreshCw } from 'lucide-svelte'
   import { page } from '$app/stores'
+  import { invalidateAll } from '$app/navigation'
 
   let { children } = $props()
 
@@ -29,14 +30,22 @@
   </main>
 
   {#if $page.data.session}
-    <button
-      class="fixed bottom-4 right-4 p-3 bg-slate-700 hover:bg-slate-800 rounded-full text-white shadow-lg transition-colors"
-      onclick={() => {
-        $isEditable = !$isEditable
-      }}
-    >
-      <PenSquare size={20} class={$isEditable ? 'text-green-400' : ''} />
-    </button>
+    <div class="fixed bottom-4 right-4 flex gap-2">
+      <button
+        class="p-3 bg-slate-700 hover:bg-slate-800 rounded-full text-white shadow-lg"
+        onclick={() => invalidateAll()}
+      >
+        <RefreshCw size={20} />
+      </button>
+      <button
+        class="p-3 bg-slate-700 hover:bg-slate-800 rounded-full text-white shadow-lg"
+        onclick={() => {
+          $isEditable = !$isEditable
+        }}
+      >
+        <PenSquare size={20} class={$isEditable ? 'text-green-400' : ''} />
+      </button>
+    </div>
   {/if}
 
   <footer class="p-4 shadow">
