@@ -37,13 +37,13 @@
   }
 
   async function handleDelete(event) {
-    await fetch(`/api/content/${event}`, {
+    await fetch(`/api/content`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         pageTitle: $pageData.pageTitle,
-        fullKey: key,
-        index: $pageData.index,
+        fullKey: event, // Changed from key to event
+        lang: $pageData.lang || undefined,
       }),
     })
     const match = event.match(new RegExp(`^${key}\\[[^\\]]+\\]\\.(\\d+)$`))

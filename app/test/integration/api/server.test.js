@@ -1,8 +1,8 @@
 ﻿import { jest } from '@jest/globals'
-import { DELETE } from '../../../src/routes/api/content/+server.js'
 import { Content } from '$lib/database/models/content.js'
 import { Page } from '$lib/database/models/page.js'
 import { Op } from 'sequelize'
+import { DELETE } from '../../../src/routes/api/content/+server.js'
 
 jest.mock(
   '@sveltejs/kit',
