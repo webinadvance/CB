@@ -20,11 +20,17 @@ jobs:
           npm install
           npm run build
           
-      - name: Unleash the Tests
+      - name: Install Dependencies
         working-directory: ./app
-        run: |
-          npm run test:unit
-          npm run test:integration
+        run: npm install
+
+      - name: Run Unit Tests with Vitest
+        working-directory: ./app
+        run: npm run test:unit
+
+      - name: Run Integration Tests with Jest
+        working-directory: ./app
+        run: npm run test:integration
 
       - name: Embark on the Server Expedition
         env:

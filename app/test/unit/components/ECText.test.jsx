@@ -46,3 +46,4 @@ test('updates content from store', async () => {
 
   expect(container.textContent).toBe('New Content')
 })
+//
