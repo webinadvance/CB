@@ -41,27 +41,25 @@ export async function DELETE({ request }) {
 
   await sequelize.transaction(async (t) => {
     if (matchWithTag) {
-      const [, key, tag, index] = matchWithTag
+      const [, key, , index] = matchWithTag
       await Content.destroy({
-        where: { pageTitle, key: { [Op.eq]: `${key}[${tag}].${index}` }, lang },
+        where: {
+          pageTitle,
+          key: { [Op.like]: `${key}[%].${index}` },
+          lang,
+        },
         transaction: t,
       })
     } else if (matchNoTag) {
       const [, key, index] = matchNoTag
-      const items = await Content.findAll({
-        where: { pageTitle, key: { [Op.like]: `${key}.%` }, lang },
-        order: [['key', 'ASC']],
+      await Content.destroy({
+        where: {
+          pageTitle,
+          key: { [Op.like]: `${key}.${index}` },
+          lang,
+        },
         transaction: t,
       })
-      const itemToDelete = items.find(
-        (item) => Number(item.key.split('.').pop()) === Number(index),
-      )
-      if (itemToDelete) {
-        await Content.destroy({
-          where: { id: itemToDelete.id },
-          transaction: t,
-        })
-      }
     } else {
       await Content.destroy({
         where: { pageTitle, key: { [Op.eq]: fullKey }, lang },
