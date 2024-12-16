@@ -101,12 +101,34 @@
       class="space-y-0"
     >
       {#each items as item (item.id)}
-        <div class="cursor-move">
-          <slot
-            baseKey={key}
-            index={item.index}
-            onEvent={(e) => handleDelete(e)}
-          />
+        <div class="hover:bg-gray-50 group">
+          <div class="flex items-center gap-2">
+            <div class="opacity-30 group-hover:opacity-100 p-1 cursor-move">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="9" cy="7" r="1" />
+                <circle cx="9" cy="12" r="1" />
+                <circle cx="9" cy="17" r="1" />
+                <circle cx="15" cy="7" r="1" />
+                <circle cx="15" cy="12" r="1" />
+                <circle cx="15" cy="17" r="1" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <slot
+                baseKey={key}
+                index={item.index}
+                onEvent={(e) => handleDelete(e)}
+              />
+            </div>
+          </div>
         </div>
       {/each}
     </div>

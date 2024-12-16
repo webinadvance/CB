@@ -48,7 +48,7 @@
     {currentContent || placeholder}
   </svelte:element>
 {:else}
-  <div class="relative">
+  <div class="relative cursor-text">
     <svelte:element
       this={tag}
       contenteditable="true"
