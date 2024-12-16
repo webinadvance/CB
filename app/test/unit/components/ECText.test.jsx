@@ -1,7 +1,6 @@
-﻿// FILE: app/src/lib/components/ECText.test.js
-import { describe, expect, test, vi } from 'vitest'
+﻿import { describe, expect, test, vi } from 'vitest'
 import { cleanup, render } from '@testing-library/svelte'
-import ECText from './ECText.svelte'
+import ECText from '$lib/components/ECText.svelte'
 
 vi.mock('$app/environment', () => ({ browser: true }))
 

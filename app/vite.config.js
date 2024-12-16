@@ -7,7 +7,7 @@ import { fileURLToPath, URL } from 'url'
 export default defineConfig(({ mode }) => ({
   plugins: [sveltekit()],
   test: {
-    include: ['src/**/*.{test,spec}.{js,ts,jsx,tsx}'],
+    include: ['test/unit/**/*.{test,spec}.{js,ts,jsx,tsx}'],
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/setupTests.js'],
