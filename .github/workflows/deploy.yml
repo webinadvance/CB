@@ -22,7 +22,9 @@ jobs:
           
       - name: Unleash the Tests
         working-directory: ./app
-        run: npm test
+        run: |
+          npm run test:unit
+          npm run test:integration
 
       - name: Embark on the Server Expedition
         env:

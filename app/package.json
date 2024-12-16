@@ -7,7 +7,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "node server.js",
-    "test": "jest"
+    "test:unit": "vitest run",
+    "test:integration": "jest",
+    "test": "npm run test:unit && npm run test:integration"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
