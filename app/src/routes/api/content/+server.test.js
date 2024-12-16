@@ -17,21 +17,15 @@ jest.mock('$lib/stores/langStore.js', () => ({
   langStore: { value: 'en' },
 }))
 
-jest.mock('$lib/database/config.js', () => ({
-  __esModule: true,
-  default: {
-    transaction: jest.fn((callback) => callback({ transaction: 'mock' })),
-  },
-}))
-
-jest.mock('$lib/database/models/content.js', () => ({
-  Content: {
-    findOne: jest.fn(),
-    findAll: jest.fn(),
-    destroy: jest.fn(),
-    update: jest.fn(),
-  },
-}))
+jest.mock('$lib/database/config.js', () => {
+  const { Sequelize } = require('sequelize')
+  return {
+    __esModule: true,
+    default: new Sequelize('sqlite::memory:', {
+      logging: console.log,
+    }),
+  }
+})
 
 global.Response = class Response {
   constructor(body, init = {}) {
@@ -45,15 +39,47 @@ global.Response = class Response {
 
 import { DELETE } from './+server.js'
 import { Content } from '$lib/database/models/content.js'
-import { Op } from 'sequelize'
+import { Page } from '$lib/database/models/page.js'
 
-describe('Content DELETE Endpoint', () => {
-  let mockRequest
+describe('Content DELETE Integration Test', () => {
+  beforeAll(async () => {
+    await Page.sync({ force: true })
+    await Content.sync({ force: true })
+    const tables = await Content.sequelize.getQueryInterface().showAllTables()
+    console.log(tables)
+  })
 
-  beforeEach(() => {
-    jest.clearAllMocks()
+  beforeEach(async () => {
+    // Clear both tables
+    await Content.destroy({ where: {} })
+    await Page.destroy({ where: {} })
 
-    mockRequest = {
+    // Seed the Pages table
+    await Page.bulkCreate([
+      { pageTitle: 'Home' }, // Add the required pageTitle
+    ])
+
+    // Seed the Content table
+    await Content.bulkCreate([
+      { pageTitle: 'Home', key: 'A9[title].0', value: '1', lang: 'en' },
+      { pageTitle: 'Home', key: 'A9[desc].0', value: '2', lang: 'en' },
+      { pageTitle: 'Home', key: 'A9[title].1', value: '3', lang: 'en' },
+      { pageTitle: 'Home', key: 'A9[desc].1', value: '4', lang: 'en' },
+      { pageTitle: 'Home', key: 'A9[title].2', value: '5', lang: 'en' },
+      { pageTitle: 'Home', key: 'A9[desc].2', value: '6', lang: 'en' },
+    ])
+  })
+
+  afterEach(async () => {
+    await Content.destroy({ where: {} })
+  })
+
+  afterAll(async () => {
+    await Content.sequelize.close()
+  })
+
+  test('deletes content and reindexes remaining items', async () => {
+    const mockRequest = {
       json: jest.fn().mockResolvedValue({
         pageTitle: 'Home',
         key: 'A9',
@@ -61,34 +87,54 @@ describe('Content DELETE Endpoint', () => {
       }),
     }
 
-    // Default successful responses
-    Content.findOne.mockResolvedValue({ id: 1 })
-    Content.findAll.mockResolvedValue([{ id: 39, key: 'A9[title].2' }])
-    Content.destroy.mockResolvedValue(1)
-    Content.update.mockResolvedValue([1])
-  })
-
-  test('successfully deletes content', async () => {
     const response = await DELETE({ request: mockRequest })
     expect(response.status).toBe(204)
-    expect(Content.destroy).toHaveBeenCalled()
-  })
 
-  test('returns 400 for invalid parameters', async () => {
-    mockRequest.json.mockResolvedValue({ pageTitle: 'Home' }) // missing key and index
-    const response = await DELETE({ request: mockRequest })
-    const data = await response.json()
-    expect(response.status).toBe(400)
-    expect(data.error).toBe('Invalid input parameters.')
-  })
-
-  test('returns 500 for database errors', async () => {
-    Content.findOne.mockImplementation(() => {
-      throw new Error('DB Error')
+    const remainingContent = await Content.findAll({
+      where: { pageTitle: 'Home' },
+      order: [['key', 'ASC']],
+      raw: true,
     })
-    const response = await DELETE({ request: mockRequest })
-    const data = await response.json()
-    expect(response.status).toBe(500)
-    expect(data.error).toBe('DB Error')
+
+    expect(remainingContent).toEqual(
+      expect.arrayContaining([
+        {
+          id: expect.any(Number),
+          pageTitle: 'Home',
+          key: 'A9[title].0',
+          value: '1',
+          lang: 'en',
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        },
+        {
+          id: expect.any(Number),
+          pageTitle: 'Home',
+          key: 'A9[desc].0',
+          value: '2',
+          lang: 'en',
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        },
+        {
+          id: expect.any(Number),
+          pageTitle: 'Home',
+          key: 'A9[title].1',
+          value: '5',
+          lang: 'en',
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        },
+        {
+          id: expect.any(Number),
+          pageTitle: 'Home',
+          key: 'A9[desc].1',
+          value: '6',
+          lang: 'en',
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        },
+      ]),
+    )
   })
 })

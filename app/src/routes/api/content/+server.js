@@ -88,6 +88,7 @@ export async function DELETE({ request }) {
 
     return new Response(null, { status: 204 })
   } catch (error) {
+    console.log(error)
     return json({ error: error.message }, { status: 500 })
   }
 }
