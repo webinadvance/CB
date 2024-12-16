@@ -41,6 +41,23 @@
 
   async function handleDndFinalize(e) {
     items = [...e.detail.items]
+    try {
+      await fetch('/api/content/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pageTitle: $pageData.pageTitle,
+          key,
+          updates: items.map((item, newIndex) => ({
+            oldIndex: item.index,
+            newIndex,
+          })),
+        }),
+      })
+    } catch (error) {
+      console.error('Reorder error:', error)
+    }
+    await invalidateAll()
   }
 
   async function addNewItem() {
@@ -81,12 +98,10 @@
       }}
       on:consider={handleDndConsider}
       on:finalize={handleDndFinalize}
-      class="space-y-2"
+      class="space-y-0"
     >
       {#each items as item (item.id)}
-        <div
-          class="cursor-move hover:bg-gray-50 p-2 rounded border border-transparent hover:border-gray-200"
-        >
+        <div class="cursor-move">
           <slot
             baseKey={key}
             index={item.index}

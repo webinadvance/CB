@@ -29,7 +29,7 @@
 <!--  &lt;!&ndash;  DESC<ECText key={`${baseKey}[desc].${index}`} />&ndash;&gt;-->
 <!--</ECList>-->
 
-<ECList key="TEST1" let:baseKey let:index>
+<ECList key="TEST1" let:baseKey let:index class="max-w-sm m-auto">
   A<ECText key={`${baseKey}[A].${index}`} />
   B<ECText key={`${baseKey}[B].${index}`} />
   <div class="mb-4"></div>

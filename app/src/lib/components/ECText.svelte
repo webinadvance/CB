@@ -52,6 +52,7 @@
     <svelte:element
       this={tag}
       contenteditable="true"
+      on:input={save}
       class={`${$$props.class || ''} ${$isEditable ? 'outline-dashed outline-1 outline-red-500' : ''}`}
     >
       {currentContent || placeholder}

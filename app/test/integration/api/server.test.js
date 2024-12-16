@@ -3,6 +3,7 @@ import { Content } from '$lib/database/models/content.js'
 import { Page } from '$lib/database/models/page.js'
 import { Op } from 'sequelize'
 import { DELETE } from '../../../src/routes/api/content/+server.js'
+import { POST } from '../../../src/routes/api/content/reorder/+server.js'
 
 jest.mock(
   '@sveltejs/kit',
@@ -129,5 +130,41 @@ describe('Content DELETE Integration Test', () => {
     })
 
     expect(remainingContent.length).toBe(1)
+  })
+
+  test('REORDER TEST1', async () => {
+    await Content.bulkCreate([
+      { pageTitle: 'Home', key: 'TEST1[A].0', value: '1', lang: 'en' },
+      { pageTitle: 'Home', key: 'TEST1[B].0', value: '2', lang: 'en' },
+      { pageTitle: 'Home', key: 'TEST1[A].1', value: '3', lang: 'en' },
+      { pageTitle: 'Home', key: 'TEST1[B].1', value: '4', lang: 'en' },
+    ])
+
+    const mockRequest = {
+      json: jest.fn().mockResolvedValue({
+        pageTitle: 'Home',
+        key: 'TEST1',
+        updates: [
+          { oldIndex: 1, newIndex: 0 },
+          { oldIndex: 0, newIndex: 1 },
+        ],
+      }),
+    }
+
+    const response = await POST({ request: mockRequest })
+    expect(response.status).toBe(200)
+
+    const content = await Content.findAll({
+      where: { pageTitle: 'Home' },
+      order: [['key', 'ASC']],
+      raw: true,
+    })
+
+    expect(content.map((c) => c.key)).toEqual([
+      'TEST1[A].0',
+      'TEST1[A].1',
+      'TEST1[B].0',
+      'TEST1[B].1',
+    ])
   })
 })
