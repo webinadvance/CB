@@ -1,10 +1,10 @@
 export default {
+  testMatch: ['<rootDir>/test/integration/**/*.test.js'], // Only integration tests
   transform: {
-    '^.+\\.js$': 'babel-jest',
+    '^.+\\.[tj]sx?$': 'babel-jest',
   },
   moduleNameMapper: {
-    '^\\$lib/(.*)$': '<rootDir>/src/lib/$1',
+    '^\\$lib(.*)$': '<rootDir>/src/lib$1',
   },
   testEnvironment: 'node',
-  transformIgnorePatterns: ['node_modules/(?!(svelte|@sveltejs)/)'],
 }
