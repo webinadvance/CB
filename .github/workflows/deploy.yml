@@ -15,15 +15,15 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Run Tests
-        working-directory: ./app
-        run: npm test
-        
       - name: Build locally
         working-directory: ./app
         run: |
           npm install
           npm run build
+
+      - name: Run Tests
+        working-directory: ./app
+        run: npm test
         
       - name: Deploy to server
         env:
