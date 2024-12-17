@@ -26,10 +26,9 @@
     return doc.body.innerHTML
   }
 
-  $: currentContent =
-    pg && $pageData.extraContent[pg]
-      ? $pageData.extraContent[pg]?.[key]?.[index]?.[elementTag] || ''
-      : $pageData.contentData[key]?.[index]?.[elementTag] || ''
+  $: currentContent = pg
+    ? $pageData.extraContent[pg]?.[key]?.[index]?.[elementTag] || ''
+    : $pageData.contentData[key]?.[index]?.[elementTag] || ''
 
   const save = async (event) =>
     await fetch('/api/content', {
