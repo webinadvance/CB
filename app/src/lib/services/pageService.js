@@ -4,13 +4,26 @@ import { getServerLang } from '$lib/server/lang.js'
 import { cachedQuery } from '$lib/cache/queryCache.js'
 
 const localizeContent = (contents) => {
-  const lang = getServerLang() // Detect server-side language
-  return contents.reduce((acc, content) => {
-    if (!acc[content.key] || content.lang === lang) {
-      acc[content.key] = content.value // Prefer localized content
+  const lang = getServerLang()
+  const contentData = {}
+
+  contents.forEach((content) => {
+    if (!contentData[content.key]) {
+      contentData[content.key] = {}
     }
-    return acc
-  }, {})
+
+    if (content.index !== null) {
+      if (!contentData[content.key][content.index]) {
+        contentData[content.key][content.index] = {}
+      }
+      contentData[content.key][content.index][content.tag || 'value'] =
+        content.value
+    } else {
+      contentData[content.key] = content.value
+    }
+  })
+
+  return contentData
 }
 
 export const getPageBySlug = async (slug) => {

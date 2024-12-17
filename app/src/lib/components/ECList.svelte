@@ -4,80 +4,57 @@
   import { setContext } from 'svelte'
   import { invalidateAll } from '$app/navigation'
   import { dndzone } from 'svelte-dnd-action'
-
   export let key
   let items = []
-
   $: {
-    const groupedItems = Object.entries($pageData.contentData || {})
-      .filter(([k]) => k.startsWith(`${key}`))
-      .reduce((acc, [fullKey, value]) => {
-        const groupedMatch = fullKey.match(
-          new RegExp(`^${key}\\[([a-zA-Z0-9_]+)\\]\\.([0-9]+)$`),
-        )
-        const ungroupedMatch = fullKey.match(new RegExp(`^${key}\\.([0-9]+)$`))
-
-        if (groupedMatch) {
-          const [, prop, index] = groupedMatch
-          const numericIndex = Number(index)
-          if (!acc[numericIndex]) {
-            acc[numericIndex] = {
-              id: `item-${numericIndex}`,
-              index: numericIndex,
-              props: {},
-            }
-          }
-          acc[numericIndex].props[prop] = value
-        }
-        return acc
-      }, [])
-
+    const groupedItems = Object.entries(
+      $pageData.contentData[key] || {},
+    ).reduce((acc, [index, value]) => {
+      acc[Number(index)] = {
+        id: `item-${index}`,
+        index: Number(index),
+        ...value,
+      }
+      return acc
+    }, [])
     items = Object.values(groupedItems).sort((a, b) => a.index - b.index)
   }
-
   function handleDndConsider(e) {
     items = [...e.detail.items]
   }
-
-  async function handleDndFinalize(e) {
-    items = [...e.detail.items]
-    try {
-      await fetch('/api/content/reorder', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          pageTitle: $pageData.pageTitle,
-          key,
-          updates: items.map((item, newIndex) => ({
-            oldIndex: item.index,
-            newIndex,
-          })),
-        }),
-      })
-    } catch (error) {
-      console.error('Reorder error:', error)
-    }
-    await invalidateAll()
-  }
-
   async function addNewItem() {
     const newIndex = items.length
     items = [...items, { id: `item-${newIndex}`, index: newIndex }]
   }
-
   async function handleDelete(event) {
-    await fetch(`/api/content`, {
-      method: 'DELETE',
+    // console.log(event)
+    // const requestBody = {
+    //   pageTitle: $pageData.pageTitle,
+    //   key: event.key,
+    //   strict: true,
+    //   index: event.index,
+    // }
+    // await fetch('/api/content', {
+    //   method: 'DELETE',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(requestBody),
+    // })
+    // await invalidateAll()
+  }
+  async function handleDndFinalize(e) {
+    items = [...e.detail.items]
+    await fetch('/api/content/reorder', {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         pageTitle: $pageData.pageTitle,
-        fullKey: event, // Changed from key to event
-        lang: $pageData.lang || undefined,
+        key,
+        startIndex: e.detail.items[0].index,
+        endIndex: e.detail.items[1].index,
       }),
     })
     await invalidateAll()
   }
-
   setContext('parentEvent', handleDelete)
 </script>
 

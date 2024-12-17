@@ -38,10 +38,12 @@
 <!--<br />-->
 <!--<br />-->
 
-<!--<ECList key="A13" let:key let:index>-->
-<!--  <ECText key={`${key}[title].${index}`} />-->
-<!--  <ECText key={`${key}[sub].${index}`} />-->
-<!--</ECList>-->
+<ECList key="A13" let:key let:index>
+  TITLE:<ECText {key} {index} elementTag="title" tag="div" />
+  DESC:<ECText {key} {index} elementTag="desc" tag="div" />
+  <br />
+  <br />
+</ECList>
 
 <!--<div>STANDALONE</div>-->
-<ECText key={`myKey`} />
+<!--<ECText key={`myKey`} />-->

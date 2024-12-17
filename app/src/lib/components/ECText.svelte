@@ -2,22 +2,20 @@
   import { pageData } from '$lib/stores/pageStore'
   import { langStore } from '$lib/stores/langStore'
   import { isEditable } from '$lib/stores/editorStore'
-
   export let key
   export let pg
   export let tag = 'div'
   export let index = null
-  export let elementTag = null // New prop for specific tag
+  export let elementTag = null
   export let placeholder = 'Content not found'
-
   let currentContent = ''
-
   $: currentContent = pg
     ? $pageData.extraContent[pg]?.[key]
-    : $pageData.contentData?.[key] || ''
-
+    : elementTag && typeof index === 'number'
+      ? $pageData.contentData[key]?.[index]?.[elementTag] || ''
+      : $pageData.contentData[key]
   import { getContext } from 'svelte'
-
+  import { invalidateAll } from '$app/navigation'
   async function save(event) {
     const newContent = event.target.textContent
     try {
@@ -36,26 +34,21 @@
       console.error('Error saving content:', error)
     }
   }
-
-  const parentEvent = getContext('parentEvent')
-
+  // const parentEvent = getContext('parentEvent')
   async function deleteText() {
-    try {
-      await fetch('/api/content', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          pageTitle: pg || $pageData.pageTitle,
-          key,
-          tag: elementTag,
-          index,
-          strict: !elementTag,
-        }),
-      })
-      parentEvent?.(key)
-    } catch (error) {
-      console.error('Error deleting content:', error)
-    }
+    await fetch('/api/content', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pageTitle: pg || $pageData.pageTitle,
+        key,
+        tag: elementTag,
+        index,
+        strict: !elementTag,
+      }),
+    })
+    await invalidateAll()
+    // parentEvent?.({ key, tag: elementTag, index })
   }
 </script>
 
