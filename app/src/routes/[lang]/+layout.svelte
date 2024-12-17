@@ -39,8 +39,9 @@
       </button>
       <button
         class="p-3 bg-slate-700 hover:bg-slate-800 rounded-full text-white shadow-lg"
-        onclick={() => {
+        onclick={async () => {
           $isEditable = !$isEditable
+          await invalidateAll()
         }}
       >
         <PenSquare size={20} class={$isEditable ? 'text-green-400' : ''} />

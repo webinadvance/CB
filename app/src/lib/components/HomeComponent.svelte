@@ -18,4 +18,4 @@
 <!--<br />-->
 <!--<br />-->
 
-<ECText key={`myKey`} />
+<ECText class="max-w-xl m-auto" key={`myKey`} />
