@@ -2,7 +2,6 @@
 import { Content } from '$lib/database/models/content.js'
 import { get } from 'svelte/store'
 import { langStore } from '$lib/stores/langStore.js'
-import { queryCache } from '$lib/cache/queryCache.js'
 import sequelize from '$lib/database/config.js'
 import { Op } from 'sequelize'
 
@@ -15,19 +14,23 @@ export async function POST({ request }) {
       return json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Default values for unique constraint
-    const data = {
+    const where = {
       pageTitle,
-      baseKey: key,
+      key,
       tag: tag || null,
       index: typeof index === 'number' ? index : null,
-      value,
       lang,
     }
 
-    const [content, created] = await Content.upsert(data)
+    const existing = await Content.findOne({ where })
 
-    return json(content, { status: created ? 201 : 200 })
+    if (existing) {
+      await existing.update({ value })
+      return json(existing, { status: 200 })
+    }
+
+    const content = await Content.create({ ...where, value })
+    return json(content, { status: 201 })
   } catch (error) {
     return json({ error: error.message }, { status: 500 })
   }
@@ -49,7 +52,7 @@ export async function DELETE({ request }) {
   }
 
   await sequelize.transaction(async (t) => {
-    const where = { pageTitle, baseKey: key, lang }
+    const where = { pageTitle, key: key, lang }
 
     if (typeof index === 'number') {
       where.index = index
@@ -62,7 +65,7 @@ export async function DELETE({ request }) {
       const tags = strict
         ? await Content.findAll({
             attributes: ['tag'],
-            where: { pageTitle, baseKey: key, lang },
+            where: { pageTitle, key: key, lang },
             group: ['tag'],
             raw: true,
           })
@@ -72,7 +75,7 @@ export async function DELETE({ request }) {
         const remainingItems = await Content.findAll({
           where: {
             pageTitle,
-            baseKey: key,
+            key: key,
             tag,
             index: { [Op.gt]: index },
             lang,

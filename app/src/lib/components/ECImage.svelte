@@ -53,9 +53,9 @@
         }),
       })
 
-      const baseKey = key.split('.')[0]
+      const key = key.split('.')[0]
       const entries = Object.entries($pageData.contentData)
-        .filter(([k]) => k.startsWith(`${baseKey}.`))
+        .filter(([k]) => k.startsWith(`${key}.`))
         .sort(([a], [b]) => Number(a.split('.')[1]) - Number(b.split('.')[1]))
         .filter(([k]) => k !== key)
 
@@ -64,7 +64,7 @@
 
       entries.forEach(([oldKey, value], idx) => {
         delete newContentData[oldKey]
-        newContentData[`${baseKey}.${idx}`] = value
+        newContentData[`${key}.${idx}`] = value
       })
 
       $pageData.contentData = newContentData

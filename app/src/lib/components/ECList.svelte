@@ -84,7 +84,7 @@
 {#if !$isEditable}
   <div class={$$props.class}>
     {#each items as item}
-      <slot baseKey={key} {...item} />
+      <slot {key} {...item} />
     {/each}
   </div>
 {:else}
@@ -122,11 +122,7 @@
               </svg>
             </div>
             <div class="flex-1">
-              <slot
-                baseKey={key}
-                index={item.index}
-                onEvent={(e) => handleDelete(e)}
-              />
+              <slot {key} index={item.index} onEvent={(e) => handleDelete(e)} />
             </div>
           </div>
         </div>

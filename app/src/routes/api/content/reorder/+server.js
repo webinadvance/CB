@@ -6,7 +6,7 @@ export async function POST({ request }) {
   const { pageTitle, key, startIndex, endIndex, tag } = await request.json()
 
   await sequelize.transaction(async (t) => {
-    const where = { pageTitle, baseKey: key }
+    const where = { pageTitle, key: key }
     if (tag) where.tag = tag
 
     await Content.update(

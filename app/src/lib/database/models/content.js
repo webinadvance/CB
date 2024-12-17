@@ -15,7 +15,7 @@ const Content = sequelize.define(
       allowNull: false,
       references: { model: Page, key: 'pageTitle' },
     },
-    baseKey: {
+    key: {
       type: DataTypes.STRING(50),
       allowNull: false,
     },
@@ -40,7 +40,7 @@ const Content = sequelize.define(
   {
     uniqueKeys: {
       content_unique: {
-        fields: ['pageTitle', 'baseKey', 'tag', 'index', 'lang'],
+        fields: ['pageTitle', 'key', 'tag', 'index', 'lang'],
       },
     },
   },

@@ -86,37 +86,17 @@ export const loadMediaFromUrl = async (url) => {
 }
 
 async function addSampleData() {
-  console.log('Starting to add sample data.')
-
   for (const page of samplePages) {
-    console.log(`Creating page: ${JSON.stringify(page)}`)
-
     const createdPage = await Page.create(page)
-    console.log(
-      `Page created with ID: ${createdPage.id} and data: ${JSON.stringify(createdPage)}`,
-    )
-
     const content = sampleContent.filter((c) => c.pageTitle === page.pageTitle)
-    console.log(
-      `Filtered content for page "${page.pageTitle}": ${JSON.stringify(content)}`,
-    )
-
     await Content.bulkCreate(
       content.map((c) => ({ ...c, pageId: createdPage.id })),
     )
-    console.log(`Content created for page ID: ${createdPage.id}`)
   }
-
-  console.log('Starting to load media sample...')
   const mediaSample = await loadMediaFromUrl(
     'https://upload.wikimedia.org/wikipedia/commons/6/6a/PNG_Test.png',
   )
-  console.log(`Media sample loaded: ${JSON.stringify(mediaSample)}`)
-
   await Media.create(mediaSample)
-  console.log('Media sample saved to database.')
-
-  console.log('Finished adding sample data.')
 }
 
 export default addSampleData

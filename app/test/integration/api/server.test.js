@@ -38,7 +38,7 @@ describe('Content API Integration Tests', () => {
     await Content.bulkCreate([
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'A',
         index: 0,
         value: '1',
@@ -46,7 +46,7 @@ describe('Content API Integration Tests', () => {
       },
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'B',
         index: 0,
         value: '2',
@@ -54,7 +54,7 @@ describe('Content API Integration Tests', () => {
       },
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'A',
         index: 1,
         value: '3',
@@ -62,7 +62,7 @@ describe('Content API Integration Tests', () => {
       },
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'B',
         index: 1,
         value: '4',
@@ -70,7 +70,7 @@ describe('Content API Integration Tests', () => {
       },
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'A',
         index: 2,
         value: '5',
@@ -78,7 +78,7 @@ describe('Content API Integration Tests', () => {
       },
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'B',
         index: 2,
         value: '6',
@@ -99,8 +99,8 @@ describe('Content API Integration Tests', () => {
     expect(response.status).toBe(204)
 
     const remainingContent = await Content.findAll({
-      attributes: ['baseKey', 'tag', 'index', 'value'],
-      where: { pageTitle: 'Home', baseKey: 'TEST1' },
+      attributes: ['key', 'tag', 'index', 'value'],
+      where: { pageTitle: 'Home', key: 'TEST1' },
       order: [
         ['tag', 'ASC'],
         ['index', 'ASC'],
@@ -109,19 +109,19 @@ describe('Content API Integration Tests', () => {
     })
 
     expect(remainingContent).toEqual([
-      { baseKey: 'TEST1', tag: 'A', index: 0, value: '1' },
-      { baseKey: 'TEST1', tag: 'A', index: 1, value: '5' },
-      { baseKey: 'TEST1', tag: 'B', index: 0, value: '2' },
-      { baseKey: 'TEST1', tag: 'B', index: 1, value: '4' },
-      { baseKey: 'TEST1', tag: 'B', index: 2, value: '6' },
+      { key: 'TEST1', tag: 'A', index: 0, value: '1' },
+      { key: 'TEST1', tag: 'A', index: 1, value: '5' },
+      { key: 'TEST1', tag: 'B', index: 0, value: '2' },
+      { key: 'TEST1', tag: 'B', index: 1, value: '4' },
+      { key: 'TEST1', tag: 'B', index: 2, value: '6' },
     ])
   })
 
   test('DELETE: Key only removes all related records', async () => {
     await Content.bulkCreate([
-      { pageTitle: 'Home', baseKey: 'TEST1', tag: 'A', index: 0, value: '1' },
-      { pageTitle: 'Home', baseKey: 'TEST1', tag: 'B', index: 0, value: '2' },
-      { pageTitle: 'Home', baseKey: 'OTHER', value: 'stays' },
+      { pageTitle: 'Home', key: 'TEST1', tag: 'A', index: 0, value: '1' },
+      { pageTitle: 'Home', key: 'TEST1', tag: 'B', index: 0, value: '2' },
+      { pageTitle: 'Home', key: 'OTHER', value: 'stays' },
     ])
 
     const response = await DELETE({
@@ -131,16 +131,16 @@ describe('Content API Integration Tests', () => {
     expect(response.status).toBe(204)
     const remaining = await Content.findAll({ raw: true })
     expect(remaining).toHaveLength(1)
-    expect(remaining[0]).toMatchObject({ baseKey: 'OTHER' })
+    expect(remaining[0]).toMatchObject({ key: 'OTHER' })
   })
 
   test('DELETE: Key + Tag removes all matching records', async () => {
     await Content.bulkCreate([
-      { pageTitle: 'Home', baseKey: 'TEST1', tag: 'A', index: 0, value: '1' },
-      { pageTitle: 'Home', baseKey: 'TEST1', tag: 'A', index: 1, value: '2' },
+      { pageTitle: 'Home', key: 'TEST1', tag: 'A', index: 0, value: '1' },
+      { pageTitle: 'Home', key: 'TEST1', tag: 'A', index: 1, value: '2' },
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'B',
         index: 0,
         value: 'stays',
@@ -161,21 +161,21 @@ describe('Content API Integration Tests', () => {
     await Content.bulkCreate([
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'A',
         index: 0,
         value: 'stays',
       },
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'A',
         index: 1,
         value: 'removes',
       },
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'B',
         index: 1,
         value: 'stays',
@@ -204,42 +204,42 @@ describe('Content API Integration Tests', () => {
     await Content.bulkCreate([
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'A',
         index: 0,
         value: 'stays0',
       },
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'B',
         index: 0,
         value: 'stays1',
       },
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'A',
         index: 1,
         value: 'removes1',
       },
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'B',
         index: 1,
         value: 'removes2',
       },
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'A',
         index: 2,
         value: 'shifts1',
       },
       {
         pageTitle: 'Home',
-        baseKey: 'TEST1',
+        key: 'TEST1',
         tag: 'B',
         index: 2,
         value: 'shifts2',
@@ -260,7 +260,7 @@ describe('Content API Integration Tests', () => {
 
     expect(response.status).toBe(204)
     const remaining = await Content.findAll({
-      attributes: ['baseKey', 'tag', 'index', 'value'],
+      attributes: ['key', 'tag', 'index', 'value'],
       order: [
         ['tag', 'ASC'],
         ['index', 'ASC'],
@@ -269,10 +269,10 @@ describe('Content API Integration Tests', () => {
     })
 
     expect(remaining).toEqual([
-      { baseKey: 'TEST1', tag: 'A', index: 0, value: 'stays0' },
-      { baseKey: 'TEST1', tag: 'A', index: 1, value: 'shifts1' },
-      { baseKey: 'TEST1', tag: 'B', index: 0, value: 'stays1' },
-      { baseKey: 'TEST1', tag: 'B', index: 1, value: 'shifts2' },
+      { key: 'TEST1', tag: 'A', index: 0, value: 'stays0' },
+      { key: 'TEST1', tag: 'A', index: 1, value: 'shifts1' },
+      { key: 'TEST1', tag: 'B', index: 0, value: 'stays1' },
+      { key: 'TEST1', tag: 'B', index: 1, value: 'shifts2' },
     ])
   })
 
@@ -280,28 +280,28 @@ describe('Content API Integration Tests', () => {
     await Content.bulkCreate([
       {
         pageTitle: 'Home',
-        baseKey: 'MENU',
+        key: 'MENU',
         tag: 'A',
         index: 0,
         value: 'first-a',
       },
       {
         pageTitle: 'Home',
-        baseKey: 'MENU',
+        key: 'MENU',
         tag: 'B',
         index: 0,
         value: 'first-b',
       },
       {
         pageTitle: 'Home',
-        baseKey: 'MENU',
+        key: 'MENU',
         tag: 'A',
         index: 1,
         value: 'second-a',
       },
       {
         pageTitle: 'Home',
-        baseKey: 'MENU',
+        key: 'MENU',
         tag: 'B',
         index: 1,
         value: 'second-b',
@@ -322,7 +322,7 @@ describe('Content API Integration Tests', () => {
     expect(response.status).toBe(200)
     const content = await Content.findAll({
       attributes: ['tag', 'index', 'value'],
-      where: { pageTitle: 'Home', baseKey: 'MENU' },
+      where: { pageTitle: 'Home', key: 'MENU' },
       order: [
         ['tag', 'ASC'],
         ['index', 'ASC'],
@@ -342,28 +342,28 @@ describe('Content API Integration Tests', () => {
     await Content.bulkCreate([
       {
         pageTitle: 'Home',
-        baseKey: 'MENU',
+        key: 'MENU',
         tag: 'A',
         index: 0,
         value: 'first-a',
       },
       {
         pageTitle: 'Home',
-        baseKey: 'MENU',
+        key: 'MENU',
         tag: 'B',
         index: 0,
         value: 'first-b',
       },
       {
         pageTitle: 'Home',
-        baseKey: 'MENU',
+        key: 'MENU',
         tag: 'A',
         index: 1,
         value: 'second-a',
       },
       {
         pageTitle: 'Home',
-        baseKey: 'MENU',
+        key: 'MENU',
         tag: 'B',
         index: 1,
         value: 'second-b',
@@ -385,7 +385,7 @@ describe('Content API Integration Tests', () => {
     expect(response.status).toBe(200)
     const content = await Content.findAll({
       attributes: ['tag', 'index', 'value'],
-      where: { pageTitle: 'Home', baseKey: 'MENU' },
+      where: { pageTitle: 'Home', key: 'MENU' },
       order: [
         ['tag', 'ASC'],
         ['index', 'ASC'],
@@ -399,5 +399,55 @@ describe('Content API Integration Tests', () => {
       { tag: 'B', index: 0, value: 'first-b' },
       { tag: 'B', index: 1, value: 'second-b' },
     ])
+  })
+
+  test('POST: Creates simple content without tag/index', async () => {
+    const response = await POST({
+      request: {
+        json: () => ({
+          pageTitle: 'Home',
+          key: 'myKey',
+          value: 'fd',
+        }),
+      },
+    })
+
+    expect(response.status).toBe(201)
+    const content = await Content.findOne({
+      where: { pageTitle: 'Home', key: 'myKey' },
+      raw: true,
+    })
+    expect(content).toMatchObject({
+      value: 'fd',
+      tag: null,
+      index: null,
+    })
+  })
+
+  test('POST: Updates existing simple content', async () => {
+    await Content.create({
+      pageTitle: 'Home',
+      key: 'myKey',
+      value: 'original',
+    })
+
+    const response = await POST({
+      request: {
+        json: () => ({
+          pageTitle: 'Home',
+          key: 'myKey',
+          value: 'updated',
+        }),
+      },
+    })
+
+    expect(response.status).toBe(200)
+    const content = await Content.findOne({
+      where: { pageTitle: 'Home', key: 'myKey' },
+      raw: true,
+    })
+    expect(content.value).toBe('updated')
+    expect(content.tag).toBeNull()
+    expect(content.index).toBeNull()
   })
 })

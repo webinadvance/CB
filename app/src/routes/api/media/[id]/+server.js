@@ -39,7 +39,7 @@ export async function DELETE({ params, request }) {
   try {
     const body = await request.json()
     const { pageTitle, key, lang } = body
-    const baseKey = key.split('.')[0]
+    const key = key.split('.')[0]
 
     await Media.destroy({
       where: { id: params.id },
@@ -55,7 +55,7 @@ export async function DELETE({ params, request }) {
       const remainingItems = await Content.findAll({
         where: {
           pageTitle,
-          key: { [Op.like]: `${baseKey}.%` },
+          key: { [Op.like]: `${key}.%` },
           lang,
         },
         order: [
@@ -70,10 +70,7 @@ export async function DELETE({ params, request }) {
       })
 
       for (let i = 0; i < remainingItems.length; i++) {
-        await remainingItems[i].update(
-          { key: `${baseKey}.${i}` },
-          { transaction },
-        )
+        await remainingItems[i].update({ key: `${key}.${i}` }, { transaction })
       }
     }
 

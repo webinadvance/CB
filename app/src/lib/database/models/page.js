@@ -2,8 +2,15 @@ import sequelize from '$lib/database/config.js'
 import { DataTypes } from 'sequelize'
 
 const Page = sequelize.define('Page', {
-  pageTitle: { type: DataTypes.STRING(200), primaryKey: true },
-  slug: { type: DataTypes.STRING(200), unique: true, defaultValue: null },
+  pageTitle: {
+    type: DataTypes.STRING(200),
+    primaryKey: true,
+  },
+  slug: {
+    type: DataTypes.STRING(200),
+    allowNull: true,
+    unique: true,
+  },
   componentName: DataTypes.STRING(100),
   paramSchema: {
     type: DataTypes.TEXT,
@@ -17,4 +24,3 @@ const Page = sequelize.define('Page', {
 })
 
 export { Page }
-//
