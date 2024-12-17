@@ -8,7 +8,6 @@
   export let index = null
   export let elementTag = null
   export let placeholder = 'Oops, this is empty!'
-  export let canDelete = false
   export let canClear = true
   let currentContent = ''
 
@@ -48,21 +47,6 @@
     })
   }
 
-  async function deleteText() {
-    await fetch('/api/content', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        pageTitle: pg || $pageData.pageTitle,
-        key,
-        tag: elementTag,
-        index,
-        strict: !!elementTag,
-      }),
-    })
-    await invalidateAll()
-  }
-
   async function clearContent() {
     await save({ target: { innerHTML: '' } })
     await invalidateAll()
@@ -87,14 +71,6 @@
     <div
       class="absolute -top-2.5 -right-2.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
     >
-      {#if canDelete}
-        <button
-          class="bg-gray-100 hover:bg-gray-200 text-gray-600 rounded w-5 h-5 flex items-center justify-center text-xs border shadow-sm transition-colors"
-          on:click={deleteText}
-        >
-          ✕
-        </button>
-      {/if}
       {#if canClear}
         <button
           class="bg-gray-100 hover:bg-gray-200 text-gray-600 rounded w-5 h-5 flex items-center justify-center text-xs border shadow-sm transition-colors"

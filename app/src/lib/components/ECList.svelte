@@ -46,6 +46,20 @@
   }
 
   setContext('parentEvent', () => {})
+
+  async function deleteItem(index) {
+    await fetch('/api/content', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pageTitle: $pageData.pageTitle,
+        key,
+        index,
+        strict: true,
+      }),
+    })
+    await invalidateAll()
+  }
 </script>
 
 {#if !$isEditable}
@@ -95,6 +109,24 @@
             <div class="flex-1">
               <slot canDelete={true} {key} index={item.index} />
             </div>
+            <button
+              class="opacity-30 group-hover:opacity-100 p-1"
+              on:click={() => deleteItem(item.index)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+                />
+              </svg>
+            </button>
           </div>
         </div>
       {/each}

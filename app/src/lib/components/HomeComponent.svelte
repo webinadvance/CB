@@ -28,13 +28,7 @@
 <!--  <ECImage {key} {index} />-->
 <!--</ECList>-->
 
-<ECList
-  key="MY-IMAGES-WITH-TAG"
-  class="inline-block"
-  let:key
-  let:index
-  let:canDelete
->
+<ECList key="MY-IMAGES-WITH-TAG" class="inline-block" let:key let:index>
   <ECImage class="w-72" {key} {index} tag="image1" />
   <ECImage class="w-72" {key} {index} tag="image2" />
   <ECText {key} {index} elementTag="title1" />
