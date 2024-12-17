@@ -1,5 +1,6 @@
 <script>
   import ECImage from '$lib/components/ECImage.svelte'
+  import ECList from '$lib/components/ECList.svelte'
 </script>
 
 <div>HomeComponent.svelte</div>
@@ -22,4 +23,8 @@
 <br />
 <br />
 
-<ECImage class="max-w-xl m-auto" key={`myImage`} />
+<ECList key="MY-IMAGES" class="inline-block" let:key let:index>
+  <ECImage {key} {index} />
+</ECList>
+
+<!--<ECImage class="max-w-xl m-auto" key={`MY-IMAGES-SINGLE`} />-->

@@ -12,7 +12,7 @@
 
   $: content =
     index !== null
-      ? $pageData.contentData?.[key]?.[index]
+      ? $pageData.contentData?.[key]?.[index]?.value
       : $pageData.contentData?.[key]
 
   async function handleImageUpload(e) {
@@ -27,14 +27,12 @@
       formData.append('pageTitle', $pageData.pageTitle)
       if (index !== null) formData.append('index', index)
 
-      const response = await fetch('/api/media', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) throw new Error('Upload failed')
-
-      const { id } = await response.json()
+      const { id } = await (
+        await fetch('/api/media', {
+          method: 'POST',
+          body: formData,
+        })
+      ).json()
 
       await fetch('/api/content', {
         method: 'POST',
@@ -42,6 +40,7 @@
         body: JSON.stringify({
           pageTitle: $pageData.pageTitle,
           key,
+          tag: index !== null ? 'value' : null,
           index,
           value: id.toString(),
           lang: $langStore,
@@ -66,7 +65,6 @@
           index,
         }),
       })
-
       await invalidateAll()
     } catch (err) {
       console.error('Delete error:', err)
