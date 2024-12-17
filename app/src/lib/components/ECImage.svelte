@@ -8,11 +8,14 @@
 
   export let key
   export let index = null
+  export let tag = null
   let fileInput
 
   $: content =
     index !== null
-      ? $pageData.contentData?.[key]?.[index]?.value
+      ? tag
+        ? $pageData.contentData?.[key]?.[index]?.[tag]
+        : $pageData.contentData?.[key]?.[index]?.value
       : $pageData.contentData?.[key]
 
   async function handleImageUpload(e) {
@@ -24,6 +27,7 @@
       formData.append('file', file)
       formData.append('lang', $langStore)
       formData.append('key', key)
+      formData.append('tag', tag)
       formData.append('pageTitle', $pageData.pageTitle)
       if (index !== null) formData.append('index', index)
 
@@ -34,12 +38,14 @@
         })
       ).json()
 
+      // Direct content saving without going through media endpoint
       await fetch('/api/content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           pageTitle: $pageData.pageTitle,
           key,
+          tag,
           index,
           value: id.toString(),
           lang: $langStore,
@@ -60,6 +66,7 @@
         body: JSON.stringify({
           pageTitle: $pageData.pageTitle,
           key,
+          tag,
           lang: $langStore,
           index,
         }),

@@ -639,4 +639,179 @@ describe('Content API Integration Tests', () => {
       { key: 'img', lang: 'fr', index: 0, value: '777' },
     ])
   })
+
+  test('DELETE: Removes media and reindexes tagged images correctly', async () => {
+    const [media1, media2, media3] = await Promise.all([
+      Media.create({
+        filename: '1.jpg',
+        mimeType: 'image/jpeg',
+        size: 4,
+        content: Buffer.from('test1'),
+      }),
+      Media.create({
+        filename: '2.jpg',
+        mimeType: 'image/jpeg',
+        size: 4,
+        content: Buffer.from('test2'),
+      }),
+      Media.create({
+        filename: '3.jpg',
+        mimeType: 'image/jpeg',
+        size: 4,
+        content: Buffer.from('test3'),
+      }),
+    ])
+
+    // Create content with tags
+    await Content.bulkCreate([
+      {
+        pageTitle: 'Home',
+        key: 'img',
+        value: media1.id.toString(),
+        lang: 'en',
+        index: 0,
+        tag: 'image1',
+      },
+      {
+        pageTitle: 'Home',
+        key: 'img',
+        value: media2.id.toString(),
+        lang: 'en',
+        index: 1,
+        tag: 'image1',
+      },
+      {
+        pageTitle: 'Home',
+        key: 'img',
+        value: media3.id.toString(),
+        lang: 'en',
+        index: 2,
+        tag: 'image1',
+      },
+      // Add some other tags to verify isolation
+      {
+        pageTitle: 'Home',
+        key: 'img',
+        value: '888',
+        lang: 'en',
+        index: 0,
+        tag: 'image2',
+      },
+      {
+        pageTitle: 'Home',
+        key: 'img',
+        value: '999',
+        lang: 'en',
+        index: 1,
+        tag: 'image2',
+      },
+    ])
+
+    // Delete middle image
+    const response = await MEDIA_DELETE({
+      params: { id: media2.id },
+      request: {
+        json: () =>
+          Promise.resolve({
+            pageTitle: 'Home',
+            key: 'img',
+            lang: 'en',
+            index: 1,
+            tag: 'image1',
+          }),
+      },
+    })
+
+    expect(response.status).toBe(200)
+    expect(await Media.findByPk(media2.id)).toBeNull()
+
+    // Verify image1 tag content
+    const image1Content = await Content.findAll({
+      where: { pageTitle: 'Home', key: 'img', lang: 'en', tag: 'image1' },
+      order: [['index', 'ASC']],
+      raw: true,
+    })
+
+    expect(image1Content).toHaveLength(2)
+    expect(
+      image1Content.map((c) => ({ index: c.index, value: c.value })),
+    ).toEqual([
+      { index: 0, value: media1.id.toString() },
+      { index: 1, value: media3.id.toString() },
+    ])
+
+    // Verify image2 tag remained unchanged
+    const image2Content = await Content.findAll({
+      where: { pageTitle: 'Home', key: 'img', lang: 'en', tag: 'image2' },
+      order: [['index', 'ASC']],
+      raw: true,
+    })
+
+    expect(image2Content).toHaveLength(2)
+    expect(
+      image2Content.map((c) => ({ index: c.index, value: c.value })),
+    ).toEqual([
+      { index: 0, value: '888' },
+      { index: 1, value: '999' },
+    ])
+  })
+
+  test('POST: Successfully uploads multiple tagged images with correct indexing', async () => {
+    const mockFileContent = Buffer.from('test')
+    const formData1 = new FormData(),
+      formData2 = new FormData()
+    const mockFile1 = new File([mockFileContent], 'test1.jpg', {
+      type: 'image/jpeg',
+    })
+    const mockFile2 = new File([mockFileContent], 'test2.jpg', {
+      type: 'image/jpeg',
+    })
+
+    formData1.append('file', mockFile1)
+    formData1.append('lang', 'en')
+    formData1.append('key', 'testKey')
+    formData1.append('pageTitle', 'Home')
+    formData1.append('index', '0')
+    formData1.append('tag', 'image1')
+
+    formData2.append('file', mockFile2)
+    formData2.append('lang', 'en')
+    formData2.append('key', 'testKey')
+    formData2.append('pageTitle', 'Home')
+    formData2.append('index', '1')
+    formData2.append('tag', 'image1')
+
+    const response1 = await MEDIA_POST({
+      request: {
+        headers: { get: (name) => (name === 'content-length' ? '4' : null) },
+        formData: () => Promise.resolve(formData1),
+      },
+    })
+
+    const response2 = await MEDIA_POST({
+      request: {
+        headers: { get: (name) => (name === 'content-length' ? '4' : null) },
+        formData: () => Promise.resolve(formData2),
+      },
+    })
+
+    expect(response1.status).toBe(201)
+    expect(response2.status).toBe(201)
+
+    const content = await Content.findAll({
+      where: {
+        pageTitle: 'Home',
+        key: 'testKey',
+        tag: 'image1',
+      },
+      order: [['index', 'ASC']],
+      raw: true,
+    })
+
+    expect(content).toHaveLength(2)
+    expect(content[0].index).toBe(0)
+    expect(content[1].index).toBe(1)
+    expect(content[0].tag).toBe('image1')
+    expect(content[1].tag).toBe('image1')
+  })
 })

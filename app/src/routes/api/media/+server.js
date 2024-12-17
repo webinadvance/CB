@@ -20,6 +20,7 @@ export async function POST({ request }) {
   const key = formData.get('key')
   const pageTitle = formData.get('pageTitle')
   const index = formData.get('index')
+  const tag = formData.get('tag')
 
   try {
     const buffer = await file.arrayBuffer()
@@ -31,7 +32,6 @@ export async function POST({ request }) {
       lang,
     })
 
-    // Pass index to saveContent
     await saveContent({
       request: {
         json: async () => ({
@@ -39,7 +39,8 @@ export async function POST({ request }) {
           key,
           value: media.id.toString(),
           lang,
-          index: index ? parseInt(index) : null, // Handle index
+          index: index ? parseInt(index) : null,
+          tag: tag || null,
         }),
       },
     })
@@ -49,4 +50,3 @@ export async function POST({ request }) {
     return json({ error: error.message }, { status: 500 })
   }
 }
-//

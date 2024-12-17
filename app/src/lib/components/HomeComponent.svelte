@@ -23,8 +23,12 @@
 <br />
 <br />
 
-<ECList key="MY-IMAGES" class="inline-block" let:key let:index>
-  <ECImage {key} {index} />
+<!--<ECList key="MY-IMAGES" class="inline-block" let:key let:index>-->
+<!--  <ECImage {key} {index} />-->
+<!--</ECList>-->
+
+<ECList key="MY-IMAGES-WITH-TAG" class="inline-block" let:key let:index>
+  <ECImage {key} {index} tag="image1" />
 </ECList>
 
 <!--<ECImage class="max-w-xl m-auto" key={`MY-IMAGES-SINGLE`} />-->
