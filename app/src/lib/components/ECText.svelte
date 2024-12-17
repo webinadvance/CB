@@ -33,6 +33,8 @@
       ? $pageData.contentData[key]?.[index]?.[elementTag] || ''
       : $pageData.contentData[key]
 
+  console.log(currentContent, $pageData.contentData)
+
   async function save(event) {
     await fetch('/api/content', {
       method: 'POST',
@@ -63,10 +65,11 @@
       this={tag}
       contenteditable="true"
       on:input={save}
+      bind:innerHTML={currentContent}
       class={`${$$props.class || ''} outline-dashed outline-1 outline-red-500`}
       data-placeholder={placeholder}
     >
-      {@html currentContent}
+      <!--{@html currentContent}-->
     </svelte:element>
     <div
       class="absolute -top-2.5 -right-2.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
