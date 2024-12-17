@@ -19,17 +19,20 @@
 <!--<br />-->
 <!--<br />-->
 
-<ECList key="extra-key" let:key let:index>
-  <ECText {key} elementTag="a" {index} pg="Extra" />
-  <ECText {key} elementTag="b" {index} pg="Extra" />
-</ECList>
+<!--<ECList key="extra-key" let:key let:index>-->
+<!--  <ECText {key} elementTag="a" {index} pg="Extra" />-->
+<!--  <ECText {key} elementTag="b" {index} pg="Extra" />-->
+<!--</ECList>-->
 
 <br />
 <br />
 
-<ECList key="extra-key" let:key let:index>
-  <ECText {key} elementTag="a" {index} />
-  <ECText {key} elementTag="b" {index} />
+<!--<ECList key="extra-key1" let:key let:index>-->
+<!--  <ECText {key} {index} />-->
+<!--</ECList>-->
+
+<ECList key="extra-key2" let:key let:index>
+  <ECImage class="w-72" {key} {index} />
 </ECList>
 
 <!--<ECText class="max-w-xl m-auto" key={`extra-key`} elementTag="test" />-->

@@ -38,7 +38,6 @@
         })
       ).json()
 
-      // Direct content saving without going through media endpoint
       await fetch('/api/content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
