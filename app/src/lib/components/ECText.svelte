@@ -44,7 +44,7 @@
         key,
         tag: elementTag,
         index,
-        strict: !elementTag,
+        strict: !!elementTag,
       }),
     })
     await invalidateAll()

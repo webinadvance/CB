@@ -2,27 +2,28 @@
 import { Content } from '$lib/database/models/content.js'
 import { get } from 'svelte/store'
 import { langStore } from '$lib/stores/langStore.js'
-import sequelize from '$lib/database/config.js'
 import { Op } from 'sequelize'
-
 export async function POST({ request }) {
-  const payload = await request.json()
-  const { pageTitle, key, tag = null, index = null, value } = payload
-  const lang = payload.lang || get(langStore)
-
+  const {
+    pageTitle,
+    key,
+    tag = null,
+    index = null,
+    value,
+    lang: payloadLang,
+  } = await request.json()
+  const lang = payloadLang || get(langStore)
   if (!pageTitle || !key)
     return json({ error: 'Missing required fields' }, { status: 400 })
-
   const where = { pageTitle, key, tag, index, lang }
   const existing = await Content.findOne({ where })
-
-  const result = existing
-    ? await existing.update({ value })
-    : await Content.create({ ...where, value })
-
-  return json(result, { status: existing ? 200 : 201 })
+  return json(
+    existing
+      ? await existing.update({ value })
+      : await Content.create({ ...where, value }),
+    { status: existing ? 200 : 201 },
+  )
 }
-
 export async function DELETE({ request }) {
   const {
     pageTitle,
@@ -33,55 +34,33 @@ export async function DELETE({ request }) {
     strict = false,
   } = await request.json()
   const lang = requestLang || get(langStore)
-
-  if (!pageTitle || !key) {
+  if (!pageTitle || !key)
     return json({ error: 'Missing required fields' }, { status: 400 })
-  }
-
-  await sequelize.transaction(async (t) => {
-    const where = { pageTitle, key: key, lang }
-
-    if (typeof index === 'number') {
-      where.index = index
-      if (!strict) {
-        where.tag = tag
-      }
-      await Content.destroy({ where, transaction: t })
-
-      // Reindex for each tag separately
-      const tags = strict
-        ? await Content.findAll({
-            attributes: ['tag'],
-            where: { pageTitle, key: key, lang },
-            group: ['tag'],
-            raw: true,
-          })
-        : [{ tag }]
-
-      for (const { tag } of tags) {
-        const remainingItems = await Content.findAll({
-          where: {
-            pageTitle,
-            key: key,
-            tag,
-            index: { [Op.gt]: index },
-            lang,
-          },
-          order: [['index', 'ASC']],
-          transaction: t,
+  const where = { pageTitle, key, lang }
+  if (typeof index === 'number') {
+    where.index = index
+    if (!strict) where.tag = tag
+    await Content.destroy({ where })
+    const tags = strict
+      ? await Content.findAll({
+          attributes: ['tag'],
+          where: { pageTitle, key, lang },
+          group: ['tag'],
+          raw: true,
         })
-
-        for (const item of remainingItems) {
-          await item.update({ index: item.index - 1 }, { transaction: t })
-        }
-      }
-    } else {
-      if (tag !== undefined) {
-        where.tag = tag
-      }
-      await Content.destroy({ where, transaction: t })
-    }
-  })
-
+      : [{ tag }]
+    for (const { tag } of tags)
+      await Promise.all(
+        (
+          await Content.findAll({
+            where: { pageTitle, key, tag, index: { [Op.gt]: index }, lang },
+            order: [['index', 'ASC']],
+          })
+        ).map((item) => item.update({ index: item.index - 1 })),
+      )
+  } else {
+    if (tag !== undefined) where.tag = tag
+    await Content.destroy({ where })
+  }
   return new Response(null, { status: 204 })
 }

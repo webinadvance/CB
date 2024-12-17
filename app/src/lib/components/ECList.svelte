@@ -6,40 +6,24 @@
   import { dndzone } from 'svelte-dnd-action'
   export let key
   let items = []
-  $: {
-    const groupedItems = Object.entries(
-      $pageData.contentData[key] || {},
-    ).reduce((acc, [index, value]) => {
-      acc[Number(index)] = {
-        id: `item-${index}`,
-        index: Number(index),
-        ...value,
-      }
-      return acc
-    }, [])
-    items = Object.values(groupedItems).sort((a, b) => a.index - b.index)
-  }
+  $: items = Object.values(
+    Object.entries($pageData.contentData[key] || {}).reduce(
+      (acc, [index, value]) => (
+        (acc[Number(index)] = {
+          id: `item-${index}`,
+          index: Number(index),
+          ...value,
+        }),
+        acc
+      ),
+      [],
+    ),
+  ).sort((a, b) => a.index - b.index)
   function handleDndConsider(e) {
     items = [...e.detail.items]
   }
   async function addNewItem() {
-    const newIndex = items.length
-    items = [...items, { id: `item-${newIndex}`, index: newIndex }]
-  }
-  async function handleDelete(event) {
-    // console.log(event)
-    // const requestBody = {
-    //   pageTitle: $pageData.pageTitle,
-    //   key: event.key,
-    //   strict: true,
-    //   index: event.index,
-    // }
-    // await fetch('/api/content', {
-    //   method: 'DELETE',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(requestBody),
-    // })
-    // await invalidateAll()
+    items = [...items, { id: `item-${items.length}`, index: items.length }]
   }
   async function handleDndFinalize(e) {
     items = [...e.detail.items]
@@ -55,14 +39,12 @@
     })
     await invalidateAll()
   }
-  setContext('parentEvent', handleDelete)
+  setContext('parentEvent', () => {})
 </script>
 
 {#if !$isEditable}
   <div class={$$props.class}>
-    {#each items as item}
-      <slot {key} {...item} />
-    {/each}
+    {#each items as item}<slot {key} {...item} />{/each}
   </div>
 {:else}
   <div class="relative {$$props.class}">
@@ -90,16 +72,23 @@
                 stroke="currentColor"
                 stroke-width="2"
               >
-                <circle cx="9" cy="7" r="1" />
-                <circle cx="9" cy="12" r="1" />
-                <circle cx="9" cy="17" r="1" />
-                <circle cx="15" cy="7" r="1" />
-                <circle cx="15" cy="12" r="1" />
-                <circle cx="15" cy="17" r="1" />
+                <circle cx="9" cy="7" r="1" /><circle
+                  cx="9"
+                  cy="12"
+                  r="1"
+                /><circle cx="9" cy="17" r="1" /><circle
+                  cx="15"
+                  cy="7"
+                  r="1"
+                /><circle cx="15" cy="12" r="1" /><circle
+                  cx="15"
+                  cy="17"
+                  r="1"
+                />
               </svg>
             </div>
             <div class="flex-1">
-              <slot {key} index={item.index} onEvent={(e) => handleDelete(e)} />
+              <slot {key} index={item.index} onEvent={(e) => {}} />
             </div>
           </div>
         </div>
@@ -107,9 +96,7 @@
     </div>
     <button
       class="mt-4 opacity-80 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded flex-shrink-0"
-      on:click={addNewItem}
+      on:click={addNewItem}>Add New</button
     >
-      Add New
-    </button>
   </div>
 {/if}
