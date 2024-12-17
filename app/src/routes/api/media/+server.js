@@ -1,7 +1,6 @@
 ﻿import { json } from '@sveltejs/kit'
-import { getAllMedia, createMedia } from '$lib/services/mediaService.js'
+import { getAllMedia } from '$lib/services/mediaService.js'
 import { Media } from '$lib/database/models/media.js'
-import sequelize from '$lib/database/config.js'
 import { POST as saveContent } from '../content/+server.js'
 
 export async function GET({ url }) {
@@ -9,7 +8,6 @@ export async function GET({ url }) {
 }
 
 export async function POST({ request }) {
-  const transaction = await sequelize.transaction()
   const contentLength = +request.headers.get('content-length') || 0
   if (contentLength > 50 * 1024 * 1024)
     return json({ error: 'File too large' }, { status: 413 })
@@ -25,16 +23,13 @@ export async function POST({ request }) {
 
   try {
     const buffer = await file.arrayBuffer()
-    const media = await Media.create(
-      {
-        content: Buffer.from(buffer),
-        filename: file.name,
-        mimeType: file.type,
-        size: file.size,
-        lang,
-      },
-      { transaction },
-    )
+    const media = await Media.create({
+      content: Buffer.from(buffer),
+      filename: file.name,
+      mimeType: file.type,
+      size: file.size,
+      lang,
+    })
 
     // Pass index to saveContent
     await saveContent({
@@ -49,10 +44,8 @@ export async function POST({ request }) {
       },
     })
 
-    await transaction.commit()
-    return json({ id: media.id })
+    return json({ id: media.id }, { status: 201 })
   } catch (error) {
-    await transaction.rollback()
     return json({ error: error.message }, { status: 500 })
   }
 }

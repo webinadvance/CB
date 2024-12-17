@@ -19,23 +19,39 @@ export async function PUT({ params, request }) {
     : new Response('Media not found', { status: 404 })
 }
 export async function DELETE({ params, request }) {
-  const { pageTitle, key, lang } = await request.json()
+  const { pageTitle, key, lang, index } = await request.json()
+
   await Media.destroy({ where: { id: params.id } })
+
+  // First delete content entry with media id
+  await Content.destroy({
+    where: {
+      value: params.id.toString(),
+      pageTitle,
+      lang,
+    },
+  })
+
   if (pageTitle && key) {
     const remainingItems = await Content.findAll({
       where: { pageTitle, key: { [Op.like]: `${key}.%` }, lang },
       order: [
         [
           sequelize.literal(
-            `CAST(SUBSTRING([key], CHARINDEX('.', [key]) + 1, LEN([key])) AS INTEGER)`,
+            sequelize.getDialect() === 'mssql'
+              ? `CAST(SUBSTRING([key], CHARINDEX('.', [key]) + 1, LEN([key])) AS INTEGER)`
+              : `CAST(SUBSTR(key, INSTR(key, '.') + 1) AS INTEGER)`,
           ),
           'ASC',
         ],
       ],
     })
-    for (let i = 0; i < remainingItems.length; i++)
+
+    for (let i = 0; i < remainingItems.length; i++) {
       await remainingItems[i].update({ key: `${key}.${i}` })
+    }
   }
+
   queryCache.flushAll()
   return json({ success: true })
 }

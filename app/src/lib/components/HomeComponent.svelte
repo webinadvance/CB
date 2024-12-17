@@ -1,6 +1,4 @@
 <script>
-  import ECList from '$lib/components/ECList.svelte'
-  import ECText from '$lib/components/ECText.svelte'
   import ECImage from '$lib/components/ECImage.svelte'
 </script>
 

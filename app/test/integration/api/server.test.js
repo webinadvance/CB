@@ -3,6 +3,9 @@ import { Content } from '$lib/database/models/content.js'
 import { Page } from '$lib/database/models/page.js'
 import { DELETE, POST } from '../../../src/routes/api/content/+server.js'
 import { POST as REORDER } from '../../../src/routes/api/content/reorder/+server.js'
+import { Media } from '$lib/database/models/media.js'
+import { POST as MEDIA_POST } from '../../../src/routes/api/media/+server.js'
+import { DELETE as MEDIA_DELETE } from '../../../src/routes/api/media/[id]/+server.js'
 
 jest.mock(
   '@sveltejs/kit',
@@ -19,20 +22,43 @@ jest.mock('$lib/database/config.js', () => ({
   default: new (require('sequelize').Sequelize)('sqlite::memory:'),
 }))
 global.Response = class extends Response {}
+global.File = class File {
+  constructor(bits, name, options) {
+    this.name = name
+    this.type = options?.type
+    this.size = bits[0].length // Set correct size based on content
+    this.arrayBuffer = () => Promise.resolve(bits[0])
+  }
+}
+global.FormData = class FormData {
+  constructor() {
+    this.data = new Map()
+  }
+  append(key, value) {
+    this.data.set(key, value)
+  }
+  get(key) {
+    return this.data.get(key)
+  }
+}
 
 describe('Content API Integration Tests', () => {
   beforeAll(async () => {
+    await Media.sync({ force: true })
     await Page.sync({ force: true })
     await Content.sync({ force: true })
     await Content.sequelize.getQueryInterface().showAllTables()
   })
   beforeEach(async () => {
     await Content.destroy({ where: {} })
+    await Media.destroy({ where: {} })
     await Page.destroy({ where: {} })
     await Page.bulkCreate([{ pageTitle: 'Home' }])
   })
   afterEach(async () => await Content.destroy({ where: {} }))
+  afterEach(async () => await Media.destroy({ where: {} }))
   afterAll(async () => await Content.sequelize.close())
+  afterAll(async () => await Media.sequelize.close())
 
   test('DELETE: Removes indexed content correctly', async () => {
     await Content.bulkCreate([
@@ -449,5 +475,84 @@ describe('Content API Integration Tests', () => {
     expect(content.value).toBe('updated')
     expect(content.tag).toBeNull()
     expect(content.index).toBeNull()
+  })
+
+  test('POST: Successfully uploads media file', async () => {
+    const fileContent = Buffer.from('test')
+    const mockFile = new File([fileContent], 'test.jpg', { type: 'image/jpeg' })
+
+    const formData = new FormData()
+    formData.append('file', mockFile)
+    formData.append('lang', 'en')
+    formData.append('key', 'testKey')
+    formData.append('pageTitle', 'Home')
+
+    const response = await MEDIA_POST({
+      request: {
+        headers: {
+          get: (name) => (name === 'content-length' ? '4' : null),
+        },
+        formData: () => Promise.resolve(formData),
+      },
+    })
+
+    const result = await response.json()
+    expect(response.status).toBe(201)
+    expect(result).toHaveProperty('id')
+
+    const savedMedia = await Media.findByPk(result.id)
+    expect(savedMedia).toMatchObject({
+      filename: 'test.jpg',
+      mimeType: 'image/jpeg',
+      size: fileContent.length, // Will be 4 bytes
+    })
+  })
+
+  test('DELETE: Removes media and updates related content', async () => {
+    const media = await Media.create({
+      filename: 'test.jpg',
+      mimeType: 'image/jpeg',
+      size: 4,
+      content: Buffer.from('test'),
+    })
+
+    await Content.bulkCreate([
+      {
+        pageTitle: 'Home',
+        key: 'img.0',
+        value: media.id.toString(),
+        lang: 'en',
+      },
+      { pageTitle: 'Home', key: 'img.1', value: '999', lang: 'en' },
+      { pageTitle: 'Home', key: 'img.2', value: '888', lang: 'en' },
+    ])
+
+    const response = await MEDIA_DELETE({
+      params: { id: media.id },
+      request: {
+        json: () =>
+          Promise.resolve({
+            pageTitle: 'Home',
+            key: 'img',
+            lang: 'en',
+          }),
+      },
+    })
+
+    expect(response.status).toBe(200)
+    const deletedMedia = await Media.findByPk(media.id)
+    expect(deletedMedia).toBeNull()
+
+    const remainingContent = await Content.findAll({
+      where: { pageTitle: 'Home' },
+      order: [['key', 'ASC']],
+      raw: true,
+    })
+
+    expect(remainingContent).toHaveLength(2)
+    expect(remainingContent[0].key).toBe('img.0')
+    expect(remainingContent[0].value).toBe('999')
+    expect(remainingContent[1].key).toBe('img.1')
+    expect(remainingContent[1].value).toBe('888')
   })
 })

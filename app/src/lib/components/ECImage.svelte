@@ -6,10 +6,12 @@
   import { Edit2, Trash2 } from 'lucide-svelte'
 
   export let key
+  export let index = null // Add index support
   let fileInput
 
   // Reactive content binding
-  $: content = $pageData.contentData?.[key]
+  $: content =
+    $pageData.contentData?.[key]?.[index] || $pageData.contentData?.[key]
 
   async function handleImageUpload(e) {
     try {
@@ -20,6 +22,7 @@
       formData.append('file', file)
       formData.append('lang', $langStore)
       formData.append('key', key)
+      if (index !== null) formData.append('index', index) // Pass index if available
       formData.append('pageTitle', $pageData.pageTitle)
 
       const response = await fetch('/api/media', {
@@ -31,7 +34,13 @@
 
       pageData.update((data) => ({
         ...data,
-        contentData: { ...data.contentData, [key]: id.toString() },
+        contentData: {
+          ...data.contentData,
+          [key]:
+            index !== null
+              ? { ...data.contentData[key], [index]: id.toString() }
+              : id.toString(),
+        },
       }))
     } catch (err) {
       console.error('Upload error:', err)
@@ -47,26 +56,19 @@
           pageTitle: $pageData.pageTitle,
           key,
           lang: $langStore,
+          index,
         }),
       })
 
-      const key = key.split('.')[0]
-      const entries = Object.entries($pageData.contentData)
-        .filter(([k]) => k.startsWith(`${key}.`))
-        .sort(([a], [b]) => Number(a.split('.')[1]) - Number(b.split('.')[1]))
-        .filter(([k]) => k !== key)
-
-      const newContentData = { ...$pageData.contentData }
-      delete newContentData[key]
-
-      entries.forEach(([oldKey, value], idx) => {
-        delete newContentData[oldKey]
-        newContentData[`${key}.${idx}`] = value
+      pageData.update((data) => {
+        const newContentData = { ...data.contentData }
+        if (index !== null) {
+          delete newContentData[key]?.[index]
+        } else {
+          delete newContentData[key]
+        }
+        return { ...data, contentData: newContentData }
       })
-
-      $pageData.contentData = newContentData
-
-      console.log('newContentData', newContentData)
     } catch (err) {
       console.error('Delete error:', err)
     }
@@ -121,4 +123,3 @@
 {:else if content}
   <img src={imgSrc} class={$$props.class} alt={key} />
 {/if}
-//
