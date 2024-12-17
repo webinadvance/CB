@@ -4,14 +4,16 @@
   import { isEditable } from '$lib/stores/editorStore'
   import { ImageIcon } from 'lucide-svelte'
   import { Edit2, Trash2 } from 'lucide-svelte'
+  import { invalidateAll } from '$app/navigation'
 
   export let key
-  export let index = null // Add index support
+  export let index = null
   let fileInput
 
-  // Reactive content binding
   $: content =
-    $pageData.contentData?.[key]?.[index] || $pageData.contentData?.[key]
+    index !== null
+      ? $pageData.contentData?.[key]?.[index]
+      : $pageData.contentData?.[key]
 
   async function handleImageUpload(e) {
     try {
@@ -22,26 +24,31 @@
       formData.append('file', file)
       formData.append('lang', $langStore)
       formData.append('key', key)
-      if (index !== null) formData.append('index', index) // Pass index if available
       formData.append('pageTitle', $pageData.pageTitle)
+      if (index !== null) formData.append('index', index)
 
       const response = await fetch('/api/media', {
         method: 'POST',
         body: formData,
       })
 
+      if (!response.ok) throw new Error('Upload failed')
+
       const { id } = await response.json()
 
-      pageData.update((data) => ({
-        ...data,
-        contentData: {
-          ...data.contentData,
-          [key]:
-            index !== null
-              ? { ...data.contentData[key], [index]: id.toString() }
-              : id.toString(),
-        },
-      }))
+      await fetch('/api/content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pageTitle: $pageData.pageTitle,
+          key,
+          index,
+          value: id.toString(),
+          lang: $langStore,
+        }),
+      })
+
+      await invalidateAll()
     } catch (err) {
       console.error('Upload error:', err)
     }
@@ -60,15 +67,7 @@
         }),
       })
 
-      pageData.update((data) => {
-        const newContentData = { ...data.contentData }
-        if (index !== null) {
-          delete newContentData[key]?.[index]
-        } else {
-          delete newContentData[key]
-        }
-        return { ...data, contentData: newContentData }
-      })
+      await invalidateAll()
     } catch (err) {
       console.error('Delete error:', err)
     }
