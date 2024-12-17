@@ -23,7 +23,6 @@ export async function DELETE({ params, request }) {
 
   await Media.destroy({ where: { id: params.id } })
 
-  // First delete content entry with media id
   await Content.destroy({
     where: {
       value: params.id.toString(),
@@ -32,23 +31,20 @@ export async function DELETE({ params, request }) {
     },
   })
 
-  if (pageTitle && key) {
+  // Reindex remaining items
+  if (typeof index === 'number') {
     const remainingItems = await Content.findAll({
-      where: { pageTitle, key: { [Op.like]: `${key}.%` }, lang },
-      order: [
-        [
-          sequelize.literal(
-            sequelize.getDialect() === 'mssql'
-              ? `CAST(SUBSTRING([key], CHARINDEX('.', [key]) + 1, LEN([key])) AS INTEGER)`
-              : `CAST(SUBSTR(key, INSTR(key, '.') + 1) AS INTEGER)`,
-          ),
-          'ASC',
-        ],
-      ],
+      where: {
+        pageTitle,
+        key,
+        lang,
+        index: { [Op.gt]: index },
+      },
+      order: [['index', 'ASC']],
     })
 
     for (let i = 0; i < remainingItems.length; i++) {
-      await remainingItems[i].update({ key: `${key}.${i}` })
+      await remainingItems[i].update({ index: index + i })
     }
   }
 

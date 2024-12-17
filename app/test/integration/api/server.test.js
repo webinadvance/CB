@@ -6,6 +6,7 @@ import { POST as REORDER } from '../../../src/routes/api/content/reorder/+server
 import { Media } from '$lib/database/models/media.js'
 import { POST as MEDIA_POST } from '../../../src/routes/api/media/+server.js'
 import { DELETE as MEDIA_DELETE } from '../../../src/routes/api/media/[id]/+server.js'
+import { Op } from 'sequelize'
 
 jest.mock(
   '@sveltejs/kit',
@@ -508,51 +509,134 @@ describe('Content API Integration Tests', () => {
     })
   })
 
-  test('DELETE: Removes media and updates related content', async () => {
-    const media = await Media.create({
-      filename: 'test.jpg',
-      mimeType: 'image/jpeg',
-      size: 4,
-      content: Buffer.from('test'),
-    })
+  test('DELETE: Removes media and correctly reindexes complex content structure', async () => {
+    const [media1, media2, media3] = await Promise.all([
+      Media.create({
+        filename: '1.jpg',
+        mimeType: 'image/jpeg',
+        size: 4,
+        content: Buffer.from('test1'),
+      }),
+      Media.create({
+        filename: '2.jpg',
+        mimeType: 'image/jpeg',
+        size: 4,
+        content: Buffer.from('test2'),
+      }),
+      Media.create({
+        filename: '3.jpg',
+        mimeType: 'image/jpeg',
+        size: 4,
+        content: Buffer.from('test3'),
+      }),
+    ])
 
     await Content.bulkCreate([
       {
         pageTitle: 'Home',
-        key: 'img.0',
-        value: media.id.toString(),
+        key: 'img',
+        value: media1.id.toString(),
         lang: 'en',
+        index: 0,
       },
-      { pageTitle: 'Home', key: 'img.1', value: '999', lang: 'en' },
-      { pageTitle: 'Home', key: 'img.2', value: '888', lang: 'en' },
+      {
+        pageTitle: 'Home',
+        key: 'img',
+        value: media2.id.toString(),
+        lang: 'en',
+        index: 1,
+      },
+      {
+        pageTitle: 'Home',
+        key: 'img',
+        value: media3.id.toString(),
+        lang: 'en',
+        index: 2,
+      },
+      { pageTitle: 'Home', key: 'img', value: '444', lang: 'en', index: 3 },
+      { pageTitle: 'Home', key: 'img', value: '555', lang: 'en', index: 4 },
+      // Different key/lang to verify isolation
+      { pageTitle: 'Home', key: 'other', value: '666', lang: 'en', index: 0 },
+      { pageTitle: 'Home', key: 'img', value: '777', lang: 'fr', index: 0 },
     ])
 
-    const response = await MEDIA_DELETE({
-      params: { id: media.id },
+    // Delete from middle (index 1)
+    const response1 = await MEDIA_DELETE({
+      params: { id: media2.id },
       request: {
         json: () =>
           Promise.resolve({
             pageTitle: 'Home',
             key: 'img',
             lang: 'en',
+            index: 1,
           }),
       },
     })
 
-    expect(response.status).toBe(200)
-    const deletedMedia = await Media.findByPk(media.id)
-    expect(deletedMedia).toBeNull()
+    expect(response1.status).toBe(200)
+    expect(await Media.findByPk(media2.id)).toBeNull()
 
-    const remainingContent = await Content.findAll({
-      where: { pageTitle: 'Home' },
-      order: [['key', 'ASC']],
+    let content = await Content.findAll({
+      where: { pageTitle: 'Home', key: 'img', lang: 'en' },
+      order: [['index', 'ASC']],
       raw: true,
     })
 
-    expect(remainingContent).toHaveLength(2)
-    expect(remainingContent[0].key).toBe('img.0')
-    expect(remainingContent[0].value).toBe('999')
-    expect(remainingContent[1].key).toBe('img.1')
-    expect(remainingContent[1].value).toBe('888')
+    expect(content).toHaveLength(4)
+    expect(content.map((c) => ({ index: c.index, value: c.value }))).toEqual([
+      { index: 0, value: media1.id.toString() },
+      { index: 1, value: media3.id.toString() },
+      { index: 2, value: '444' },
+      { index: 3, value: '555' },
+    ])
+
+    // Delete from start (index 0)
+    const response2 = await MEDIA_DELETE({
+      params: { id: media1.id },
+      request: {
+        json: () =>
+          Promise.resolve({
+            pageTitle: 'Home',
+            key: 'img',
+            lang: 'en',
+            index: 0,
+          }),
+      },
+    })
+
+    content = await Content.findAll({
+      where: { pageTitle: 'Home', key: 'img', lang: 'en' },
+      order: [['index', 'ASC']],
+      raw: true,
+    })
+
+    expect(content).toHaveLength(3)
+    expect(content.map((c) => ({ index: c.index, value: c.value }))).toEqual([
+      { index: 0, value: media3.id.toString() },
+      { index: 1, value: '444' },
+      { index: 2, value: '555' },
+    ])
+
+    // Verify other content remained unchanged
+    const otherContent = await Content.findAll({
+      where: {
+        [Op.or]: [{ key: 'other' }, { lang: 'fr' }],
+      },
+      raw: true,
+    })
+
+    expect(otherContent).toHaveLength(2)
+    expect(
+      otherContent.map((c) => ({
+        key: c.key,
+        lang: c.lang,
+        index: c.index,
+        value: c.value,
+      })),
+    ).toEqual([
+      { key: 'other', lang: 'en', index: 0, value: '666' },
+      { key: 'img', lang: 'fr', index: 0, value: '777' },
+    ])
   })
 })
