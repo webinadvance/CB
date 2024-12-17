@@ -7,8 +7,9 @@
   export let tag = 'div'
   export let index = null
   export let elementTag = null
-  export let placeholder = 'Content not found'
+  export let placeholder = 'Oops, this is empty!'
   export let canDelete = false
+  export let canClear = true
   let currentContent = ''
 
   $: currentContent = pg
@@ -17,7 +18,6 @@
       ? $pageData.contentData[key]?.[index]?.[elementTag] || ''
       : $pageData.contentData[key]
 
-  // Sanitize HTML by removing unwanted tags
   function sanitizeHTML(html) {
     const parser = new DOMParser()
     const doc = parser.parseFromString(html, 'text/html')
@@ -28,8 +28,7 @@
   }
 
   async function save(event) {
-    const rawHTML = event.target.innerHTML
-    const cleanHTML = sanitizeHTML(rawHTML)
+    const cleanHTML = sanitizeHTML(event.target.innerHTML)
     try {
       await fetch('/api/content', {
         method: 'POST',
@@ -67,14 +66,18 @@
     const clipboardData = event.clipboardData || window.clipboardData
     let pastedData =
       clipboardData.getData('text/html') || clipboardData.getData('text/plain')
-    const cleanData = sanitizeHTML(pastedData)
-    document.execCommand('insertHTML', false, cleanData)
+    currentContent = sanitizeHTML(pastedData)
+  }
+
+  async function clearContent() {
+    await save({ target: { innerHTML: '' } })
+    await invalidateAll()
   }
 </script>
 
 {#if !$isEditable}
   <svelte:element this={tag} class={$$props.class || ''}>
-    {@html currentContent || placeholder}
+    {@html currentContent}
   </svelte:element>
 {:else}
   <div class="relative cursor-text">
@@ -83,9 +86,10 @@
       contenteditable="true"
       on:input={save}
       on:paste={handlePaste}
-      class={`${$$props.class || ''} ${$isEditable ? 'outline-dashed outline-1 outline-red-500' : ''}`}
+      class={`${$$props.class || ''} outline-dashed outline-1 outline-red-500`}
+      data-placeholder={placeholder}
     >
-      {@html currentContent || placeholder}
+      {@html currentContent}
     </svelte:element>
     {#if canDelete}
       <button
@@ -95,15 +99,23 @@
         Delete
       </button>
     {/if}
+    {#if canClear}
+      <button
+        class="absolute top-0 right-12 bg-gray-500 text-white rounded p-1 text-sm hover:bg-gray-700"
+        on:click={clearContent}
+      >
+        Clear
+      </button>
+    {/if}
   </div>
 {/if}
 
 <style>
-  .drag-container {
-    pointer-events: auto;
-  }
-
-  .drag-handle {
-    pointer-events: auto;
+  [contenteditable='true']:empty::before {
+    content: attr(data-placeholder);
+    color: gray;
+    font-style: italic;
+    opacity: 0.5;
+    pointer-events: none;
   }
 </style>
