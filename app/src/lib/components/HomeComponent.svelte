@@ -5,19 +5,12 @@
 
 <div>HomeComponent.svelte</div>
 
-<ECList key="A13" let:key let:index>
-  TITLE:<ECText {key} {index} elementTag="title" tag="div" />
-  DESC:<ECText {key} {index} elementTag="desc" tag="div" />
-  <br />
-  <br />
-</ECList>
-
 <!--<br />-->
 <!--<br />-->
 
-<!--<ECList key="A14" let:key let:index>-->
-<!--  TITLE:<ECText {key} {index} elementTag="title" tag="div" />-->
-<!--  DESC:<ECText {key} {index} elementTag="desc" tag="div" />-->
+<!--<ECList key="A14" let:key let:index let:canDelete>-->
+<!--  TITLE:<ECText {canDelete} {key} {index} elementTag="title" tag="div" />-->
+<!--  DESC:<ECText {canDelete} {key} {index} elementTag="desc" tag="div" />-->
 <!--  <br />-->
 <!--  <br />-->
 <!--</ECList>-->
@@ -25,4 +18,4 @@
 <!--<br />-->
 <!--<br />-->
 
-<!--<ECText key={`myKey`} />-->
+<ECText key={`myKey`} />

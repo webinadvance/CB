@@ -93,7 +93,7 @@
               </svg>
             </div>
             <div class="flex-1">
-              <slot {key} index={item.index} />
+              <slot canDelete={true} {key} index={item.index} />
             </div>
           </div>
         </div>

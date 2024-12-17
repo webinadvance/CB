@@ -1,6 +1,5 @@
 <script>
   import { pageData } from '$lib/stores/pageStore'
-  import { langStore } from '$lib/stores/langStore'
   import { isEditable } from '$lib/stores/editorStore'
   export let key
   export let pg
@@ -8,13 +7,13 @@
   export let index = null
   export let elementTag = null
   export let placeholder = 'Content not found'
+  export let canDelete = false
   let currentContent = ''
   $: currentContent = pg
     ? $pageData.extraContent[pg]?.[key]
     : elementTag && typeof index === 'number'
       ? $pageData.contentData[key]?.[index]?.[elementTag] || ''
       : $pageData.contentData[key]
-  import { getContext } from 'svelte'
   import { invalidateAll } from '$app/navigation'
   async function save(event) {
     const newContent = event.target.textContent
@@ -66,11 +65,13 @@
     >
       {currentContent || placeholder}
     </svelte:element>
-    <button
-      class="absolute top-0 right-0 bg-red-500 text-white rounded p-1 text-sm hover:bg-red-700"
-      on:click={deleteText}
-    >
-      Delete
-    </button>
+    {#if canDelete}
+      <button
+        class="absolute top-0 right-0 bg-red-500 text-white rounded p-1 text-sm hover:bg-red-700"
+        on:click={deleteText}
+      >
+        Delete
+      </button>
+    {/if}
   </div>
 {/if}
