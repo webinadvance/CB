@@ -40,7 +40,6 @@
         body: JSON.stringify({
           pageTitle: $pageData.pageTitle,
           key,
-          tag: index !== null ? 'value' : null,
           index,
           value: id.toString(),
           lang: $langStore,
