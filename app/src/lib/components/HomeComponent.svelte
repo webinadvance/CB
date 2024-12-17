@@ -19,7 +19,7 @@
 <!--<br />-->
 <!--<br />-->
 
-<!--<ECText class="max-w-xl m-auto" key={`myKey`} />-->
+<ECText class="max-w-xl m-auto" key={`myKey`} />
 
 <br />
 <br />
@@ -28,10 +28,10 @@
 <!--  <ECImage {key} {index} />-->
 <!--</ECList>-->
 
-<ECList key="MY-IMAGES-WITH-TAG" class="inline-block" let:key let:index>
-  <ECImage class="w-72" {key} {index} tag="image1" />
-  <ECImage class="w-72" {key} {index} tag="image2" />
-  <ECText {key} {index} elementTag="title1" />
-</ECList>
+<!--<ECList key="MY-IMAGES-WITH-TAG" class="inline-block" let:key let:index>-->
+<!--  <ECImage class="w-72" {key} {index} tag="image1" />-->
+<!--  <ECImage class="w-72" {key} {index} tag="image2" />-->
+<!--  <ECText {key} {index} elementTag="title1" />-->
+<!--</ECList>-->
 
 <!--<ECImage class="max-w-xl m-auto" key={`MY-IMAGES-SINGLE`} />-->
