@@ -3,7 +3,7 @@ import { Content } from '$lib/database/models/content.js'
 import { getServerLang } from '$lib/server/lang.js'
 import { cachedQuery } from '$lib/cache/queryCache.js'
 
-const localizeContent = (contents) => {
+export const localizeContent = (contents) => {
   const lang = getServerLang()
   const contentData = {}
 

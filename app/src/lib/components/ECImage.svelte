@@ -1,4 +1,4 @@
-﻿<script>
+<script>
   import { pageData } from '$lib/stores/pageStore'
   import { langStore } from '$lib/stores/langStore'
   import { isEditable } from '$lib/stores/editorStore'

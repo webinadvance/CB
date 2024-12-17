@@ -3,6 +3,25 @@ import { Content } from '$lib/database/models/content.js'
 import { get } from 'svelte/store'
 import { langStore } from '$lib/stores/langStore.js'
 import { Op } from 'sequelize'
+export async function GET({ url }) {
+  const pageTitle = url.searchParams.get('pageTitle')
+  const requestLang = url.searchParams.get('lang')
+  const lang = requestLang || get(langStore)
+
+  // Set query filters based on presence of `pageTitle` and `lang`.
+  const where = {}
+  if (pageTitle) where.pageTitle = pageTitle
+  if (lang) where.lang = lang
+
+  try {
+    // Fetch all matching content
+    const content = await Content.findAll({ where })
+    return json(content, { status: 200 })
+  } catch (error) {
+    console.error('Error fetching page data:', error)
+    return json({ error: 'Failed to fetch data' }, { status: 500 })
+  }
+}
 export async function POST({ request }) {
   const {
     pageTitle,

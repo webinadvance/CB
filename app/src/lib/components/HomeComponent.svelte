@@ -19,10 +19,20 @@
 <!--<br />-->
 <!--<br />-->
 
-<ECText class="max-w-xl m-auto" key={`myKey`} />
+<ECList key="extra-key" let:key let:index>
+  <ECText {key} elementTag="a" {index} pg="Extra" />
+  <ECText {key} elementTag="b" {index} pg="Extra" />
+</ECList>
 
 <br />
 <br />
+
+<ECList key="extra-key" let:key let:index>
+  <ECText {key} elementTag="a" {index} />
+  <ECText {key} elementTag="b" {index} />
+</ECList>
+
+<!--<ECText class="max-w-xl m-auto" key={`extra-key`} elementTag="test" />-->
 
 <!--<ECList key="MY-IMAGES" class="inline-block" let:key let:index>-->
 <!--  <ECImage {key} {index} />-->

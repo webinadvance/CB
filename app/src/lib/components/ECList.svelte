@@ -1,4 +1,4 @@
-﻿<script>
+<script>
   import { pageData } from '$lib/stores/pageStore'
   import { isEditable } from '$lib/stores/editorStore'
   import { setContext } from 'svelte'

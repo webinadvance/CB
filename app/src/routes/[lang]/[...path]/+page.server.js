@@ -1,4 +1,8 @@
-﻿import { getAllPages, getPageBySlug } from '$lib/services/pageService.js'
+﻿import {
+  getAllPages,
+  getPageBySlug,
+  localizeContent,
+} from '$lib/services/pageService.js'
 import { getPageContent } from '$lib/server/pageContent.js'
 import { componentDependencies } from '$lib/utils/dependencies.js'
 import { setServerLang } from '$lib/server/lang.js'
@@ -47,6 +51,19 @@ export async function load({ params, url }) {
     []) {
     const content = await getPageContent(pageTitle)
     extraContent[pageTitle] = content ? content.contentData : {}
+  }
+
+  const extraKeys = url.searchParams.getAll('extraKeys[]')
+  for (const keyParam of extraKeys) {
+    try {
+      const { pageTitle } = JSON.parse(keyParam)
+      const content = await getPageContent(pageTitle)
+      if (content) {
+        extraContent[pageTitle] = localizeContent(content.contents)
+      }
+    } catch (e) {
+      console.error('Invalid extraKeys format:', keyParam)
+    }
   }
 
   return {
