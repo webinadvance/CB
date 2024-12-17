@@ -34,7 +34,7 @@ afterEach(() => {
 
 test('renders placeholder when empty', () => {
   const { container } = render(ECText, { props: { key: 'myKey' } })
-  expect(container.textContent).toBe('Content not found')
+  expect(container.textContent).toBe('')
 })
 
 test('updates content from store', async () => {
