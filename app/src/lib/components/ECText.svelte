@@ -12,38 +12,40 @@
   export let canClear = true
   let currentContent = ''
 
+  function sanitizeHTML(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html')
+    doc.body
+      .querySelectorAll('*')
+      .forEach((el) => el.style.removeProperty('font-family'))
+    ;(function removeComments(node) {
+      for (let i = node.childNodes.length - 1; i >= 0; i--) {
+        const child = node.childNodes[i]
+        child.nodeType === 8
+          ? node.removeChild(child)
+          : child.nodeType === 1 && removeComments(child)
+      }
+    })(doc.body)
+    return doc.body.innerHTML
+  }
+
   $: currentContent = pg
     ? $pageData.extraContent[pg]?.[key]
     : elementTag && typeof index === 'number'
       ? $pageData.contentData[key]?.[index]?.[elementTag] || ''
       : $pageData.contentData[key]
 
-  function sanitizeHTML(html) {
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(html, 'text/html')
-    doc.body
-      .querySelectorAll('*')
-      .forEach((el) => el.style.removeProperty('font-family'))
-    return doc.body.innerHTML
-  }
-
   async function save(event) {
-    const cleanHTML = sanitizeHTML(event.target.innerHTML)
-    try {
-      await fetch('/api/content', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          pageTitle: pg || $pageData.pageTitle,
-          key,
-          tag: elementTag,
-          index,
-          value: cleanHTML,
-        }),
-      })
-    } catch (error) {
-      console.error('Error saving content:', error)
-    }
+    await fetch('/api/content', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pageTitle: pg || $pageData.pageTitle,
+        key,
+        tag: elementTag,
+        index,
+        value: sanitizeHTML(event.target.innerHTML),
+      }),
+    })
   }
 
   async function deleteText() {
@@ -59,14 +61,6 @@
       }),
     })
     await invalidateAll()
-  }
-
-  function handlePaste(event) {
-    event.preventDefault()
-    const clipboardData = event.clipboardData || window.clipboardData
-    let pastedData =
-      clipboardData.getData('text/html') || clipboardData.getData('text/plain')
-    currentContent = sanitizeHTML(pastedData)
   }
 
   async function clearContent() {
@@ -85,7 +79,6 @@
       this={tag}
       contenteditable="true"
       on:input={save}
-      on:paste={handlePaste}
       class={`${$$props.class || ''} outline-dashed outline-1 outline-red-500`}
       data-placeholder={placeholder}
     >
