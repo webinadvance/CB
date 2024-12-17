@@ -1,35 +1,29 @@
 ﻿import { json } from '@sveltejs/kit'
 import { getAllMedia, createMedia } from '$lib/services/mediaService.js'
 import { Media } from '$lib/database/models/media.js'
-import { queryCache } from '$lib/cache/queryCache.js'
-import { Content } from '$lib/database/models/content.js'
 import sequelize from '$lib/database/config.js'
+import { POST as saveContent } from '../content/+server.js'
 
 export async function GET({ url }) {
-  const publicOnly = url.searchParams.get('publicOnly') !== 'false'
-  const media = await getAllMedia(publicOnly)
-  return json(media)
+  return json(await getAllMedia(url.searchParams.get('publicOnly') !== 'false'))
 }
 
 export async function POST({ request }) {
   const transaction = await sequelize.transaction()
-
-  const contentLength = request.headers.get('content-length')
-  if (contentLength && parseInt(contentLength) > 50 * 1024 * 1024) {
+  const contentLength = +request.headers.get('content-length') || 0
+  if (contentLength > 50 * 1024 * 1024)
     return json({ error: 'File too large' }, { status: 413 })
-  }
+
+  const formData = await request.formData()
+  const file = formData.get('file')
+  if (!file) return json({ error: 'No file uploaded' }, { status: 400 })
+
+  const lang = formData.get('lang')
+  const key = formData.get('key')
+  const pageTitle = formData.get('pageTitle')
+  const index = formData.get('index')
 
   try {
-    const formData = await request.formData()
-    const file = formData.get('file')
-    const lang = formData.get('lang')
-    const key = formData.get('key')
-    const pageTitle = formData.get('pageTitle')
-
-    if (!file) {
-      return json({ error: 'No file uploaded' }, { status: 400 })
-    }
-
     const buffer = await file.arrayBuffer()
     const media = await Media.create(
       {
@@ -42,21 +36,20 @@ export async function POST({ request }) {
       { transaction },
     )
 
-    if (key && pageTitle) {
-      await Content.upsert(
-        {
+    // Pass index to saveContent
+    await saveContent({
+      request: {
+        json: async () => ({
           pageTitle,
           key,
           value: media.id.toString(),
           lang,
-        },
-        { transaction },
-      )
-    }
+          index: index ? parseInt(index) : null, // Handle index
+        }),
+      },
+    })
 
     await transaction.commit()
-    queryCache.flushAll()
-
     return json({ id: media.id })
   } catch (error) {
     await transaction.rollback()

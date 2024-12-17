@@ -4,9 +4,6 @@
   import { isEditable } from '$lib/stores/editorStore'
   import { ImageIcon } from 'lucide-svelte'
   import { Edit2, Trash2 } from 'lucide-svelte'
-  import { createEventDispatcher } from 'svelte'
-  export let timestamp = ''
-  import { listStore } from '$lib/stores/listStore'
 
   export let key
   let fileInput
@@ -124,3 +121,4 @@
 {:else if content}
   <img src={imgSrc} class={$$props.class} alt={key} />
 {/if}
+//
