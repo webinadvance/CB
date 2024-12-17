@@ -1,6 +1,7 @@
 <script>
   import ECImage from '$lib/components/ECImage.svelte'
   import ECList from '$lib/components/ECList.svelte'
+  import ECText from '$lib/components/ECText.svelte'
 </script>
 
 <div>HomeComponent.svelte</div>
@@ -27,8 +28,16 @@
 <!--  <ECImage {key} {index} />-->
 <!--</ECList>-->
 
-<ECList key="MY-IMAGES-WITH-TAG" class="inline-block" let:key let:index>
-  <ECImage {key} {index} tag="image1" />
+<ECList
+  key="MY-IMAGES-WITH-TAG"
+  class="inline-block"
+  let:key
+  let:index
+  let:canDelete
+>
+  <ECImage class="w-72" {key} {index} tag="image1" />
+  <ECImage class="w-72" {key} {index} tag="image2" />
+  <ECText {key} {index} elementTag="title1" />
 </ECList>
 
 <!--<ECImage class="max-w-xl m-auto" key={`MY-IMAGES-SINGLE`} />-->

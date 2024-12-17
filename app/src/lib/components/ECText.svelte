@@ -74,7 +74,7 @@
     {@html currentContent}
   </svelte:element>
 {:else}
-  <div class="relative cursor-text">
+  <div class="relative group">
     <svelte:element
       this={tag}
       contenteditable="true"
@@ -84,22 +84,26 @@
     >
       {@html currentContent}
     </svelte:element>
-    {#if canDelete}
-      <button
-        class="absolute top-0 right-0 bg-red-500 text-white rounded p-1 text-sm hover:bg-red-700"
-        on:click={deleteText}
-      >
-        Delete
-      </button>
-    {/if}
-    {#if canClear}
-      <button
-        class="absolute top-0 right-12 bg-gray-500 text-white rounded p-1 text-sm hover:bg-gray-700"
-        on:click={clearContent}
-      >
-        Clear
-      </button>
-    {/if}
+    <div
+      class="absolute -top-2.5 -right-2.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+    >
+      {#if canDelete}
+        <button
+          class="bg-gray-100 hover:bg-gray-200 text-gray-600 rounded w-5 h-5 flex items-center justify-center text-xs border shadow-sm transition-colors"
+          on:click={deleteText}
+        >
+          ✕
+        </button>
+      {/if}
+      {#if canClear}
+        <button
+          class="bg-gray-100 hover:bg-gray-200 text-gray-600 rounded w-5 h-5 flex items-center justify-center text-xs border shadow-sm transition-colors"
+          on:click={clearContent}
+        >
+          ↺
+        </button>
+      {/if}
+    </div>
   </div>
 {/if}
 

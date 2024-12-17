@@ -25,7 +25,7 @@
     </div>
   </header>
 
-  <main class="flex-1 w-full mx-auto p-4 text-center">
+  <main class="flex-1 max-w-lg mx-auto">
     {@render children()}
   </main>
 
