@@ -56,10 +56,18 @@ describe('Content API Integration Tests', () => {
     await Page.destroy({ where: {} })
     await Page.bulkCreate([{ pageTitle: 'Home' }])
   })
-  afterEach(async () => await Content.destroy({ where: {} }))
-  afterEach(async () => await Media.destroy({ where: {} }))
-  afterAll(async () => await Content.sequelize.close())
-  afterAll(async () => await Media.sequelize.close())
+
+  afterEach(async () => {
+    await Content.destroy({ where: {} })
+    await Media.destroy({ where: {} })
+    await Page.destroy({ where: {} })
+  })
+
+  afterAll(async () => {
+    if (Content.sequelize) {
+      await Content.sequelize.close()
+    }
+  })
 
   test('DELETE: Removes indexed content correctly', async () => {
     await Content.bulkCreate([

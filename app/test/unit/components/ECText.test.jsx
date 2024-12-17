@@ -1,4 +1,4 @@
-﻿import { describe, expect, test, vi } from 'vitest'
+﻿import { expect, test, vi } from 'vitest'
 import { cleanup, render } from '@testing-library/svelte'
 import ECText from '$lib/components/ECText.svelte'
 
