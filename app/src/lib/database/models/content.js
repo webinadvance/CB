@@ -7,17 +7,25 @@ const Content = sequelize.define(
   {
     id: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
       autoIncrement: true,
+      primaryKey: true,
     },
     pageTitle: {
       type: DataTypes.STRING(200),
       allowNull: false,
       references: { model: Page, key: 'pageTitle' },
     },
-    key: {
-      type: DataTypes.STRING(100),
+    baseKey: {
+      type: DataTypes.STRING(50),
       allowNull: false,
+    },
+    tag: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+    },
+    index: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
     value: {
       type: DataTypes.TEXT,
@@ -30,12 +38,11 @@ const Content = sequelize.define(
     },
   },
   {
-    indexes: [
-      {
-        unique: true,
-        fields: ['pageTitle', 'key', 'lang'],
+    uniqueKeys: {
+      content_unique: {
+        fields: ['pageTitle', 'baseKey', 'tag', 'index', 'lang'],
       },
-    ],
+    },
   },
 )
 
@@ -43,3 +50,4 @@ Page.hasMany(Content, { foreignKey: 'pageTitle', as: 'contents' })
 Content.belongsTo(Page, { foreignKey: 'pageTitle' })
 
 export { Content }
+//

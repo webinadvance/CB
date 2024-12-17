@@ -27,3 +27,4 @@ async function initializeDatabase() {
 }
 
 export default initializeDatabase
+//

@@ -6,6 +6,8 @@
   export let key
   export let pg
   export let tag = 'div'
+  export let index = null
+  export let elementTag = null // New prop for specific tag
   export let placeholder = 'Content not found'
 
   let currentContent = ''
@@ -18,8 +20,6 @@
 
   async function save(event) {
     const newContent = event.target.textContent
-    console.log('Save:', newContent)
-
     try {
       await fetch('/api/content', {
         method: 'POST',
@@ -27,8 +27,9 @@
         body: JSON.stringify({
           pageTitle: pg || $pageData.pageTitle,
           key,
+          tag: elementTag,
+          index,
           value: newContent,
-          lang: $langStore,
         }),
       })
     } catch (error) {
@@ -38,8 +39,23 @@
 
   const parentEvent = getContext('parentEvent')
 
-  function deleteText() {
-    parentEvent?.(key)
+  async function deleteText() {
+    try {
+      await fetch('/api/content', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pageTitle: pg || $pageData.pageTitle,
+          key,
+          tag: elementTag,
+          index,
+          strict: !elementTag,
+        }),
+      })
+      parentEvent?.(key)
+    } catch (error) {
+      console.error('Error deleting content:', error)
+    }
   }
 </script>
 
