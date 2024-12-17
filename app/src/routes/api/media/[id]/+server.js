@@ -37,9 +37,7 @@ export async function DELETE({ params, request }) {
   const transaction = await sequelize.transaction()
 
   try {
-    const body = await request.json()
-    const { pageTitle, key, lang } = body
-    const key = key.split('.')[0]
+    const { pageTitle, key: mediaId, lang } = await request.json()
 
     await Media.destroy({
       where: { id: params.id },
