@@ -6,34 +6,21 @@ import sequelize from '$lib/database/config.js'
 import { Op } from 'sequelize'
 
 export async function POST({ request }) {
-  try {
-    let { pageTitle, key, tag, index, value, lang } = await request.json()
-    lang = lang || get(langStore)
+  const payload = await request.json()
+  const { pageTitle, key, tag = null, index = null, value } = payload
+  const lang = payload.lang || get(langStore)
 
-    if (!pageTitle || !key) {
-      return json({ error: 'Missing required fields' }, { status: 400 })
-    }
+  if (!pageTitle || !key)
+    return json({ error: 'Missing required fields' }, { status: 400 })
 
-    const where = {
-      pageTitle,
-      key,
-      tag: tag || null,
-      index: typeof index === 'number' ? index : null,
-      lang,
-    }
+  const where = { pageTitle, key, tag, index, lang }
+  const existing = await Content.findOne({ where })
 
-    const existing = await Content.findOne({ where })
+  const result = existing
+    ? await existing.update({ value })
+    : await Content.create({ ...where, value })
 
-    if (existing) {
-      await existing.update({ value })
-      return json(existing, { status: 200 })
-    }
-
-    const content = await Content.create({ ...where, value })
-    return json(content, { status: 201 })
-  } catch (error) {
-    return json({ error: error.message }, { status: 500 })
-  }
+  return json(result, { status: existing ? 200 : 201 })
 }
 
 export async function DELETE({ request }) {
