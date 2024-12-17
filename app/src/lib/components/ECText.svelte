@@ -102,7 +102,6 @@
     {/if}
   </div>
 {/if}
-//
 
 <style>
   [contenteditable='true']:empty::before {
