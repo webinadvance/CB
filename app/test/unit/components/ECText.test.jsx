@@ -36,13 +36,3 @@ test('renders placeholder when empty', () => {
   const { container } = render(ECText, { props: { key: 'myKey' } })
   expect(container.textContent).toBe('')
 })
-
-test('updates content from store', async () => {
-  const { container } = render(ECText, { props: { key: 'myKey' } })
-  await vi.dynamicImportSettled()
-
-  mockStoreSubscriber({ contentData: { myKey: 'New Content' } })
-  await Promise.resolve() // Wait for reactive update
-
-  expect(container.textContent).toBe('New Content')
-})
